@@ -1,102 +1,391 @@
+import React from "react";
+import Link from "next/link";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  BookOpen,
+  Users,
+  CheckCircle,
+  Calendar,
+  FileText,
+  Star,
+  ArrowRight,
+  Zap,
+  Shield,
+  Clock,
+} from "lucide-react";
+import { ROUTES } from "@/lib/constants";
 
-export default function Home() {
+export default function HomePage() {
+  const features = [
+    {
+      icon: <FileText className="h-8 w-8 text-primary" />,
+      title: "Submissão Simplificada",
+      description:
+        "Interface intuitiva para submissão de artigos com validação automática e suporte a múltiplos formatos.",
+    },
+    {
+      icon: <Users className="h-8 w-8 text-primary" />,
+      title: "Gestão de Avaliadores",
+      description:
+        "Sistema completo para coordenadores gerenciarem avaliadores e distribuírem artigos de forma eficiente.",
+    },
+    {
+      icon: <CheckCircle className="h-8 w-8 text-primary" />,
+      title: "Avaliação Estruturada",
+      description:
+        "Checklists personalizáveis e sistema de notas para avaliações consistentes e transparentes.",
+    },
+    {
+      icon: <Calendar className="h-8 w-8 text-primary" />,
+      title: "Eventos Organizados",
+      description:
+        "Criação e gestão de eventos acadêmicos com prazos, critérios e workflows personalizados.",
+    },
+    {
+      icon: <Zap className="h-8 w-8 text-primary" />,
+      title: "Processo Ágil",
+      description:
+        "Automatização de fluxos de trabalho reduzindo tempo e aumentando a eficiência do processo.",
+    },
+    {
+      icon: <Shield className="h-8 w-8 text-primary" />,
+      title: "Seguro e Confiável",
+      description:
+        "Dados protegidos com autenticação robusta e controle de acesso baseado em perfis.",
+    },
+  ];
+
+  const benefits = [
+    "Redução de 80% no tempo de gestão de submissões",
+    "Interface moderna e responsiva para todos os dispositivos",
+    "Sistema de notificações em tempo real",
+    "Relatórios e estatísticas detalhadas",
+    "Suporte completo durante todo o processo",
+  ];
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen">
+      {/* Header */}
+      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
+            {/* Logo */}
+            <div className="flex items-center space-x-2">
+              <div className="submita-gradient w-10 h-10 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">S</span>
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-primary">SUBMITA</h1>
+                <p className="text-xs text-gray-500">Biopark</p>
+              </div>
+            </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            {/* Navigation */}
+            <nav className="hidden md:flex items-center space-x-8">
+              <a
+                href="#features"
+                className="text-gray-600 hover:text-primary transition-colors"
+              >
+                Recursos
+              </a>
+              <a
+                href="#benefits"
+                className="text-gray-600 hover:text-primary transition-colors"
+              >
+                Benefícios
+              </a>
+              <a
+                href="#contact"
+                className="text-gray-600 hover:text-primary transition-colors"
+              >
+                Contato
+              </a>
+            </nav>
+
+            {/* Auth Buttons */}
+            <div className="flex items-center space-x-3">
+              <Button variant="ghost" asChild>
+                <Link href={ROUTES.LOGIN}>Entrar</Link>
+              </Button>
+              <Button asChild>
+                <Link href={ROUTES.REGISTER}>Registrar</Link>
+              </Button>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </header>
+
+      {/* Hero Section */}
+      <section className="submita-gradient py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="max-w-3xl mx-auto">
+            <Badge className="mb-6 bg-white/20 text-white hover:bg-white/30">
+              Desenvolvido no Biopark
+            </Badge>
+
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+              Sistema de Submissão de{" "}
+              <span className="text-blue-200">Artigos Acadêmicos</span>
+            </h1>
+
+            <p className="text-xl text-blue-100 mb-8 leading-relaxed">
+              Plataforma completa para gestão de submissões, avaliações e
+              eventos acadêmicos. Desenvolvido para simplificar e otimizar todo
+              o processo de publicação científica.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                size="lg"
+                className="bg-white text-primary hover:bg-gray-100"
+                asChild
+              >
+                <Link href={ROUTES.REGISTER}>
+                  Começar Agora
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white text-white hover:bg-white/10"
+                asChild
+              >
+                <Link href={ROUTES.LOGIN}>Já tenho conta</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-20 bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Recursos Poderosos
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              Tudo que você precisa para gerenciar submissões acadêmicas de
+              forma eficiente
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <Card
+                key={index}
+                className="border-0 shadow-lg hover:shadow-xl transition-shadow"
+              >
+                <CardHeader>
+                  <div className="mb-4">{feature.icon}</div>
+                  <CardTitle className="text-xl">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    {feature.description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section id="benefits" className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+                Transforme a Gestão Acadêmica do seu Evento
+              </h2>
+              <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
+                O SUBMITA revoluciona a forma como eventos acadêmicos gerenciam
+                submissões, proporcionando uma experiência moderna e eficiente
+                para todos os envolvidos.
+              </p>
+
+              <ul className="space-y-4 mb-8">
+                {benefits.map((benefit, index) => (
+                  <li key={index} className="flex items-start space-x-3">
+                    <CheckCircle className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700 dark:text-gray-300">
+                      {benefit}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <Button size="lg" asChild>
+                <Link href={ROUTES.REGISTER}>
+                  Começar Gratuitamente
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+
+            <div className="relative">
+              <div className="bg-gradient-to-br from-primary to-blue-600 rounded-2xl p-8 text-white">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold">80%</div>
+                    <div className="text-sm opacity-80">Redução de Tempo</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold">100%</div>
+                    <div className="text-sm opacity-80">Digital</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold">24/7</div>
+                    <div className="text-sm opacity-80">Disponibilidade</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold">∞</div>
+                    <div className="text-sm opacity-80">Submissões</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-primary">
+        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            Pronto para Modernizar seu Evento Acadêmico?
+          </h2>
+          <p className="text-xl text-blue-100 mb-8">
+            Junte-se à comunidade Biopark e revolucione a gestão de submissões
+            acadêmicas
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              size="lg"
+              className="bg-white text-primary hover:bg-gray-100"
+              asChild
+            >
+              <Link href={ROUTES.REGISTER}>Criar Conta Gratuita</Link>
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-white text-white hover:bg-white/10"
+              asChild
+            >
+              <Link href={ROUTES.LOGIN}>Fazer Login</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer id="contact" className="bg-gray-900 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {/* Logo e Descrição */}
+            <div className="md:col-span-2">
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="submita-gradient w-10 h-10 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">S</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold">SUBMITA</h3>
+                  <p className="text-sm text-gray-400">Biopark</p>
+                </div>
+              </div>
+              <p className="text-gray-400 mb-4 max-w-md">
+                Sistema de submissão de artigos acadêmicos desenvolvido para a
+                comunidade científica do Biopark e eventos acadêmicos.
+              </p>
+              <div className="flex space-x-4">
+                <Badge
+                  variant="outline"
+                  className="text-gray-400 border-gray-600"
+                >
+                  Versão 1.0.0
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className="text-gray-400 border-gray-600"
+                >
+                  Open Source
+                </Badge>
+              </div>
+            </div>
+
+            {/* Links Rápidos */}
+            <div>
+              <h4 className="font-semibold mb-4">Links Rápidos</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li>
+                  <Link
+                    href={ROUTES.LOGIN}
+                    className="hover:text-white transition-colors"
+                  >
+                    Fazer Login
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href={ROUTES.REGISTER}
+                    className="hover:text-white transition-colors"
+                  >
+                    Criar Conta
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href="#features"
+                    className="hover:text-white transition-colors"
+                  >
+                    Recursos
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#benefits"
+                    className="hover:text-white transition-colors"
+                  >
+                    Benefícios
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Contato */}
+            <div>
+              <h4 className="font-semibold mb-4">Contato</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li>contato@biopark.com.br</li>
+                <li>(45) 3000-0000</li>
+                <li>Toledo - PR</li>
+                <li>
+                  <a
+                    href="https://biopark.com.br"
+                    className="hover:text-white transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    biopark.com.br
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+            <p>&copy; 2024 Biopark. Todos os direitos reservados.</p>
+            <p className="mt-2 text-sm">
+              Desenvolvido com ❤️ para a comunidade acadêmica
+            </p>
+          </div>
+        </div>
       </footer>
     </div>
   );

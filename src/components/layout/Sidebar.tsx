@@ -1,0 +1,224 @@
+"use client";
+
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import {
+  LayoutDashboard,
+  Calendar,
+  FileText,
+  Users,
+  ClipboardList,
+  Upload,
+  BarChart3,
+  UserCheck,
+  History,
+  Settings,
+  X,
+} from "lucide-react";
+import { useAuthContext } from "@/providers/AuthProvider";
+import { ROUTES, USER_ROLES } from "@/lib/constants";
+
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+interface NavigationItem {
+  title: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  roles: string[];
+  badge?: string;
+}
+
+const navigationItems: NavigationItem[] = [
+  {
+    title: "Dashboard",
+    href: ROUTES.DASHBOARD,
+    icon: LayoutDashboard,
+    roles: [USER_ROLES.STUDENT, USER_ROLES.EVALUATOR, USER_ROLES.COORDINATOR],
+  },
+  {
+    title: "Eventos",
+    href: ROUTES.EVENTS,
+    icon: Calendar,
+    roles: [USER_ROLES.COORDINATOR],
+  },
+  {
+    title: "Artigos",
+    href: ROUTES.ARTICLES,
+    icon: FileText,
+    roles: [USER_ROLES.STUDENT, USER_ROLES.EVALUATOR],
+  },
+  {
+    title: "Submeter Artigo",
+    href: ROUTES.SUBMIT_ARTICLE,
+    icon: Upload,
+    roles: [USER_ROLES.STUDENT],
+  },
+  {
+    title: "Usuários",
+    href: ROUTES.USERS,
+    icon: Users,
+    roles: [USER_ROLES.COORDINATOR],
+  },
+  {
+    title: "Checklists",
+    href: ROUTES.CHECKLISTS,
+    icon: ClipboardList,
+    roles: [USER_ROLES.COORDINATOR],
+  },
+  {
+    title: "Rascunhos",
+    href: "/rascunhos",
+    icon: FileText,
+    roles: [USER_ROLES.EVALUATOR],
+  },
+  {
+    title: "Histórico",
+    href: "/historico",
+    icon: History,
+    roles: [USER_ROLES.EVALUATOR],
+  },
+  {
+    title: "Atribuições",
+    href: "/atribuicoes",
+    icon: UserCheck,
+    roles: [USER_ROLES.COORDINATOR],
+  },
+  {
+    title: "Relatórios",
+    href: "/relatorios",
+    icon: BarChart3,
+    roles: [USER_ROLES.COORDINATOR],
+  },
+];
+
+export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
+  const { user } = useAuthContext();
+  const pathname = usePathname();
+
+  if (!user) return null;
+
+  const userNavigationItems = navigationItems.filter((item) =>
+    item.roles.includes(user.role)
+  );
+
+  const isActive = (href: string) => {
+    if (href === ROUTES.DASHBOARD) {
+      return pathname === href;
+    }
+    return pathname.startsWith(href);
+  };
+
+  return (
+    <>
+      {/* Overlay para mobile */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={cn(
+          "fixed left-0 top-0 z-50 h-full w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-200 ease-in-out md:relative md:translate-x-0",
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        {/* Header do Sidebar */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center space-x-2">
+            <div className="submita-gradient w-8 h-8 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">S</span>
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-primary">SUBMITA</h2>
+              <p className="text-xs text-gray-500">Biopark</p>
+            </div>
+          </div>
+
+          {/* Botão fechar para mobile */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            className="md:hidden"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Navegação */}
+        <ScrollArea className="flex-1 px-3 py-4">
+          <nav className="space-y-1">
+            {userNavigationItems.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.href);
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={onClose}
+                  className={cn(
+                    "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                    active
+                      ? "bg-primary text-primary-foreground"
+                      : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  )}
+                >
+                  <Icon className="mr-3 h-4 w-4" />
+                  {item.title}
+                  {item.badge && (
+                    <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-0.5">
+                      {item.badge}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <Separator className="my-4" />
+
+          {/* Links adicionais */}
+          <div className="space-y-1">
+            <Link
+              href={ROUTES.PROFILE}
+              onClick={onClose}
+              className={cn(
+                "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                pathname === ROUTES.PROFILE
+                  ? "bg-primary text-primary-foreground"
+                  : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+              )}
+            >
+              <Settings className="mr-3 h-4 w-4" />
+              Perfil
+            </Link>
+          </div>
+        </ScrollArea>
+
+        {/* Footer do Sidebar */}
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center space-x-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                {user.name}
+              </p>
+              <p className="text-xs text-gray-500 truncate">{user.email}</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </>
+  );
+}
