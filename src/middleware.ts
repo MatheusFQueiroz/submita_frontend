@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
+import { is } from "date-fns/locale";
 
 // Rotas que não precisam de autenticação
 const publicRoutes = ["/", "/login", "/register"];
@@ -58,7 +59,15 @@ export async function middleware(request: NextRequest) {
     );
     const { payload } = await jwtVerify(token, secret);
 
-    const user = payload as any;
+    const tokenData = payload as any;
+
+    // Mapear dados do token
+    const user = {
+      id: tokenData.userId,
+      role: tokenData.role,
+      isFirstLogin: tokenData.isFirstLogin || false,
+      email: tokenData.email,
+    };
 
     // Se é primeira senha e não está na rota de redefinir senha
     if (

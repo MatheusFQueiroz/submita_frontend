@@ -45,7 +45,7 @@ export function LoginForm() {
             <span className="text-white font-bold text-xl">S</span>
           </div>
         </div>
-        <CardTitle className="text-2xl font-bold">Entrar no SUBMITA</CardTitle>
+        <CardTitle className="text-2xl font-bold">Entrar</CardTitle>
         <p className="text-sm text-gray-600">
           Faça login na sua conta para continuar
         </p>
@@ -110,7 +110,11 @@ export function LoginForm() {
 
           {/* Botões */}
           <div className="space-y-4">
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              className="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Entrando..." : "Entrar"}
             </Button>
 

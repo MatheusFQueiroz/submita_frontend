@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,8 +12,6 @@ import { AuthGuard } from "@/components/guards/AuthGuard";
 import { RoleGuard } from "@/components/guards/RoleGuard";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { EmptyState } from "@/components/common/EmptyState";
-import { DataTable } from "@/components/common/DataTable";
-import { StatusBadge } from "@/components/common/StatusBadge";
 import {
   Calendar,
   Plus,
@@ -30,18 +28,49 @@ import { Event } from "@/types";
 import { ROUTES, formatDate, USER_ROLES } from "@/lib/utils";
 import { api } from "@/lib/api";
 
+// ✅ CORREÇÃO 1: Interface para a resposta da API
+interface EventsApiResponse {
+  events: Event[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export default function EventsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearch = useDebounce(searchTerm, 300);
 
+  const fetchEvents = useCallback(() => {
+    const url = `/events${
+      debouncedSearch ? `?search=${encodeURIComponent(debouncedSearch)}` : ""
+    }`;
+    console.log("🔍 Fazendo requisição para:", url);
+    return api.get(url);
+  }, [debouncedSearch]);
+
   const {
-    data: events,
+    data: apiResponse,
     loading,
     error,
     execute: refetchEvents,
-  } = useApi<Event[]>(() => api.get(`/events?search=${debouncedSearch}`), {
+  } = useApi<EventsApiResponse>(fetchEvents, {
     immediate: true,
   });
+
+  const events = apiResponse?.events || [];
+  const pagination = apiResponse
+    ? {
+        total: apiResponse.total,
+        page: apiResponse.page,
+        limit: apiResponse.limit,
+        totalPages: apiResponse.totalPages,
+      }
+    : null;
+
+  console.log("🔍 API Response:", apiResponse);
+  console.log("🔍 Events extraídos:", events);
+  console.log("🔍 Quantidade de eventos:", events.length);
 
   const getEventStatus = (event: Event) => {
     const now = new Date();
@@ -60,88 +89,35 @@ export default function EventsPage() {
     { label: "Eventos" },
   ];
 
-  const eventColumns = [
-    {
-      key: "title",
-      title: "Evento",
-      render: (value: string, event: Event) => (
-        <div className="flex items-center space-x-3">
-          {event.imageUrl && (
-            <Image
-              src={event.imageUrl}
-              alt={event.title}
-              width={40}
-              height={40}
-              className="rounded-lg object-cover"
-            />
-          )}
-          <div>
-            <p className="font-medium">{event.title}</p>
-            <p className="text-sm text-gray-500 truncate max-w-xs">
-              {event.description}
-            </p>
+  if (loading) {
+    return (
+      <AuthGuard>
+        <PageLayout title="Eventos" breadcrumbs={breadcrumbs}>
+          <div className="flex justify-center py-8">
+            <LoadingSpinner text="Carregando eventos..." />
           </div>
-        </div>
-      ),
-    },
-    {
-      key: "submissionPeriod",
-      title: "Período de Submissão",
-      render: (_: any, event: Event) => (
-        <div className="text-sm">
-          <p>{formatDate(event.submissionStartDate)}</p>
-          <p className="text-gray-500">
-            até {formatDate(event.submissionEndDate)}
-          </p>
-        </div>
-      ),
-    },
-    {
-      key: "status",
-      title: "Status",
-      render: (_: any, event: Event) => {
-        const status = getEventStatus(event);
-        return <Badge className={status.color}>{status.label}</Badge>;
-      },
-    },
-    {
-      key: "evaluationType",
-      title: "Tipo de Avaliação",
-      render: (value: string) => {
-        const types = {
-          DIRECT: "Direta",
-          PAIR: "Por Pares",
-          PANEL: "Painel",
-        };
-        return types[value as keyof typeof types] || value;
-      },
-    },
-    {
-      key: "actions",
-      title: "Ações",
-      render: (_: any, event: Event) => (
-        <div className="flex space-x-2">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href={ROUTES.EVENT_DETAILS(event.id)}>
-              <Eye className="h-4 w-4" />
-            </Link>
-          </Button>
-          <RoleGuard allowedRoles={[USER_ROLES.COORDINATOR]}>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href={ROUTES.EVENT_ARTICLES(event.id)}>
-                <FileText className="h-4 w-4" />
-              </Link>
+        </PageLayout>
+      </AuthGuard>
+    );
+  }
+
+  if (error) {
+    return (
+      <AuthGuard>
+        <PageLayout title="Eventos" breadcrumbs={breadcrumbs}>
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Erro ao carregar eventos
+            </h2>
+            <p className="text-gray-600 mt-2">{error}</p>
+            <Button onClick={refetchEvents} className="mt-4">
+              Tentar novamente
             </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href={ROUTES.EVENT_EVALUATORS(event.id)}>
-                <Users className="h-4 w-4" />
-              </Link>
-            </Button>
-          </RoleGuard>
-        </div>
-      ),
-    },
-  ];
+          </div>
+        </PageLayout>
+      </AuthGuard>
+    );
+  }
 
   return (
     <AuthGuard>
@@ -153,7 +129,7 @@ export default function EventsPage() {
             <Button asChild>
               <Link href={ROUTES.CREATE_EVENT}>
                 <Plus className="mr-2 h-4 w-4" />
-                Criar Evento
+                Novo Evento
               </Link>
             </Button>
           </RoleGuard>
@@ -162,10 +138,10 @@ export default function EventsPage() {
         <div className="space-y-6">
           {/* Filtros */}
           <Card>
-            <CardContent className="pt-6">
+            <CardContent className="p-4">
               <div className="flex items-center space-x-4">
-                <div className="relative flex-1 max-w-sm">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <Input
                     placeholder="Buscar eventos..."
                     value={searchTerm}
@@ -177,77 +153,122 @@ export default function EventsPage() {
             </CardContent>
           </Card>
 
+          {/* Informações de paginação */}
+          {pagination && pagination.total > 0 && (
+            <div className="text-sm text-gray-500">
+              Mostrando {events.length} de {pagination.total} eventos
+            </div>
+          )}
+
           {/* Lista de Eventos */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Calendar className="mr-2 h-5 w-5" />
-                Eventos Disponíveis
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <DataTable
-                data={events || []}
-                columns={eventColumns}
-                loading={loading}
-                emptyMessage="Nenhum evento encontrado"
-                emptyIcon={Calendar}
-                onRowClick={(event) =>
-                  (window.location.href = ROUTES.EVENT_DETAILS(event.id))
-                }
-              />
-            </CardContent>
-          </Card>
+          {events.length === 0 ? (
+            <EmptyState
+              icon={Calendar}
+              title="Nenhum evento encontrado"
+              description={
+                searchTerm
+                  ? `Nenhum evento encontrado para "${searchTerm}"`
+                  : "Não há eventos cadastrados ainda."
+              }
+              action={{
+                label: "Criar Primeiro Evento",
+                onClick: () => (window.location.href = ROUTES.CREATE_EVENT),
+              }}
+            />
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {events.map((event) => {
+                const status = getEventStatus(event);
 
-          {/* Cards de Eventos para Mobile */}
-          <div className="md:hidden space-y-4">
-            {events?.map((event) => {
-              const status = getEventStatus(event);
-              return (
-                <Card
-                  key={event.id}
-                  className="cursor-pointer hover:shadow-md transition-shadow"
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <CardTitle className="text-lg">{event.title}</CardTitle>
-                        <p className="text-sm text-gray-600 mt-1">
-                          {event.description}
-                        </p>
+                return (
+                  <Card
+                    key={event.id}
+                    className="hover:shadow-lg transition-shadow"
+                  >
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <CardTitle className="text-lg line-clamp-2">
+                            {event.title}
+                          </CardTitle>
+                          <Badge
+                            className={`mt-2 ${status.color}`}
+                            variant="secondary"
+                          >
+                            {status.label}
+                          </Badge>
+                        </div>
+                        {event.imageUrl && (
+                          <Image
+                            src={event.imageUrl}
+                            alt={event.title}
+                            width={80}
+                            height={60}
+                            className="rounded-md object-cover"
+                          />
+                        )}
                       </div>
-                      <Badge className={status.color}>{status.label}</Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex items-center text-sm text-gray-500">
-                      <Clock className="mr-2 h-4 w-4" />
-                      {formatDate(event.submissionStartDate)} -{" "}
-                      {formatDate(event.submissionEndDate)}
-                    </div>
+                    </CardHeader>
 
-                    <div className="flex justify-between items-center">
-                      <Badge variant="outline">
-                        {event.evaluationType === "DIRECT"
-                          ? "Direta"
-                          : event.evaluationType === "PAIR"
-                          ? "Por Pares"
-                          : "Painel"}
-                      </Badge>
+                    <CardContent className="space-y-4">
+                      <p className="text-sm text-gray-600 line-clamp-3">
+                        {event.description}
+                      </p>
 
-                      <div className="flex space-x-2">
-                        <Button variant="outline" size="sm" asChild>
-                          <Link href={ROUTES.EVENT_DETAILS(event.id)}>
-                            Ver Detalhes
-                          </Link>
-                        </Button>
+                      <div className="space-y-2 text-sm text-gray-500">
+                        <div className="flex items-center">
+                          <Calendar className="mr-2 h-4 w-4" />
+                          Submissões: {formatDate(
+                            event.submissionStartDate
+                          )} - {formatDate(event.submissionEndDate)}
+                        </div>
+
+                        <div className="flex items-center">
+                          <Clock className="mr-2 h-4 w-4" />
+                          Evento: {formatDate(event.submissionStartDate)} -{" "}
+                          {formatDate(event.submissionEndDate)}
+                        </div>
+
+                        <div className="flex items-center">
+                          <Users className="mr-2 h-4 w-4" />
+                          Tipo: {event.evaluationType}
+                        </div>
+
+                        <div className="flex items-center">
+                          <FileText className="mr-2 h-4 w-4" />
+                          Status: {event.status}
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+
+                      <div className="flex items-center justify-between pt-4 border-t">
+                        <div className="text-xs text-gray-500">
+                          Criado em {formatDate(event.createdAt)}
+                        </div>
+
+                        <div className="flex space-x-2">
+                          <Button variant="outline" size="sm" asChild>
+                            <Link href={ROUTES.EVENT_DETAILS(event.id)}>
+                              <Eye className="mr-1 h-3 w-3" />
+                              Ver
+                            </Link>
+                          </Button>
+
+                          <RoleGuard allowedRoles={[USER_ROLES.COORDINATOR]}>
+                            <Button variant="outline" size="sm" asChild>
+                              <Link href={`/eventos/${event.id}/editar`}>
+                                <Settings className="mr-1 h-3 w-3" />
+                                Gerenciar
+                              </Link>
+                            </Button>
+                          </RoleGuard>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
         </div>
       </PageLayout>
     </AuthGuard>

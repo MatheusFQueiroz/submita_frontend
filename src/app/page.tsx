@@ -109,7 +109,7 @@ export default function HomePage() {
 
             {/* Auth Buttons */}
             <div className="flex items-center space-x-3">
-              <Button variant="ghost" asChild>
+              <Button variant="default" asChild>
                 <Link href={ROUTES.LOGIN}>Entrar</Link>
               </Button>
               <Button asChild>
@@ -124,10 +124,6 @@ export default function HomePage() {
       <section className="submita-gradient py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="max-w-3xl mx-auto">
-            <Badge className="mb-6 bg-white/20 text-white hover:bg-white/30">
-              Desenvolvido no Biopark
-            </Badge>
-
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
               Sistema de Submissão de{" "}
               <span className="text-blue-200">Artigos Acadêmicos</span>
