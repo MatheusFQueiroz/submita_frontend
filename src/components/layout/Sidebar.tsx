@@ -129,12 +129,12 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 h-full w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-200 ease-in-out md:relative md:translate-x-0",
+          "fixed left-0 top-0 z-50 h-full w-64 bg-white  border-r border-gray-200  transform transition-transform duration-200 ease-in-out md:relative md:translate-x-0",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Header do Sidebar */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 ">
           <div className="flex items-center space-x-2">
             <div className="submita-gradient w-8 h-8 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">S</span>
@@ -172,7 +172,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                     "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
                     active
                       ? "bg-primary text-primary-foreground"
-                      : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      : "text-gray-700 hover:bg-gray-100 "
                   )}
                 >
                   <Icon className="mr-3 h-4 w-4" />
@@ -198,7 +198,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                 "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
                 pathname === ROUTES.PROFILE
                   ? "bg-primary text-primary-foreground"
-                  : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  : "text-gray-700 hover:bg-gray-100 "
               )}
             >
               <Settings className="mr-3 h-4 w-4" />
@@ -208,10 +208,10 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
         </ScrollArea>
 
         {/* Footer do Sidebar */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="p-4 border-t border-gray-200 ">
           <div className="flex items-center space-x-3">
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+              <p className="text-sm font-medium text-gray-900  truncate">
                 {user.name}
               </p>
               <p className="text-xs text-gray-500 truncate">{user.email}</p>

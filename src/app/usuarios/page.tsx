@@ -238,11 +238,11 @@ export default function UsersPage() {
                   )}
                 </div>
 
-                <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded-lg text-sm">
-                  <p className="font-medium text-blue-900 dark:text-blue-100 mb-1">
+                <div className="bg-blue-50  p-3 rounded-lg text-sm">
+                  <p className="font-medium text-blue-900  mb-1">
                     Informações importantes:
                   </p>
-                  <ul className="text-blue-700 dark:text-blue-300 space-y-1">
+                  <ul className="text-blue-700  space-y-1">
                     <li>• Uma senha temporária será criada automaticamente</li>
                     <li>
                       • O avaliador deve alterar a senha no primeiro login

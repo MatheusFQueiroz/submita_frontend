@@ -46,10 +46,10 @@ export function EvaluatorDashboard() {
       {/* Cabeçalho */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-2xl font-bold text-gray-900 ">
             Dashboard do Avaliador
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-gray-600">
             Gerencie suas avaliações e acompanhe seu progresso
           </p>
         </div>
@@ -150,7 +150,7 @@ export function EvaluatorDashboard() {
                 <div key={index} className="flex items-center justify-between">
                   <span className="text-sm font-medium">{monthData.month}</span>
                   <div className="flex items-center space-x-2">
-                    <div className="w-20 bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                    <div className="w-20 bg-gray-200 rounded-full h-2 ">
                       <div
                         className="bg-primary h-2 rounded-full"
                         style={{
@@ -196,7 +196,7 @@ export function EvaluatorDashboard() {
               {pendingEvaluations.map((evaluation) => (
                 <div
                   key={evaluation.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50  transition-colors"
                 >
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium truncate">

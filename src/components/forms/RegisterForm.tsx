@@ -54,7 +54,7 @@ export function RegisterForm() {
           </div>
         </div>
         <CardTitle className="text-2xl font-bold">Criar Conta</CardTitle>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-sm text-gray-600">
           Registre-se para acessar o SUBMITA
         </p>
       </CardHeader>
@@ -188,9 +188,7 @@ export function RegisterForm() {
             </Button>
 
             <div className="text-center text-sm">
-              <span className="text-gray-600 dark:text-gray-400">
-                Já tem uma conta?{" "}
-              </span>
+              <span className="text-gray-600">Já tem uma conta? </span>
               <Link
                 href={ROUTES.LOGIN}
                 className="text-primary hover:underline font-medium"

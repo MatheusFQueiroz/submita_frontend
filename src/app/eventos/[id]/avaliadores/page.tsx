@@ -306,9 +306,7 @@ export default function EventEvaluatorsPage({
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-lg font-semibold">{event?.title}</h2>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {event?.description}
-                  </p>
+                  <p className="text-sm text-gray-600">{event?.description}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-2xl font-bold text-primary">

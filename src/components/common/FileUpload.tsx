@@ -70,10 +70,10 @@ export function FileUpload({
           "border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors",
           isDragActive || dragActive
             ? "border-primary bg-primary/5"
-            : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500",
+            : "border-gray-300  hover:border-gray-400 ",
           disabled && "opacity-50 cursor-not-allowed",
-          error && "border-red-300 bg-red-50 dark:bg-red-950",
-          isUploaded && "border-green-300 bg-green-50 dark:bg-green-950"
+          error && "border-red-300 bg-red-50 ",
+          isUploaded && "border-green-300 bg-green-50 "
         )}
       >
         <input {...getInputProps()} />
@@ -81,9 +81,7 @@ export function FileUpload({
         {isUploading ? (
           <div className="space-y-2">
             <Upload className="mx-auto h-8 w-8 text-primary animate-pulse" />
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Enviando arquivo...
-            </p>
+            <p className="text-sm text-gray-600">Enviando arquivo...</p>
             <Progress
               value={uploadProgress}
               className="w-full max-w-xs mx-auto"
@@ -128,7 +126,7 @@ export function FileUpload({
           <div className="space-y-2">
             <Upload className="mx-auto h-8 w-8 text-gray-400" />
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-600">
                 {isDragActive
                   ? "Solte o arquivo aqui..."
                   : "Clique ou arraste arquivos aqui"}

@@ -101,10 +101,10 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
       <AuthGuard>
         <PageLayout>
           <div className="text-center py-12">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-gray-900">
               Artigo não encontrado
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
+            <p className="text-gray-600 mt-2">
               O artigo que você está procurando não existe ou foi removido.
             </p>
             <Button asChild className="mt-4">
@@ -222,7 +222,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                   {/* Resumo */}
                   <div>
                     <h3 className="text-lg font-medium mb-3">Resumo</h3>
-                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                    <p className="text-gray-700 leading-relaxed">
                       {article.abstract}
                     </p>
                   </div>
@@ -280,7 +280,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                             <h4 className="font-medium">
                               {article.event?.title}
                             </h4>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            <p className="text-sm text-gray-600 mt-1">
                               {article.event?.description}
                             </p>
                             <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
@@ -380,7 +380,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                                 <h4 className="text-sm font-medium mb-2">
                                   Comentários:
                                 </h4>
-                                <p className="text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
+                                <p className="text-sm text-gray-700 bg-gray-50  p-3 rounded-md">
                                   {evaluation.evaluationDescription}
                                 </p>
                               </div>
@@ -421,13 +421,13 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-center space-x-4 p-4 border rounded-lg bg-blue-50 dark:bg-blue-950">
+                    <div className="flex items-center space-x-4 p-4 border rounded-lg bg-blue-50">
                       <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium">
                         {article.currentVersion}
                       </div>
                       <div className="flex-1">
                         <p className="font-medium">Versão Atual</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-sm text-gray-600">
                           Submetido em {formatDate(article.createdAt)}
                         </p>
                       </div>

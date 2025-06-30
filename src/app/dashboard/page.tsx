@@ -35,12 +35,10 @@ export default function DashboardPage() {
       default:
         return (
           <div className="text-center py-12">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-gray-900">
               Role não reconhecido
             </h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              Entre em contato com o suporte.
-            </p>
+            <p className="text-gray-600">Entre em contato com o suporte.</p>
           </div>
         );
     }

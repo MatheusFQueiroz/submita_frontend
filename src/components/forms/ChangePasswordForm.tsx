@@ -56,7 +56,7 @@ export function ChangePasswordForm({
         <CardTitle className="text-2xl font-bold">
           {isFirstLogin ? "Redefinir Senha" : "Alterar Senha"}
         </CardTitle>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-sm text-gray-600">
           {isFirstLogin
             ? "Para continuar, você deve redefinir sua senha temporária"
             : "Altere sua senha atual para uma nova"}

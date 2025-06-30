@@ -41,7 +41,7 @@ export function Header({
   };
 
   return (
-    <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+    <header className="bg-white  border-b border-gray-200  px-4 py-3">
       <div className="flex items-center justify-between">
         {/* Logo e Toggle Sidebar */}
         <div className="flex items-center space-x-4">
@@ -72,17 +72,6 @@ export function Header({
 
         {/* Ações do Header */}
         <div className="flex items-center space-x-2">
-          {/* Toggle Tema */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-          >
-            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
-          </Button>
-
           {user ? (
             <>
               {/* Notificações */}

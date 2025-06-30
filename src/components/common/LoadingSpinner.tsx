@@ -34,9 +34,7 @@ export function LoadingSpinner({
           sizeClasses[size]
         )}
       />
-      {text && (
-        <p className="text-sm text-gray-500 dark:text-gray-400">{text}</p>
-      )}
+      {text && <p className="text-sm text-gray-500">{text}</p>}
     </div>
   );
 }

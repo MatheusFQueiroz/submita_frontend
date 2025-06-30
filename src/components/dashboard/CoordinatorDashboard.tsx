@@ -53,10 +53,10 @@ export function CoordinatorDashboard() {
       {/* Cabeçalho */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-2xl font-bold text-gray-900 ">
             Dashboard do Coordenador
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-gray-600">
             Visão geral do sistema e estatísticas gerais
           </p>
         </div>
@@ -198,7 +198,7 @@ export function CoordinatorDashboard() {
               {stats.submissionsByEvent.map((eventData) => (
                 <div
                   key={eventData.eventId}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50  transition-colors"
                 >
                   <div className="flex-1">
                     <h3 className="font-medium">{eventData.eventTitle}</h3>
@@ -234,21 +234,21 @@ export function CoordinatorDashboard() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center p-4 rounded-lg bg-green-50 dark:bg-green-900/20">
+              <div className="text-center p-4 rounded-lg bg-green-50 ">
                 <div className="text-2xl font-bold text-green-600">
                   {stats.evaluationProgress.completed}
                 </div>
                 <p className="text-sm text-green-600">Concluídas</p>
               </div>
 
-              <div className="text-center p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20">
+              <div className="text-center p-4 rounded-lg bg-yellow-50 ">
                 <div className="text-2xl font-bold text-yellow-600">
                   {stats.evaluationProgress.inProgress}
                 </div>
                 <p className="text-sm text-yellow-600">Em Andamento</p>
               </div>
 
-              <div className="text-center p-4 rounded-lg bg-orange-50 dark:bg-orange-900/20">
+              <div className="text-center p-4 rounded-lg bg-orange-50 ">
                 <div className="text-2xl font-bold text-orange-600">
                   {stats.evaluationProgress.pending}
                 </div>

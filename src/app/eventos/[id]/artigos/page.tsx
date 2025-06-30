@@ -340,9 +340,9 @@ export default function EventArticlesPage({ params }: EventArticlesPageProps) {
               </DialogHeader>
               <div className="space-y-4">
                 {selectedArticle && (
-                  <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                  <div className="p-4 bg-gray-50  rounded-lg">
                     <h3 className="font-medium">{selectedArticle.title}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-600">
                       Por {selectedArticle.user?.name}
                     </p>
                   </div>

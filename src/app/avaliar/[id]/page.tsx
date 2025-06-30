@@ -109,10 +109,10 @@ export default function EvaluateArticlePage({
       <AuthGuard requiredRoles={[USER_ROLES.EVALUATOR]}>
         <PageLayout>
           <div className="text-center py-12">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-gray-900">
               Artigo não encontrado
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
+            <p className="text-gray-600 mt-2">
               O artigo que você está tentando avaliar não existe ou não está
               disponível.
             </p>

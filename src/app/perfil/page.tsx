@@ -135,7 +135,7 @@ export default function ProfilePage() {
 
                       <div className="space-y-2">
                         <Label>Membro desde</Label>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-sm text-gray-600">
                           {formatDate(user?.createdAt || new Date())}
                         </p>
                       </div>

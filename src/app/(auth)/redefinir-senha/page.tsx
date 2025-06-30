@@ -42,7 +42,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-6">
         {/* Aviso de Segurança */}
         <Alert variant="destructive">
@@ -58,14 +58,14 @@ export default function ResetPasswordPage() {
         <ChangePasswordForm isFirstLogin={true} />
 
         {/* Informações de Segurança */}
-        <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
+        <Card className="bg-blue-50 border-blue-200">
           <CardContent className="pt-6">
             <div className="text-center text-sm">
-              <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-2 flex items-center justify-center">
+              <h3 className="font-medium text-blue-900 mb-2 flex items-center justify-center">
                 <Shield className="mr-2 h-4 w-4" />
                 Segurança em Primeiro Lugar
               </h3>
-              <div className="space-y-1 text-blue-700 dark:text-blue-300 text-left">
+              <div className="space-y-1 text-blue-700 text-left">
                 <p>• Esta é uma medida de segurança obrigatória</p>
                 <p>• Sua senha deve ser forte e única</p>
                 <p>• Não compartilhe suas credenciais</p>
@@ -76,7 +76,7 @@ export default function ResetPasswordPage() {
         </Card>
 
         {/* Informação do Usuário */}
-        <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+        <div className="text-center text-sm text-gray-600">
           <p>
             Logado como: <strong>{user.name}</strong>
           </p>

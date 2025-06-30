@@ -85,7 +85,7 @@ export function PDFViewer({
     <div className={className}>
       {/* Controles */}
       {showControls && (
-        <div className="flex items-center justify-between p-4 bg-gray-100 dark:bg-gray-800 rounded-t-lg border-b">
+        <div className="flex items-center justify-between p-4 bg-gray-100  rounded-t-lg border-b">
           <div className="flex items-center space-x-2">
             <Button
               variant="outline"
@@ -129,7 +129,7 @@ export function PDFViewer({
       )}
 
       {/* Visualizador */}
-      <div className="relative bg-gray-50 dark:bg-gray-900 rounded-b-lg overflow-auto max-h-96">
+      <div className="relative bg-gray-50  rounded-b-lg overflow-auto max-h-96">
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center">
             <LoadingSpinner text="Carregando PDF..." />

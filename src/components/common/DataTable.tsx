@@ -77,11 +77,7 @@ export function DataTable<T extends Record<string, any>>({
             {data.map((row, index) => (
               <TableRow
                 key={index}
-                className={
-                  onRowClick
-                    ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
-                    : ""
-                }
+                className={onRowClick ? "cursor-pointer hover:bg-gray-50 " : ""}
                 onClick={() => onRowClick?.(row)}
               >
                 {columns.map((column) => (
@@ -100,7 +96,7 @@ export function DataTable<T extends Record<string, any>>({
       {/* Paginação */}
       {pagination && pagination.totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-700 dark:text-gray-300">
+          <p className="text-sm text-gray-700 ">
             Página {pagination.currentPage} de {pagination.totalPages}
           </p>
 

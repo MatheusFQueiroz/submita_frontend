@@ -31,7 +31,7 @@ export function Navigation({ items, className }: NavigationProps) {
     >
       <Link
         href="/"
-        className="flex items-center hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+        className="flex items-center hover:text-gray-700  transition-colors"
       >
         <Home className="h-4 w-4" />
         <span className="sr-only">Home</span>
@@ -43,14 +43,12 @@ export function Navigation({ items, className }: NavigationProps) {
           {item.href ? (
             <Link
               href={item.href}
-              className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+              className="hover:text-gray-700  transition-colors"
             >
               {item.label}
             </Link>
           ) : (
-            <span className="text-gray-900 dark:text-gray-100 font-medium">
-              {item.label}
-            </span>
+            <span className="text-gray-900  font-medium">{item.label}</span>
           )}
         </React.Fragment>
       ))}

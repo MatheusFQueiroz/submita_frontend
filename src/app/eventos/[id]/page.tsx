@@ -68,10 +68,10 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
       <AuthGuard>
         <PageLayout>
           <div className="text-center py-12">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-gray-900">
               Evento não encontrado
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
+            <p className="text-gray-600 mt-2">
               O evento que você está procurando não existe ou foi removido.
             </p>
             <Button asChild className="mt-4">
@@ -174,10 +174,10 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                 <div className="flex-1 space-y-4">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                      <h1 className="text-3xl font-bold text-gray-900">
                         {event.title}
                       </h1>
-                      <p className="text-lg text-gray-600 dark:text-gray-400 mt-2">
+                      <p className="text-lg text-gray-600 mt-2">
                         {event.description}
                       </p>
                     </div>
@@ -194,7 +194,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                         <p className="text-sm font-medium">
                           Início das Submissões
                         </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-sm text-gray-600">
                           {formatDateTime(event.submissionStartDate)}
                         </p>
                       </div>
@@ -206,7 +206,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                         <p className="text-sm font-medium">
                           Fim das Submissões
                         </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-sm text-gray-600">
                           {formatDateTime(event.submissionEndDate)}
                         </p>
                       </div>
@@ -216,7 +216,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                       <BarChart3 className="h-5 w-5 text-primary" />
                       <div>
                         <p className="text-sm font-medium">Tipo de Avaliação</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-sm text-gray-600">
                           {event.evaluationType === "DIRECT"
                             ? "Avaliação Direta"
                             : event.evaluationType === "PAIR"
@@ -313,7 +313,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                   {articles.slice(0, 5).map((article) => (
                     <div
                       key={article.id}
-                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50  transition-colors"
                     >
                       <div className="flex-1">
                         <h3 className="font-medium">{article.title}</h3>
@@ -355,13 +355,13 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
 
           {/* Informações para Submissão */}
           {canSubmit && (
-            <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
+            <Card className="bg-blue-50  border-blue-200 ">
               <CardHeader>
-                <CardTitle className="text-blue-900 dark:text-blue-100">
+                <CardTitle className="text-blue-900 ">
                   Como Submeter seu Artigo
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-blue-800 dark:text-blue-200">
+              <CardContent className="text-blue-800 ">
                 <ol className="list-decimal list-inside space-y-2">
                   <li>Prepare seu artigo em formato PDF</li>
                   <li>Tenha em mãos o resumo e palavras-chave</li>

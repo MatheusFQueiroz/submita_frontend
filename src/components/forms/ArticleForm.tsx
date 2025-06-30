@@ -142,7 +142,7 @@ export function ArticleForm({
         <CardTitle>
           {initialData ? "Editar Artigo" : "Submeter Novo Artigo"}
         </CardTitle>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-sm text-gray-600">
           Preencha todas as informações necessárias para submeter seu artigo
         </p>
       </CardHeader>

@@ -46,7 +46,7 @@ export function LoginForm() {
           </div>
         </div>
         <CardTitle className="text-2xl font-bold">Entrar no SUBMITA</CardTitle>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-sm text-gray-600">
           Faça login na sua conta para continuar
         </p>
       </CardHeader>
@@ -115,9 +115,7 @@ export function LoginForm() {
             </Button>
 
             <div className="text-center text-sm">
-              <span className="text-gray-600 dark:text-gray-400">
-                Não tem uma conta?{" "}
-              </span>
+              <span className="text-gray-600">Não tem uma conta? </span>
               <Link
                 href={ROUTES.REGISTER}
                 className="text-primary hover:underline font-medium"

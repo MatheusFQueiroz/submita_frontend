@@ -179,19 +179,15 @@ export function EvaluationForm({
         <CardContent className="space-y-2">
           <div>
             <Label className="text-sm font-medium">Título:</Label>
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              {article.title}
-            </p>
+            <p className="text-sm text-gray-700 ">{article.title}</p>
           </div>
           <div>
             <Label className="text-sm font-medium">Resumo:</Label>
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              {article.abstract}
-            </p>
+            <p className="text-sm text-gray-700 ">{article.abstract}</p>
           </div>
           <div>
             <Label className="text-sm font-medium">Palavras-chave:</Label>
-            <p className="text-sm text-gray-700 dark:text-gray-300">
+            <p className="text-sm text-gray-700 ">
               {article.keywords.join(", ")}
             </p>
           </div>

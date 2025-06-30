@@ -51,12 +51,10 @@ export function StudentDashboard() {
       {/* Cabeçalho */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-2xl font-bold text-gray-900 ">
             Dashboard do Aluno
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Acompanhe suas submissões e progresso
-          </p>
+          <p className="text-gray-600">Acompanhe suas submissões e progresso</p>
         </div>
         <Button asChild>
           <Link href={ROUTES.SUBMIT_ARTICLE}>
@@ -213,7 +211,7 @@ export function StudentDashboard() {
               {recentArticles.map((article) => (
                 <div
                   key={article.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50  transition-colors"
                 >
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium truncate">{article.title}</h3>
