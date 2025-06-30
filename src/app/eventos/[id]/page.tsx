@@ -181,10 +181,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                         {event.description}
                       </p>
                     </div>
-                    <Badge
-                      className={status.color}
-                      className="flex items-center"
-                    >
+                    <Badge className="flex items-center">
                       <status.icon className="mr-1 h-4 w-4" />
                       {status.label}
                     </Badge>

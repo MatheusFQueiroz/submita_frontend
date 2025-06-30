@@ -64,8 +64,8 @@ export function ArticleForm({
     append: appendKeyword,
     remove: removeKeyword,
   } = useFieldArray({
-    control,
-    name: "keywords",
+    control: control as any,
+    name: "keywords" as any,
   });
 
   const {
@@ -73,8 +73,8 @@ export function ArticleForm({
     append: appendAuthor,
     remove: removeAuthor,
   } = useFieldArray({
-    control,
-    name: "relatedAuthors",
+    control: control as any,
+    name: "relatedAuthors" as any,
   });
 
   const watchedKeywords = watch("keywords");
@@ -229,7 +229,7 @@ export function ArticleForm({
                   variant="secondary"
                   className="flex items-center space-x-1"
                 >
-                  <span>{field.value}</span>
+                  <span>{watchedKeywords[index]}</span>
                   <button
                     type="button"
                     onClick={() => removeKeyword(index)}
@@ -269,7 +269,7 @@ export function ArticleForm({
                   variant="outline"
                   className="flex items-center space-x-1"
                 >
-                  <span>{field.value}</span>
+                  <span>{watchedAuthors[index]}</span>
                   <button
                     type="button"
                     onClick={() => removeAuthor(index)}
@@ -296,7 +296,14 @@ export function ArticleForm({
               maxSize={FILE_CONFIG.maxSize}
               onFileSelect={handlePdfUpload}
               uploadProgress={isUploading ? uploadProgress : undefined}
-              uploadedFile={uploadedFile}
+              uploadedFile={
+                uploadedFile
+                  ? {
+                      name: uploadedFile.fileName || "arquivo.pdf",
+                      size: uploadedFile.fileSize || 0,
+                    }
+                  : null
+              }
             />
             <p className="text-xs text-gray-500">
               Envie seu artigo em formato PDF. Certifique-se de que o arquivo

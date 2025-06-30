@@ -28,7 +28,11 @@ export default function EvaluateArticlePage({
     { immediate: true }
   );
 
-  const { data: questions, loading: questionsLoading } = useApi<Question[]>(
+  const {
+    data: questions,
+    loading: questionsLoading,
+    execute: refetchQuestions,
+  } = useApi<Question[]>(
     () =>
       article?.eventId
         ? api.get(`/events/${article.eventId}/checklist/questions`)
@@ -45,9 +49,9 @@ export default function EvaluateArticlePage({
   // Carrega perguntas quando artigo é carregado
   React.useEffect(() => {
     if (article?.eventId) {
-      questions.execute();
+      refetchQuestions();
     }
-  }, [article?.eventId]);
+  }, [article?.eventId, refetchQuestions]);
 
   const handleSubmitEvaluation = async (data: EvaluationFormData) => {
     try {
@@ -143,7 +147,7 @@ export default function EvaluateArticlePage({
         <div className="max-w-4xl mx-auto">
           <EvaluationForm
             article={article}
-            questions={questions.data || []}
+            questions={questions || []}
             onSubmit={handleSubmitEvaluation}
             onSaveDraft={handleSaveDraft}
             initialData={initialData}

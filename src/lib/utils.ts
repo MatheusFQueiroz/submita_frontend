@@ -3,15 +3,22 @@ import { twMerge } from "tailwind-merge";
 import { format, parseISO, isValid } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
+// Re-export das constantes
+export { ROUTES, USER_ROLES, STATUS_LABELS } from "./constants";
+
+// Re-export das funções de auth
+export { formatUserRole, canAccess } from "./auth";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export function formatDate(
-  date: Date | string,
+  date: Date | string | undefined | null,
   pattern: string = "dd/MM/yyyy"
 ): string {
   try {
+    if (!date) return "Data não disponível";
     const dateObj = typeof date === "string" ? parseISO(date) : date;
     if (!isValid(dateObj)) return "Data inválida";
     return format(dateObj, pattern, { locale: ptBR });
@@ -20,7 +27,7 @@ export function formatDate(
   }
 }
 
-export function formatDateTime(date: Date | string): string {
+export function formatDateTime(date: Date | string | undefined | null): string {
   return formatDate(date, "dd/MM/yyyy 'às' HH:mm");
 }
 
