@@ -51,7 +51,6 @@ export function EventForm({
     try {
       setError("");
 
-      // Inclui o ID da imagem se foi feito upload
       const formData = {
         ...data,
         imageId: uploadedFile?.fileId,
@@ -89,14 +88,14 @@ export function EventForm({
 
           {/* Título */}
           <div className="space-y-2">
-            <Label htmlFor="title">Título do evento *</Label>
+            <Label htmlFor="name">Título do evento *</Label>
             <Input
-              id="title"
+              id="name"
               placeholder="Ex: Simpósio de Tecnologia 2024"
-              {...register("title")}
+              {...register("name")}
             />
-            {errors.title && (
-              <p className="text-sm text-red-600">{errors.title.message}</p>
+            {errors.name && (
+              <p className="text-sm text-red-600">{errors.name.message}</p>
             )}
           </div>
 
@@ -135,7 +134,46 @@ export function EventForm({
             </p>
           </div>
 
-          {/* Datas */}
+          {/* Datas do Evento */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="eventStartDate">
+                Data de início do evento *
+              </Label>
+              <Input
+                id="eventStartDate"
+                type="datetime-local"
+                {...register("eventStartDate", {
+                  valueAsDate: true,
+                })}
+              />
+              {errors.eventStartDate && (
+                <p className="text-sm text-red-600">
+                  {errors.eventStartDate.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="eventEndDate">
+                Data de fim do evento *
+              </Label>
+              <Input
+                id="eventEndDate"
+                type="datetime-local"
+                {...register("eventEndDate", {
+                  valueAsDate: true,
+                })}
+              />
+              {errors.eventEndDate && (
+                <p className="text-sm text-red-600">
+                  {errors.eventEndDate.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Datas da Submissão */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="submissionStartDate">

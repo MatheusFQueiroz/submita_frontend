@@ -39,7 +39,7 @@ export const changePasswordSchema = z
 
 // Schema de evento
 export const eventSchema = z.object({
-  title: z
+  name: z
     .string()
     .min(5, "Título deve ter pelo menos 5 caracteres")
     .max(200, "Título deve ter no máximo 200 caracteres"),
@@ -47,11 +47,17 @@ export const eventSchema = z.object({
     .string()
     .min(10, "Descrição deve ter pelo menos 10 caracteres")
     .max(1000, "Descrição deve ter no máximo 1000 caracteres"),
+  eventStartDate: z.date({
+    required_error: "Data de início do evento é obrigatória",
+  }),
+  eventEndDate: z.date({
+    required_error: "Data de fim do evento é obrigatória",
+  }),
   submissionStartDate: z.date({
-    required_error: "Data de início é obrigatória",
+    required_error: "Data de início das submissões é obrigatória",
   }),
   submissionEndDate: z.date({
-    required_error: "Data de fim é obrigatória",
+    required_error: "Data de fim das submissões é obrigatória",
   }),
   evaluationType: z.enum(["DIRECT", "PEER", "PANEL"]),
 });
