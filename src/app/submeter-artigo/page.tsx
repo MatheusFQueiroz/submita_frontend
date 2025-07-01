@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { ArticleForm } from "@/components/forms/ArticleForm";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { AuthGuard } from "@/components/guards/AuthGuard";
-import { RoleGuard } from "@/components/guards/RoleGuard";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { useApi } from "@/hooks/useApi";
 import { ArticleFormData } from "@/lib/validations";

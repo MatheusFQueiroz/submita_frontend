@@ -269,7 +269,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                     <Card>
                       <CardContent className="pt-4">
                         <div className="flex items-start space-x-4">
-                          {article.event?.imageUrl && (
+                          {article.event?.banner && (
                             <img
                               src={article.event.imageUrl}
                               alt={article.event.name}
@@ -278,7 +278,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                           )}
                           <div className="flex-1">
                             <h4 className="font-medium">
-                              {article.event?.title}
+                              {article.event?.name}
                             </h4>
                             <p className="text-sm text-gray-600 mt-1">
                               {article.event?.description}

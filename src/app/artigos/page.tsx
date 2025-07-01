@@ -87,7 +87,7 @@ export default function ArticlesPage() {
       title: "Evento",
       render: (_: any, article: Article) => (
         <span className="text-sm">
-          {article.event?.title || "Evento não encontrado"}
+          {article.event?.name || "Evento não encontrado"}
         </span>
       ),
     },
@@ -245,7 +245,7 @@ export default function ArticlesPage() {
                     <div className="flex-1">
                       <CardTitle className="text-lg">{article.title}</CardTitle>
                       <p className="text-sm text-gray-600 mt-1">
-                        {article.event?.title}
+                        {article.event?.name}
                       </p>
                     </div>
                     <StatusBadge status={article.status} />

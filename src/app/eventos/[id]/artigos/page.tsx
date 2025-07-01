@@ -120,7 +120,7 @@ export default function EventArticlesPage({ params }: EventArticlesPageProps) {
   const breadcrumbs = [
     { label: "Dashboard", href: "/dashboard" },
     { label: "Eventos", href: "/eventos" },
-    { label: event?.title || "Evento", href: ROUTES.EVENT_DETAILS(params.id) },
+    { label: event?.name || "Evento", href: ROUTES.EVENT_DETAILS(params.id) },
     { label: "Artigos" },
   ];
 
@@ -203,7 +203,7 @@ export default function EventArticlesPage({ params }: EventArticlesPageProps) {
 
   return (
     <AuthGuard requiredRoles={[USER_ROLES.COORDINATOR]}>
-      <PageLayout title={`Artigos - ${event?.title}`} breadcrumbs={breadcrumbs}>
+      <PageLayout title={`Artigos - ${event?.name}`} breadcrumbs={breadcrumbs}>
         <div className="space-y-6">
           {/* Estatísticas */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">

@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -12,13 +11,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { AuthGuard } from "@/components/guards/AuthGuard";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
@@ -27,16 +19,12 @@ import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import {
   Users,
   Plus,
-  Search,
   UserMinus,
-  Mail,
-  Calendar,
-  FileText,
 } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
 import { useDebounce } from "@/hooks/useDebounce";
 import { User, Event } from "@/types";
-import { ROUTES, formatDate, formatUserRole, USER_ROLES } from "@/lib/utils";
+import { ROUTES, formatDate, USER_ROLES } from "@/lib/utils";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
 
@@ -131,7 +119,7 @@ export default function EventEvaluatorsPage({
   const breadcrumbs = [
     { label: "Dashboard", href: "/dashboard" },
     { label: "Eventos", href: "/eventos" },
-    { label: event?.title || "Evento", href: ROUTES.EVENT_DETAILS(params.id) },
+    { label: event?.name || "Evento", href: ROUTES.EVENT_DETAILS(params.id) },
     { label: "Avaliadores" },
   ];
 
@@ -194,7 +182,7 @@ export default function EventEvaluatorsPage({
   return (
     <AuthGuard requiredRoles={[USER_ROLES.COORDINATOR]}>
       <PageLayout
-        title={`Avaliadores - ${event?.title}`}
+        title={`Avaliadores - ${event?.name}`}
         breadcrumbs={breadcrumbs}
         actions={
           <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
@@ -305,7 +293,7 @@ export default function EventEvaluatorsPage({
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold">{event?.title}</h2>
+                  <h2 className="text-lg font-semibold">{event?.name}</h2>
                   <p className="text-sm text-gray-600">{event?.description}</p>
                 </div>
                 <div className="text-right">
