@@ -133,29 +133,6 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Header do Sidebar */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 ">
-          <div className="flex items-center space-x-2">
-            <div className="submita-gradient w-8 h-8 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">S</span>
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-primary">SUBMITA</h2>
-              <p className="text-xs text-gray-500">Biopark</p>
-            </div>
-          </div>
-
-          {/* Botão fechar para mobile */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="md:hidden"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-
         {/* Navegação */}
         <ScrollArea className="flex-1 px-3 py-4">
           <nav className="space-y-1">

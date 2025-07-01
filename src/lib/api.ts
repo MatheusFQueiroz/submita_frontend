@@ -67,17 +67,50 @@ class ApiClient {
     }
   }
 
-  setToken(token: string) {
+  // ✅ NOVO: Método para salvar dados de login completos
+  setLoginData(token: string, isFirstLogin: boolean) {
     this.token = token;
-    Cookies.set("submita_token", token, { expires: 7 }); // 7 dias
+
+    // Salvar token (7 dias)
+    Cookies.set("submita_token", token, { expires: 7 });
+
+    // ✅ CORREÇÃO: Salvar flag isFirstLogin em cookie separado
+    if (isFirstLogin) {
+      Cookies.set("submita_first_login", "true", { expires: 7 });
+    } else {
+      Cookies.remove("submita_first_login");
+    }
+
+    console.log("💾 Login data saved:", { hasToken: !!token, isFirstLogin });
   }
 
+  // ✅ ATUALIZADO: Método setToken mantido para compatibilidade
+  setToken(token: string) {
+    this.token = token;
+    Cookies.set("submita_token", token, { expires: 7 });
+    // Não mexer no cookie isFirstLogin aqui
+  }
+
+  // ✅ ATUALIZADO: Limpar todos os cookies relacionados
   clearToken() {
     this.token = null;
     Cookies.remove("submita_token");
+    Cookies.remove("submita_first_login"); // ✅ Limpar flag também
+    console.log("🗑️ All auth cookies cleared");
   }
 
-  // Métodos HTTP
+  // ✅ NOVO: Verificar se é primeiro login via cookie
+  isFirstLogin(): boolean {
+    return Cookies.get("submita_first_login") === "true";
+  }
+
+  // ✅ NOVO: Marcar que não é mais primeiro login
+  clearFirstLoginFlag() {
+    Cookies.remove("submita_first_login");
+    console.log("✅ First login flag cleared");
+  }
+
+  // Métodos HTTP (sem mudanças)
   async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.client.get<ApiResponse<T>>(url, config);
     return (response.data.data ?? response.data) as T;
@@ -113,38 +146,6 @@ class ApiClient {
   async delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.client.delete<ApiResponse<T>>(url, config);
     return (response.data.data ?? response.data) as T;
-  }
-
-  // Upload de arquivos
-  async uploadFile(
-    url: string,
-    file: File,
-    onProgress?: (progress: number) => void
-  ): Promise<any> {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    return this.post(url, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      onUploadProgress: (progressEvent) => {
-        if (onProgress && progressEvent.total) {
-          const progress = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          onProgress(progress);
-        }
-      },
-    });
-  }
-
-  // Download de arquivos
-  async downloadFile(url: string): Promise<Blob> {
-    const response = await this.client.get(url, {
-      responseType: "blob",
-    });
-    return response.data;
   }
 }
 
