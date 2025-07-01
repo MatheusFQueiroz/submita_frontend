@@ -147,7 +147,7 @@ export default function EventEvaluatorsPage({
       ),
     },
     {
-      key: "isFromIFPB",
+      key: "isFromBpk",
       title: "Instituição",
       render: (value: boolean) => (
         <Badge variant={value ? "default" : "outline"}>
@@ -248,11 +248,11 @@ export default function EventEvaluatorsPage({
                             <div className="flex items-center space-x-2 mt-1">
                               <Badge
                                 variant={
-                                  evaluator.isFromIFPB ? "default" : "outline"
+                                  evaluator.isFromBpk ? "default" : "outline"
                                 }
                                 className="text-xs"
                               >
-                                {evaluator.isFromIFPB ? "Biopark" : "Externa"}
+                                {evaluator.isFromBpk ? "Biopark" : "Externa"}
                               </Badge>
                               <Badge
                                 variant={

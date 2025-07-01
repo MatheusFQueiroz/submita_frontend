@@ -5,7 +5,7 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
-  isFromIFPB?: boolean; // Atualizado para Biopark
+  isFromBpk?: boolean; // Atualizado para Biopark
   isActive: boolean;
   isFirstLogin?: boolean; // Flag para primeira senha
   createdAt: Date;
@@ -28,7 +28,7 @@ export interface RegisterRequest {
   name: string;
   email: string;
   password: string;
-  isFromIFPB?: boolean; // Biopark
+  isFromBpk?: boolean; // Biopark
 }
 
 export interface ChangePasswordRequest {

@@ -145,7 +145,7 @@ export default function UsersPage() {
       ),
     },
     {
-      key: "isFromIFPB",
+      key: "isFromBpk",
       title: "Instituição",
       render: (value: boolean) => (
         <Badge variant={value ? "default" : "outline"}>

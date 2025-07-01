@@ -125,10 +125,10 @@ export default function ProfilePage() {
                         <Label>Instituição</Label>
                         <div>
                           <Badge
-                            variant={user?.isFromIFPB ? "default" : "outline"}
+                            variant={user?.isFromBpk ? "default" : "outline"}
                             className="text-sm"
                           >
-                            {user?.isFromIFPB ? "Biopark" : "Externa"}
+                            {user?.isFromBpk ? "Biopark" : "Externa"}
                           </Badge>
                         </div>
                       </div>

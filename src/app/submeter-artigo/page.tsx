@@ -18,7 +18,7 @@ export default function SubmitArticlePage() {
   const router = useRouter();
 
   const { data: events, loading: eventsLoading } = useApi<Event[]>(
-    () => api.get("/events?status=active"),
+    () => api.get("/events/active"),
     { immediate: true }
   );
 

@@ -30,11 +30,11 @@ export function RegisterForm() {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      isFromIFPB: false, // Atualizado para Biopark
+      isFromBpk: false, // Atualizado para Biopark
     },
   });
 
-  const watchIsFromBiopark = watch("isFromIFPB");
+  const watchIsFromBiopark = watch("isFromBpk");
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
@@ -173,7 +173,7 @@ export function RegisterForm() {
               id="isFromBiopark"
               checked={watchIsFromBiopark}
               onCheckedChange={(checked) =>
-                setValue("isFromIFPB", checked as boolean)
+                setValue("isFromBpk", checked as boolean)
               }
             />
             <Label htmlFor="isFromBiopark" className="text-sm">

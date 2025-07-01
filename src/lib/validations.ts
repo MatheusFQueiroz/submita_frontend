@@ -19,7 +19,7 @@ export const registerSchema = z.object({
     .string()
     .min(6, "Senha deve ter pelo menos 6 caracteres")
     .max(50, "Senha deve ter no máximo 50 caracteres"),
-  isFromIFPB: z.boolean().optional().default(false),
+  isFromBpk: z.boolean().optional().default(false),
 });
 
 // Schema de mudança de senha
