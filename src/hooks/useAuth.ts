@@ -74,7 +74,6 @@ export function useAuth(): UseAuthReturn {
 
         toast.success("Login realizado com sucesso!");
 
-        // Redireciona baseado no status da senha
         const redirectPath = getRedirectPath(userWithFirstLogin);
         router.push(redirectPath);
       } catch (error: any) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { api } from "@/lib/api";
 
 interface UseApiOptions {
@@ -27,17 +27,30 @@ export function useApi<T = any>(
 
   const { immediate = false, onSuccess, onError } = options;
 
+  // ✅ FIX: Usar ref para manter a função atual sem causar re-renders
+  const apiFunctionRef = useRef(apiFunction);
+  const onSuccessRef = useRef(onSuccess);
+  const onErrorRef = useRef(onError);
+
+  // Atualiza as refs sempre que as funções mudarem
+  useEffect(() => {
+    apiFunctionRef.current = apiFunction;
+    onSuccessRef.current = onSuccess;
+    onErrorRef.current = onError;
+  });
+
   const execute = useCallback(
     async (...args: any[]): Promise<T> => {
       try {
         setLoading(true);
         setError(null);
 
-        const result = await apiFunction(...args);
+        // ✅ FIX: Usar a ref atual em vez da dependência
+        const result = await apiFunctionRef.current(...args);
         setData(result);
 
-        if (onSuccess) {
-          onSuccess(result);
+        if (onSuccessRef.current) {
+          onSuccessRef.current(result);
         }
 
         return result;
@@ -45,8 +58,8 @@ export function useApi<T = any>(
         const errorMessage = err.message || "Erro na requisição";
         setError(errorMessage);
 
-        if (onError) {
-          onError(err);
+        if (onErrorRef.current) {
+          onErrorRef.current(err);
         }
 
         throw err;
@@ -54,7 +67,7 @@ export function useApi<T = any>(
         setLoading(false);
       }
     },
-    [apiFunction, onSuccess, onError]
+    [] // ✅ FIX: Array vazio - execute nunca mudará
   );
 
   const reset = useCallback(() => {
@@ -63,11 +76,22 @@ export function useApi<T = any>(
     setError(null);
   }, []);
 
+  // ✅ FIX: Usar ref para controlar se já foi executado
+  const hasExecutedRef = useRef(false);
+
   useEffect(() => {
-    if (immediate) {
+    if (immediate && !hasExecutedRef.current) {
+      hasExecutedRef.current = true;
       execute();
     }
   }, [immediate, execute]);
+
+  // ✅ FIX: Reset do flag quando immediate muda
+  useEffect(() => {
+    if (!immediate) {
+      hasExecutedRef.current = false;
+    }
+  }, [immediate]);
 
   return {
     data,

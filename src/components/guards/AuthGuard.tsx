@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/providers/AuthProvider";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
@@ -23,16 +23,21 @@ export function AuthGuard({
   const { user, isLoading, isAuthenticated } = useAuthContext();
   const router = useRouter();
 
+  // ✅ FIX: Usar ref para evitar redirecionamentos múltiplos
+  const hasRedirectedRef = useRef(false);
+
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && !hasRedirectedRef.current) {
       // Se requer autenticação mas não está autenticado
       if (requiresAuth && !isAuthenticated) {
+        hasRedirectedRef.current = true;
         router.push(ROUTES.LOGIN);
         return;
       }
 
       // Se tem roles específicos mas usuário não tem acesso
       if (requiredRoles.length > 0 && !canAccess(user, requiredRoles)) {
+        hasRedirectedRef.current = true;
         router.push(ROUTES.DASHBOARD);
         return;
       }
@@ -42,11 +47,17 @@ export function AuthGuard({
         user?.isFirstLogin &&
         window.location.pathname !== ROUTES.RESET_PASSWORD
       ) {
+        hasRedirectedRef.current = true;
         router.push(ROUTES.RESET_PASSWORD);
         return;
       }
     }
   }, [user, isLoading, isAuthenticated, requiresAuth, requiredRoles, router]);
+
+  // ✅ FIX: Reset do flag quando usuário muda
+  useEffect(() => {
+    hasRedirectedRef.current = false;
+  }, [user?.id]);
 
   // Carregando
   if (isLoading) {

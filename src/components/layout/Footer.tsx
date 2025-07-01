@@ -11,19 +11,6 @@ export function Footer() {
     <footer className="bg-white  border-t border-gray-200  mt-auto">
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          {/* Logo e descrição */}
-          <div className="flex items-center space-x-2">
-            <div className="submita-gradient w-8 h-8 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">S</span>
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-primary">SUBMITA</h3>
-              <p className="text-xs text-gray-500">
-                Sistema de Submissão - Biopark
-              </p>
-            </div>
-          </div>
-
           {/* Links */}
           <div className="flex items-center space-x-6 text-sm text-gray-500">
             <Link
@@ -57,22 +44,6 @@ export function Footer() {
             <span>© {currentYear} Biopark. Feito com</span>
             <Heart className="h-3 w-3 text-red-500" />
             <span>para a comunidade acadêmica.</span>
-          </div>
-        </div>
-
-        {/* Informações adicionais */}
-        <div className="mt-4 pt-4 border-t border-gray-200 ">
-          <div className="text-center text-xs text-gray-400">
-            <p>
-              Sistema desenvolvido para gerenciamento de submissões de artigos
-              acadêmicos
-            </p>
-            <p className="mt-1">
-              Versão 1.0.0 •{" "}
-              <Link href="/changelog" className="hover:text-gray-600">
-                Changelog
-              </Link>
-            </p>
           </div>
         </div>
       </div>

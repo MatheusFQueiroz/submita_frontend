@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,8 +24,12 @@ import { ROUTES, STATUS_LABELS } from "@/lib/utils";
 import { api } from "@/lib/api";
 
 export function CoordinatorDashboard() {
+  const fetchStats = useCallback(() => {
+    return api.get("/dashboard/coordinator/stats");
+  }, []); // Array vazio - função nunca mudará
+
   const { data: stats, loading: statsLoading } = useApi<CoordinatorStats>(
-    () => api.get("/dashboard/coordinator/stats"),
+    fetchStats, // ✅ FIX: Função memoizada
     { immediate: true }
   );
 

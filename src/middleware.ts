@@ -74,6 +74,7 @@ export async function middleware(request: NextRequest) {
       user.isFirstLogin &&
       !passwordRoutes.some((route) => pathname.startsWith(route))
     ) {
+      console.log("Redirecionando para redefinir senha");
       return NextResponse.redirect(new URL("/redefinir-senha", request.url));
     }
 
@@ -94,6 +95,7 @@ export async function middleware(request: NextRequest) {
 
     if (!hasAccess) {
       // Redireciona para dashboard se não tem acesso à rota
+      console.log("Redirecionando para dashboard por falta de permissão");
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
 
@@ -109,14 +111,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

@@ -121,97 +121,106 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
       {/* Overlay para mobile */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={onClose}
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - SEMPRE FIXO */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 h-full w-64 bg-white  border-r border-gray-200  transform transition-transform duration-200 ease-in-out md:relative md:translate-x-0",
-          isOpen ? "translate-x-0" : "-translate-x-full"
+          // ✅ FIXO: Sempre fixed, ocupa toda a altura da tela
+          "fixed left-0 top-0 z-50 h-screen w-64 bg-white border-r border-gray-200 transform transition-transform duration-200 ease-in-out",
+          // ✅ MOBILE: Esconde/mostra baseado no estado
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
         {/* Header do Sidebar */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 ">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center space-x-2">
-            <div className="submita-gradient w-8 h-8 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-[#243444] rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">S</span>
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-primary">SUBMITA</h2>
+              <h1 className="font-bold text-lg text-gray-900">SUBMITA</h1>
               <p className="text-xs text-gray-500">Biopark</p>
             </div>
           </div>
 
-          {/* Botão fechar para mobile */}
+          {/* Botão fechar apenas no mobile */}
           <Button
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="md:hidden"
+            className="lg:hidden"
           >
             <X className="h-4 w-4" />
           </Button>
         </div>
 
-        {/* Navegação */}
-        <ScrollArea className="flex-1 px-3 py-4">
-          <nav className="space-y-1">
-            {userNavigationItems.map((item) => {
-              const Icon = item.icon;
-              const active = isActive(item.href);
+        {/* Área de Navegação com Scroll */}
+        <div className="flex-1 flex flex-col h-[calc(100vh-140px)]">
+          <ScrollArea className="flex-1 px-3 py-4">
+            <nav className="space-y-1">
+              {userNavigationItems.map((item) => {
+                const Icon = item.icon;
+                const active = isActive(item.href);
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={onClose}
-                  className={cn(
-                    "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                    active
-                      ? "bg-primary text-primary-foreground"
-                      : "text-gray-700 hover:bg-gray-100 "
-                  )}
-                >
-                  <Icon className="mr-3 h-4 w-4" />
-                  {item.title}
-                  {item.badge && (
-                    <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-0.5">
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={onClose}
+                    className={cn(
+                      "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                      active
+                        ? "bg-[#243444] text-white"
+                        : "text-gray-700 hover:bg-gray-100"
+                    )}
+                  >
+                    <Icon className="mr-3 h-4 w-4" />
+                    {item.title}
+                    {item.badge && (
+                      <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-0.5">
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
 
-          <Separator className="my-4" />
+            <Separator className="my-4" />
 
-          {/* Links adicionais */}
-          <div className="space-y-1">
-            <Link
-              href={ROUTES.PROFILE}
-              onClick={onClose}
-              className={cn(
-                "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                pathname === ROUTES.PROFILE
-                  ? "bg-primary text-primary-foreground"
-                  : "text-gray-700 hover:bg-gray-100 "
-              )}
-            >
-              <Settings className="mr-3 h-4 w-4" />
-              Perfil
-            </Link>
-          </div>
-        </ScrollArea>
+            {/* Links adicionais */}
+            <div className="space-y-1">
+              <Link
+                href={ROUTES.PROFILE}
+                onClick={onClose}
+                className={cn(
+                  "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                  pathname === ROUTES.PROFILE
+                    ? "bg-[#243444] text-white"
+                    : "text-gray-700 hover:bg-gray-100"
+                )}
+              >
+                <Settings className="mr-3 h-4 w-4" />
+                Perfil
+              </Link>
+            </div>
+          </ScrollArea>
+        </div>
 
-        {/* Footer do Sidebar */}
-        <div className="p-4 border-t border-gray-200 ">
+        {/* Footer do Sidebar - SEMPRE VISÍVEL */}
+        <div className="p-4 border-t border-gray-200 bg-gray-50">
           <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-[#243444] rounded-full flex items-center justify-center">
+              <span className="text-white font-medium text-sm">
+                {user.name?.charAt(0).toUpperCase()}
+              </span>
+            </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900  truncate">
+              <p className="text-sm font-medium text-gray-900 truncate">
                 {user.name}
               </p>
               <p className="text-xs text-gray-500 truncate">{user.email}</p>

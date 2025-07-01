@@ -45,12 +45,10 @@ export function canAccess(
 }
 
 export function getRedirectPath(user: User): string {
-  // Se é primeiro login, sempre redireciona para redefinir senha
   if (user.isFirstLogin) {
     return "/redefinir-senha";
   }
 
-  // Redirecionamento baseado no role
   return "/dashboard";
 }
 

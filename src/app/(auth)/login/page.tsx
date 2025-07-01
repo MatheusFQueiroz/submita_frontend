@@ -7,7 +7,7 @@ import { ArrowLeft } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Login",
-  description: "Faça login na sua conta SUBMITA",
+  description: "Faça login na sua conta",
 };
 
 export default function LoginPage() {

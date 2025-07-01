@@ -74,12 +74,6 @@ export function Header({
         <div className="flex items-center space-x-2">
           {user ? (
             <>
-              {/* Notificações */}
-              <Button variant="ghost" size="sm">
-                <Bell className="h-4 w-4" />
-                <span className="sr-only">Notificações</span>
-              </Button>
-
               {/* Menu do Usuário */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

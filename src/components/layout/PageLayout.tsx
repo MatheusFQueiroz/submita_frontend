@@ -34,38 +34,46 @@ export function PageLayout({
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      {/* Header */}
-      <Header
-        onToggleSidebar={toggleSidebar}
-        showSidebarToggle={showSidebar && !!user}
-      />
+    <div className="min-h-screen bg-gray-50">
+      {/* Sidebar Fixo */}
+      {showSidebar && user && (
+        <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
+      )}
 
-      <div className="flex flex-1">
-        {/* Sidebar */}
-        {showSidebar && user && (
-          <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
+      {/* Conteúdo Principal com margem para o sidebar */}
+      <div
+        className={cn(
+          "min-h-screen flex flex-col",
+          showSidebar && user ? "lg:pl-64" : ""
         )}
+      >
+        {/* Header */}
+        <Header
+          onToggleSidebar={toggleSidebar}
+          showSidebarToggle={showSidebar && !!user}
+        />
 
         {/* Conteúdo Principal */}
         <main className="flex-1 flex flex-col">
           {/* Header da Página */}
           {(title || breadcrumbs || actions) && (
-            <div className="bg-white  border-b border-gray-200  px-4 py-4">
+            <div className="bg-white border-b border-gray-200 px-4 py-4 lg:px-6">
               <div className="max-w-7xl mx-auto">
                 {breadcrumbs && (
                   <Navigation items={breadcrumbs} className="mb-2" />
                 )}
 
                 {(title || actions) && (
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     {title && (
-                      <h1 className="text-2xl font-bold text-gray-900 ">
-                        {title}
-                      </h1>
+                      <div>
+                        <h1 className="text-2xl font-bold text-gray-900">
+                          {title}
+                        </h1>
+                      </div>
                     )}
                     {actions && (
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2 flex-shrink-0">
                         {actions}
                       </div>
                     )}
@@ -75,8 +83,8 @@ export function PageLayout({
             </div>
           )}
 
-          {/* Conteúdo */}
-          <div className={cn("flex-1 p-4", className)}>
+          {/* Área de Conteúdo */}
+          <div className={cn("flex-1 p-4 lg:p-6", className)}>
             <div className="max-w-7xl mx-auto">{children}</div>
           </div>
 

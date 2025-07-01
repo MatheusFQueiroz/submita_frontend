@@ -67,17 +67,44 @@ class ApiClient {
     }
   }
 
+  // ✅ NOVO: Método para salvar dados de login completos
+  setLoginData(token: string, isFirstLogin: boolean) {
+    this.token = token;
+
+    Cookies.set("submita_token", token, { expires: 7 });
+
+    if (isFirstLogin) {
+      Cookies.set("submita_first_login", "true", { expires: 7 });
+    } else {
+      Cookies.remove("submita_first_login");
+    }
+
+    console.log("💾 Login data saved:", { hasToken: !!token, isFirstLogin });
+  }
+
   setToken(token: string) {
     this.token = token;
-    Cookies.set("submita_token", token, { expires: 7 }); // 7 dias
+    Cookies.set("submita_token", token, { expires: 7 });
   }
 
   clearToken() {
     this.token = null;
     Cookies.remove("submita_token");
+    Cookies.remove("submita_first_login");
+    console.log("🗑️ All auth cookies cleared");
   }
 
-  // Métodos HTTP
+  isFirstLogin(): boolean {
+    return Cookies.get("submita_first_login") === "true";
+  }
+
+  // ✅ NOVO: Marcar que não é mais primeiro login
+  clearFirstLoginFlag() {
+    Cookies.remove("submita_first_login");
+    console.log("✅ First login flag cleared");
+  }
+
+  // Métodos HTTP (sem mudanças)
   async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.client.get<ApiResponse<T>>(url, config);
     return (response.data.data ?? response.data) as T;
