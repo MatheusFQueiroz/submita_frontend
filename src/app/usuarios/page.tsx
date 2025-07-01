@@ -85,7 +85,7 @@ export default function UsersPage() {
     try {
       await api.post("/auth/register-evaluator", {
         ...data,
-        temporaryPassword: "TempPass123!", // Senha temporária padrão
+        password: "eventoia360@2025", // Senha temporária padrão
       });
 
       toast.success("Avaliador criado com sucesso!");
@@ -203,18 +203,25 @@ export default function UsersPage() {
                 Criar Avaliador
               </Button>
             </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Criar Novo Avaliador</DialogTitle>
+            {/* ✅ MODAL COM FUNDO BRANCO */}
+            <DialogContent className="bg-white border border-gray-200 shadow-lg max-w-md mx-auto">
+              <DialogHeader className="pb-4">
+                <DialogTitle className="text-lg font-semibold text-gray-900">
+                  Criar Novo Avaliador
+                </DialogTitle>
               </DialogHeader>
+
               <form
                 onSubmit={handleSubmit(handleCreateEvaluator)}
-                className="space-y-4"
+                className="space-y-6"
               >
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Nome completo</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    Nome completo
+                  </label>
                   <Input
                     placeholder="Nome do avaliador"
+                    className="bg-white border-gray-300"
                     {...register("name")}
                   />
                   {errors.name && (
@@ -225,10 +232,13 @@ export default function UsersPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">E-mail</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    E-mail
+                  </label>
                   <Input
                     type="email"
                     placeholder="email@exemplo.com"
+                    className="bg-white border-gray-300"
                     {...register("email")}
                   />
                   {errors.email && (
@@ -238,31 +248,52 @@ export default function UsersPage() {
                   )}
                 </div>
 
-                <div className="bg-blue-50  p-3 rounded-lg text-sm">
-                  <p className="font-medium text-blue-900  mb-1">
-                    Informações importantes:
-                  </p>
-                  <ul className="text-blue-700  space-y-1">
-                    <li>• Uma senha temporária será criada automaticamente</li>
-                    <li>
-                      • O avaliador deve alterar a senha no primeiro login
-                    </li>
-                    <li>
-                      • Um e-mail será enviado com as credenciais de acesso
-                    </li>
-                  </ul>
+                {/* ✅ CAIXA DE INFORMAÇÕES COM FUNDO AZUL CLARO */}
+                <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                  <div className="flex items-start space-x-2">
+                    <Shield className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium text-blue-900 mb-2">
+                        Informações importantes:
+                      </p>
+                      <ul className="text-blue-800 text-sm space-y-1">
+                        <li>
+                          • Uma senha temporária será criada automaticamente
+                        </li>
+                        <li>
+                          • O avaliador deve alterar a senha no primeiro login
+                        </li>
+                        <li>
+                          • Um e-mail será enviado com as credenciais de acesso
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex justify-end space-x-2">
+                {/* ✅ BOTÕES COM FUNDO BRANCO */}
+                <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => setCreateDialogOpen(false)}
+                    className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
                   >
                     Cancelar
                   </Button>
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? "Criando..." : "Criar Avaliador"}
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="bg-[#243444] hover:bg-[#1a2631] text-white"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <LoadingSpinner size="sm" className="mr-2" />
+                        Criando...
+                      </>
+                    ) : (
+                      "Criar Avaliador"
+                    )}
                   </Button>
                 </div>
               </form>
@@ -289,7 +320,7 @@ export default function UsersPage() {
                   <SelectTrigger className="w-full sm:w-48">
                     <SelectValue placeholder="Tipo de usuário" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border border-gray-200">
                     <SelectItem value="all">Todos os tipos</SelectItem>
                     <SelectItem value="STUDENT">Alunos</SelectItem>
                     <SelectItem value="EVALUATOR">Avaliadores</SelectItem>

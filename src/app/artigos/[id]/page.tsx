@@ -272,7 +272,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                           {article.event?.imageUrl && (
                             <img
                               src={article.event.imageUrl}
-                              alt={article.event.title}
+                              alt={article.event.name}
                               className="w-16 h-16 rounded-lg object-cover"
                             />
                           )}

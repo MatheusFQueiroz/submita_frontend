@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+// ===== SCHEMAS EXISTENTES (mantidos) =====
+
 // Schema de login
 export const loginSchema = z.object({
   email: z.string().min(1, "E-mail é obrigatório").email("E-mail inválido"),
@@ -7,27 +9,18 @@ export const loginSchema = z.object({
 });
 
 // Schema de registro
-export const registerSchema = z
-  .object({
-    name: z
-      .string()
-      .min(2, "Nome deve ter pelo menos 2 caracteres")
-      .max(100, "Nome deve ter no máximo 100 caracteres"),
-    email: z.string().min(1, "E-mail é obrigatório").email("E-mail inválido"),
-    password: z
-      .string()
-      .min(8, "Senha deve ter pelo menos 8 caracteres")
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-        "Senha deve conter pelo menos uma letra minúscula, uma maiúscula e um número"
-      ),
-    confirmPassword: z.string(),
-    isFromIFPB: z.boolean().optional(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Senhas não conferem",
-    path: ["confirmPassword"],
-  });
+export const registerSchema = z.object({
+  name: z
+    .string()
+    .min(2, "Nome deve ter pelo menos 2 caracteres")
+    .max(100, "Nome deve ter no máximo 100 caracteres"),
+  email: z.string().min(1, "E-mail é obrigatório").email("E-mail inválido"),
+  password: z
+    .string()
+    .min(6, "Senha deve ter pelo menos 6 caracteres")
+    .max(50, "Senha deve ter no máximo 50 caracteres"),
+  isFromIFPB: z.boolean().optional().default(false),
+});
 
 // Schema de mudança de senha
 export const changePasswordSchema = z
@@ -35,43 +28,33 @@ export const changePasswordSchema = z
     currentPassword: z.string().min(1, "Senha atual é obrigatória"),
     newPassword: z
       .string()
-      .min(8, "Nova senha deve ter pelo menos 8 caracteres")
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-        "Nova senha deve conter pelo menos uma letra minúscula, uma maiúscula e um número"
-      ),
-    confirmPassword: z.string(),
+      .min(6, "Nova senha deve ter pelo menos 6 caracteres")
+      .max(50, "Nova senha deve ter no máximo 50 caracteres"),
+    confirmPassword: z.string().min(1, "Confirmação de senha é obrigatória"),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Senhas não conferem",
+    message: "Senhas não coincidem",
     path: ["confirmPassword"],
   });
 
 // Schema de evento
-export const eventSchema = z
-  .object({
-    title: z
-      .string()
-      .min(5, "Título deve ter pelo menos 5 caracteres")
-      .max(200, "Título deve ter no máximo 200 caracteres"),
-    description: z
-      .string()
-      .min(10, "Descrição deve ter pelo menos 10 caracteres")
-      .max(1000, "Descrição deve ter no máximo 1000 caracteres"),
-    submissionStartDate: z.date({
-      required_error: "Data de início é obrigatória",
-    }),
-    submissionEndDate: z.date({
-      required_error: "Data de fim é obrigatória",
-    }),
-    evaluationType: z.enum(["DIRECT", "PAIR", "PANEL"], {
-      required_error: "Tipo de avaliação é obrigatório",
-    }),
-  })
-  .refine((data) => data.submissionEndDate > data.submissionStartDate, {
-    message: "Data de fim deve ser posterior à data de início",
-    path: ["submissionEndDate"],
-  });
+export const eventSchema = z.object({
+  title: z
+    .string()
+    .min(5, "Título deve ter pelo menos 5 caracteres")
+    .max(200, "Título deve ter no máximo 200 caracteres"),
+  description: z
+    .string()
+    .min(10, "Descrição deve ter pelo menos 10 caracteres")
+    .max(1000, "Descrição deve ter no máximo 1000 caracteres"),
+  submissionStartDate: z.date({
+    required_error: "Data de início é obrigatória",
+  }),
+  submissionEndDate: z.date({
+    required_error: "Data de fim é obrigatória",
+  }),
+  evaluationType: z.enum(["DIRECT", "PEER", "PANEL"]),
+});
 
 // Schema de artigo
 export const articleSchema = z.object({
@@ -111,28 +94,6 @@ export const evaluationSchema = z.object({
   ),
 });
 
-// Schema de checklist
-export const checklistSchema = z.object({
-  title: z
-    .string()
-    .min(5, "Título deve ter pelo menos 5 caracteres")
-    .max(200, "Título deve ter no máximo 200 caracteres"),
-  description: z
-    .string()
-    .max(500, "Descrição deve ter no máximo 500 caracteres")
-    .optional(),
-  questions: z
-    .array(
-      z.object({
-        text: z.string().min(10, "Pergunta deve ter pelo menos 10 caracteres"),
-        type: z.enum(["BOOLEAN", "TEXT", "SCALE", "MULTIPLE_CHOICE"]),
-        isRequired: z.boolean(),
-        options: z.array(z.string()).optional(),
-      })
-    )
-    .min(1, "Deve ter pelo menos 1 pergunta"),
-});
-
 // Schema de criação de avaliador
 export const createEvaluatorSchema = z.object({
   name: z
@@ -142,12 +103,187 @@ export const createEvaluatorSchema = z.object({
   email: z.string().min(1, "E-mail é obrigatório").email("E-mail inválido"),
 });
 
-// Tipos inferidos dos schemas
+// ===== NOVOS SCHEMAS PARA CHECKLISTS =====
+
+// Schema para dados básicos do checklist (Etapa 1)
+export const checklistBasicSchema = z.object({
+  title: z
+    .string()
+    .min(3, "Título deve ter pelo menos 3 caracteres")
+    .max(100, "Título deve ter no máximo 100 caracteres")
+    .transform((val) => val.trim()),
+  description: z
+    .string()
+    .max(300, "Descrição deve ter no máximo 300 caracteres")
+    .optional()
+    .or(z.literal(""))
+    .transform((val) => (val === "" ? undefined : val?.trim())),
+});
+
+// Schema para uma questão individual
+export const questionSchema = z.object({
+  description: z
+    .string()
+    .min(3, "Pergunta deve ter pelo menos 3 caracteres")
+    .max(200, "Pergunta deve ter no máximo 200 caracteres")
+    .transform((val) => val.trim()),
+  type: z.enum(["YES_NO", "TEXT", "SCALE"], {
+    required_error: "Tipo de pergunta é obrigatório",
+    invalid_type_error: "Tipo de pergunta inválido",
+  }),
+  isRequired: z.boolean().default(true),
+});
+
+// Schema para múltiplas questões (Etapa 2)
+export const questionsSchema = z.object({
+  questions: z
+    .array(questionSchema)
+    .min(1, "Pelo menos uma pergunta é obrigatória")
+    .max(20, "Máximo de 20 perguntas permitidas"),
+});
+
+// Schema completo para checklist (ambas as etapas)
+export const completeChecklistSchema = z.object({
+  basic: checklistBasicSchema,
+  questions: z.array(questionSchema).min(1),
+});
+
+// ===== SCHEMAS PARA FILTROS E BUSCA =====
+
+export const checklistFiltersSchema = z.object({
+  search: z.string().optional(),
+  isActive: z.boolean().optional(),
+  withQuestions: z.boolean().optional(),
+});
+
+// ===== TIPOS INFERIDOS DOS SCHEMAS =====
+
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
 export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
 export type EventFormData = z.infer<typeof eventSchema>;
 export type ArticleFormData = z.infer<typeof articleSchema>;
 export type EvaluationFormData = z.infer<typeof evaluationSchema>;
-export type ChecklistFormData = z.infer<typeof checklistSchema>;
 export type CreateEvaluatorFormData = z.infer<typeof createEvaluatorSchema>;
+
+// ✅ Novos tipos para checklists
+export type ChecklistBasicFormData = z.infer<typeof checklistBasicSchema>;
+export type QuestionFormData = z.infer<typeof questionSchema>;
+export type QuestionsFormData = z.infer<typeof questionsSchema>;
+export type CompleteChecklistFormData = z.infer<typeof completeChecklistSchema>;
+export type ChecklistFiltersData = z.infer<typeof checklistFiltersSchema>;
+
+// ===== VALIDADORES CUSTOMIZADOS =====
+
+// Validar se pelo menos uma pergunta é obrigatória
+export const validateAtLeastOneRequired = (
+  questions: QuestionFormData[]
+): boolean => {
+  return questions.some((q) => q.isRequired);
+};
+
+// Validar se as descrições das perguntas são únicas
+export const validateUniqueQuestions = (
+  questions: QuestionFormData[]
+): boolean => {
+  const descriptions = questions.map((q) => q.description.toLowerCase().trim());
+  return new Set(descriptions).size === descriptions.length;
+};
+
+// Validar distribuição de tipos de pergunta
+export const validateQuestionDistribution = (
+  questions: QuestionFormData[]
+): {
+  isValid: boolean;
+  warnings: string[];
+} => {
+  const types = questions.map((q) => q.type);
+  const typeCount = {
+    YES_NO: types.filter((t) => t === "YES_NO").length,
+    TEXT: types.filter((t) => t === "TEXT").length,
+    SCALE: types.filter((t) => t === "SCALE").length,
+  };
+
+  const warnings: string[] = [];
+
+  // Avisos para melhor balanceamento
+  if (typeCount.YES_NO === 0) {
+    warnings.push("Considere adicionar pelo menos uma pergunta Sim/Não");
+  }
+
+  if (typeCount.TEXT > questions.length * 0.5) {
+    warnings.push(
+      "Muitas perguntas de texto livre podem dificultar a avaliação"
+    );
+  }
+
+  if (questions.length > 10) {
+    warnings.push("Checklists muito longos podem desencorajar avaliadores");
+  }
+
+  return {
+    isValid: true, // Sempre válido, apenas avisos
+    warnings,
+  };
+};
+
+// ===== HELPERS DE VALIDAÇÃO =====
+
+export const getQuestionTypeOptions = () =>
+  [
+    { value: "YES_NO", label: "Sim/Não", description: "Resposta: Sim / Não" },
+    {
+      value: "TEXT",
+      label: "Texto Livre",
+      description: "Resposta: Campo de texto livre",
+    },
+    {
+      value: "SCALE",
+      label: "Escala (1-10)",
+      description: "Resposta: Escala de 1 a 10",
+    },
+  ] as const;
+
+export const validateChecklistBeforeSubmit = (
+  basic: ChecklistBasicFormData,
+  questions: QuestionFormData[]
+): { isValid: boolean; errors: string[]; warnings: string[] } => {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  // Validar dados básicos
+  try {
+    checklistBasicSchema.parse(basic);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      errors.push(...error.errors.map((e) => e.message));
+    }
+  }
+
+  // Validar questões
+  try {
+    questionsSchema.parse({ questions });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      errors.push(...error.errors.map((e) => e.message));
+    }
+  }
+
+  // Validações customizadas
+  if (!validateAtLeastOneRequired(questions)) {
+    warnings.push("Recomenda-se ter pelo menos uma pergunta obrigatória");
+  }
+
+  if (!validateUniqueQuestions(questions)) {
+    errors.push("Todas as perguntas devem ser únicas");
+  }
+
+  const distribution = validateQuestionDistribution(questions);
+  warnings.push(...distribution.warnings);
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    warnings,
+  };
+};

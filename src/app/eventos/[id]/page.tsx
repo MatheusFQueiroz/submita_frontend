@@ -86,7 +86,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
   const breadcrumbs = [
     { label: "Dashboard", href: "/dashboard" },
     { label: "Eventos", href: "/eventos" },
-    { label: event.title },
+    { label: event.name },
   ];
 
   const now = new Date();
@@ -124,7 +124,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
   return (
     <AuthGuard>
       <PageLayout
-        title={event.title}
+        title={event.name}
         breadcrumbs={breadcrumbs}
         actions={
           <div className="flex space-x-2">
@@ -159,11 +159,11 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-start space-x-6">
-                {event.imageUrl && (
+                {event.banner && (
                   <div className="flex-shrink-0">
                     <Image
                       src={event.imageUrl}
-                      alt={event.title}
+                      alt={event.name}
                       width={200}
                       height={120}
                       className="rounded-lg object-cover"
@@ -175,7 +175,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                   <div className="flex items-start justify-between">
                     <div>
                       <h1 className="text-3xl font-bold text-gray-900">
-                        {event.title}
+                        {event.name}
                       </h1>
                       <p className="text-lg text-gray-600 mt-2">
                         {event.description}

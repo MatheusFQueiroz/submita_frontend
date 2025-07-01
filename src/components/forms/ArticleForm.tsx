@@ -165,7 +165,7 @@ export function ArticleForm({
               <SelectContent>
                 {events.map((event) => (
                   <SelectItem key={event.id} value={event.id}>
-                    {event.title}
+                    {event.name}
                   </SelectItem>
                 ))}
               </SelectContent>

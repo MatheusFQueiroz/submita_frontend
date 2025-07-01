@@ -2,10 +2,12 @@ import { EvaluationType } from ".";
 import { Question } from "./api";
 
 export interface EventFormData {
-  title: string;
+  name: string;
   description: string;
   image?: File;
-  imageUrl?: string;
+  banner?: string;
+  eventStartDate: Date;
+  eventEndDate: Date;
   submissionStartDate: Date;
   submissionEndDate: Date;
   evaluationType: EvaluationType;

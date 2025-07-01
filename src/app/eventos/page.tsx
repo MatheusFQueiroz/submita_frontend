@@ -189,7 +189,7 @@ export default function EventsPage() {
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <CardTitle className="text-lg line-clamp-2">
-                            {event.title}
+                            {event.name}
                           </CardTitle>
                           <Badge
                             className={`mt-2 ${status.color}`}
@@ -198,10 +198,10 @@ export default function EventsPage() {
                             {status.label}
                           </Badge>
                         </div>
-                        {event.imageUrl && (
+                        {event.banner && (
                           <Image
                             src={event.imageUrl}
-                            alt={event.title}
+                            alt={event.name}
                             width={80}
                             height={60}
                             className="rounded-md object-cover"

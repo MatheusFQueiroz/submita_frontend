@@ -19,6 +19,7 @@ import {
   History,
   Settings,
   X,
+  Heart,
 } from "lucide-react";
 import { useAuthContext } from "@/providers/AuthProvider";
 import { ROUTES, USER_ROLES } from "@/lib/constants";
@@ -102,6 +103,7 @@ const navigationItems: NavigationItem[] = [
 export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
   const { user } = useAuthContext();
   const pathname = usePathname();
+  const currentYear = new Date().getFullYear();
 
   if (!user) return null;
 
@@ -191,41 +193,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
             </nav>
 
             <Separator className="my-4" />
-
-            {/* Links adicionais */}
-            <div className="space-y-1">
-              <Link
-                href={ROUTES.PROFILE}
-                onClick={onClose}
-                className={cn(
-                  "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                  pathname === ROUTES.PROFILE
-                    ? "bg-[#243444] text-white"
-                    : "text-gray-700 hover:bg-gray-100"
-                )}
-              >
-                <Settings className="mr-3 h-4 w-4" />
-                Perfil
-              </Link>
-            </div>
           </ScrollArea>
-        </div>
-
-        {/* Footer do Sidebar - SEMPRE VISÍVEL */}
-        <div className="p-4 border-t border-gray-200 bg-gray-50">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-[#243444] rounded-full flex items-center justify-center">
-              <span className="text-white font-medium text-sm">
-                {user.name?.charAt(0).toUpperCase()}
-              </span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
-                {user.name}
-              </p>
-              <p className="text-xs text-gray-500 truncate">{user.email}</p>
-            </div>
-          </div>
         </div>
       </aside>
     </>

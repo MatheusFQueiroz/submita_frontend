@@ -88,7 +88,11 @@ export function Header({
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuContent
+                  className="w-56 bg-white border border-gray-200 shadow-lg rounded-md p-1"
+                  align="end"
+                  forceMount
+                >
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">
@@ -97,19 +101,12 @@ export function Header({
                       <p className="text-xs leading-none text-muted-foreground">
                         {user.email}
                       </p>
-                      <p className="text-xs leading-none text-muted-foreground">
-                        {formatUserRole(user.role)}
-                      </p>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleProfile}>
                     <User className="mr-2 h-4 w-4" />
                     <span>Perfil</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleProfile}>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Configurações</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout}>

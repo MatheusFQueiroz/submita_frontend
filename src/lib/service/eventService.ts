@@ -2,9 +2,11 @@ import { api } from "@/lib/api";
 import { Event, User, Article } from "@/types";
 
 interface CreateEventRequest {
-  title: string;
+  name: string; // ✅ MUDANÇA: title → name
   description: string;
-  imageUrl?: string;
+  banner?: string; // ✅ MUDANÇA: imageUrl → banner
+  eventStartDate: Date; // ✅ ADICIONADO
+  eventEndDate: Date; // ✅ ADICIONADO
   submissionStartDate: Date;
   submissionEndDate: Date;
   evaluationType: "DIRECT" | "PAIR" | "PANEL";
@@ -28,9 +30,18 @@ export const eventService = {
     return api.get<Event>(`/events/${id}`);
   },
 
-  // Criar evento
+  // Criar evento - ✅ CORRIGIDO
   async createEvent(data: CreateEventRequest): Promise<Event> {
-    return api.post<Event>("/events", data);
+    return api.post<Event>("/events", {
+      name: data.name, // ✅ Usar "name"
+      banner: data.banner, // ✅ Usar "banner"
+      description: data.description,
+      eventStartDate: data.eventStartDate,
+      eventEndDate: data.eventEndDate,
+      submissionStartDate: data.submissionStartDate,
+      submissionEndDate: data.submissionEndDate,
+      evaluationType: data.evaluationType,
+    });
   },
 
   // Atualizar evento

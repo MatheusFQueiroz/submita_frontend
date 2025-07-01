@@ -3,9 +3,11 @@ import { User } from "./auth";
 
 export interface Event {
   id: string;
-  title: string;
+  name: string;
+  banner?: string;
   description: string;
-  imageUrl?: string;
+  eventStartDate: Date;
+  eventEndDate: Date;
   submissionStartDate: Date;
   submissionEndDate: Date;
   evaluationType: EvaluationType;

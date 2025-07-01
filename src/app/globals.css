@@ -104,3 +104,291 @@
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-400;
 }
+[data-radix-dialog-content] {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Fundos brancos para Selects */
+[data-radix-select-content] {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  z-index: 9999 !important;
+}
+
+[data-radix-select-item] {
+  background-color: transparent !important;
+}
+
+[data-radix-select-item]:hover,
+[data-radix-select-item][data-highlighted] {
+  background-color: #f9fafb !important;
+  color: #111827 !important;
+}
+
+[data-radix-select-item][data-state="checked"] {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+/* Fundos brancos para Dropdown Menus */
+[data-radix-dropdown-menu-content] {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  z-index: 9999 !important;
+}
+
+[data-radix-dropdown-menu-item] {
+  background-color: transparent !important;
+}
+
+[data-radix-dropdown-menu-item]:hover,
+[data-radix-dropdown-menu-item][data-highlighted] {
+  background-color: #f9fafb !important;
+  color: #111827 !important;
+}
+
+/* Fundos brancos para Popovers */
+[data-radix-popover-content] {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Fundos brancos para Tooltips */
+[data-radix-tooltip-content] {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  color: #374151 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Garantir que cards tenham fundo branco */
+.card,
+[data-radix-card] {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+/* Garantir que inputs tenham fundo branco */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+textarea,
+select {
+  background-color: white !important;
+  border-color: #d1d5db !important;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+textarea:focus,
+select:focus {
+  border-color: #3b82f6 !important;
+  ring-color: #3b82f6 !important;
+}
+
+/* Scroll suave para modais */
+.dialog-scroll-area {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.dialog-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dialog-scroll-area::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.dialog-scroll-area::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.dialog-scroll-area::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Garantir visibilidade dos componentes */
+.ensure-white-bg {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+/* Classes utilitárias para forçar fundos brancos */
+.force-white-bg {
+  background-color: white !important;
+}
+
+.force-white-border {
+  border-color: #e5e7eb !important;
+}
+
+.force-white-shadow {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Componentes específicos do shadcn/ui */
+.bg-background {
+  background-color: white !important;
+}
+
+.bg-card {
+  background-color: white !important;
+}
+
+.bg-popover {
+  background-color: white !important;
+}
+
+/* Garantir contraste adequado */
+.text-foreground {
+  color: #111827 !important;
+}
+
+.text-muted-foreground {
+  color: #6b7280 !important;
+}
+
+/* Estados hover para melhor UX */
+.hover\:bg-accent:hover {
+  background-color: #f9fafb !important;
+}
+
+.hover\:bg-muted:hover {
+  background-color: #f3f4f6 !important;
+}
+
+[data-state="checked"].switch-required {
+  background-color: #ef4444 !important; /* red-500 */
+}
+
+[data-state="checked"].switch-required::before {
+  background-color: white !important;
+}
+
+/* Switch opcional (verde) */
+[data-state="unchecked"].switch-optional {
+  background-color: #22c55e !important; /* green-500 */
+}
+
+[data-state="unchecked"].switch-optional::before {
+  background-color: white !important;
+}
+
+/* Estados hover */
+[data-state="checked"].switch-required:hover {
+  background-color: #dc2626 !important; /* red-600 */
+}
+
+[data-state="unchecked"].switch-optional:hover {
+  background-color: #16a34a !important; /* green-600 */
+}
+
+/* Transições suaves */
+.switch-required,
+.switch-optional {
+  transition: background-color 0.2s ease-in-out !important;
+}
+
+/* Estilos para o indicador visual */
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.status-indicator.required {
+  background-color: #ef4444; /* red-500 */
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+.status-indicator.optional {
+  background-color: #22c55e; /* green-500 */
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+/* Container da pergunta com melhor destaque */
+.question-card {
+  transition: all 0.2s ease-in-out;
+}
+
+.question-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+
+/* Status badge melhorado */
+.required-badge {
+  background-color: #fef2f2; /* red-50 */
+  color: #dc2626; /* red-600 */
+  border: 1px solid #fecaca; /* red-200 */
+  font-weight: 500;
+}
+
+.optional-badge {
+  background-color: #f0fdf4; /* green-50 */
+  color: #16a34a; /* green-600 */
+  border: 1px solid #bbf7d0; /* green-200 */
+  font-weight: 500;
+}
+
+/* Melhorar visibilidade dos selects */
+.question-type-select {
+  background-color: white !important;
+  border: 2px solid #e5e7eb !important;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.question-type-select:focus {
+  border-color: #3b82f6 !important;
+  ring: 2px solid rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Estilo para textarea de pergunta */
+.question-textarea {
+  min-height: 80px;
+  resize: vertical;
+  background-color: white !important;
+  border: 2px solid #e5e7eb !important;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.question-textarea:focus {
+  border-color: #3b82f6 !important;
+  ring: 2px solid rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Preview box melhorado */
+.question-preview {
+  background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.question-preview-icon {
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.question-preview-text {
+  color: #1e40af;
+  font-weight: 500;
+}
