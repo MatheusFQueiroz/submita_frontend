@@ -23,7 +23,6 @@ interface UseAuthReturn {
   logout: () => void;
   changePassword: (data: ChangePasswordRequest) => Promise<void>;
   refreshProfile: () => Promise<void>;
-  syncWithCookies: () => void;
 }
 
 export function useAuth(): UseAuthReturn {
@@ -66,38 +65,27 @@ export function useAuth(): UseAuthReturn {
         const response = await api.post("/auth/login", data);
         const { token, user: userData, isFirstLogin } = response;
 
-        console.log("📥 Login response:", {
-          hasToken: !!token,
-          isFirstLogin,
-          userRole: userData.role,
-        });
+        // Salva o token
+        api.setToken(token);
 
-        // ✅ CORREÇÃO: Usar novo método que salva token + flag
-        api.setLoginData(token, isFirstLogin);
-
-        // Atualizar estado do usuário
+        // Atualiza dados do usuário
         const userWithFirstLogin = { ...userData, isFirstLogin };
         setUser(userWithFirstLogin);
 
         toast.success("Login realizado com sucesso!");
 
-        // ✅ CORREÇÃO: NÃO usar router.push - deixar o middleware processar
-        // O middleware vai ler o cookie e fazer o redirecionamento correto
-        console.log("🔄 Recarregando página para middleware processar...");
-
-        // Pequeno delay para garantir que os cookies foram salvos
-        setTimeout(() => {
-          window.location.reload();
-        }, 100);
+        // Redireciona baseado no status da senha
+        const redirectPath = getRedirectPath(userWithFirstLogin);
+        router.push(redirectPath);
       } catch (error: any) {
-        console.error("❌ Erro no login:", error);
+        console.error("Erro no login:", error);
         toast.error(error.message || "Erro ao fazer login");
         throw error;
       } finally {
         setIsLoading(false);
       }
     },
-    [] // Remover dependência do router
+    [router]
   );
 
   const register = useCallback(
@@ -126,7 +114,7 @@ export function useAuth(): UseAuthReturn {
   );
 
   const logout = useCallback(() => {
-    api.clearToken(); // ✅ Agora limpa todos os cookies
+    api.clearToken();
     setUser(null);
     toast.success("Logout realizado com sucesso!");
     router.push(ROUTES.HOME);
@@ -139,29 +127,17 @@ export function useAuth(): UseAuthReturn {
 
         await api.put("/auth/change-password", data);
 
-        // ✅ CORREÇÃO: Limpar flag de primeiro login
-        api.clearFirstLoginFlag();
-
-        // Buscar perfil atualizado
-        try {
-          const updatedProfile = await api.get<User>("/auth/profile");
-          setUser(updatedProfile);
-        } catch (profileError) {
-          console.error("Erro ao buscar perfil atualizado:", profileError);
-          // Fallback: atualizar localmente
-          if (user) {
-            setUser({ ...user, isFirstLogin: false });
-          }
+        // Atualiza o usuário para remover flag de primeiro login
+        if (user) {
+          setUser({ ...user, isFirstLogin: false });
         }
 
         toast.success("Senha alterada com sucesso!");
 
-        // ✅ CORREÇÃO: Dar tempo para o middleware processar a mudança
-        setTimeout(() => {
-          router.push(ROUTES.DASHBOARD);
-        }, 500);
+        // Redireciona para dashboard após mudança de senha
+        router.push(ROUTES.DASHBOARD);
       } catch (error: any) {
-        console.error("❌ Erro ao alterar senha:", error);
+        console.error("Erro ao alterar senha:", error);
         toast.error(error.message || "Erro ao alterar senha");
         throw error;
       } finally {
@@ -180,49 +156,6 @@ export function useAuth(): UseAuthReturn {
     }
   }, []);
 
-  const syncWithCookies = useCallback(() => {
-    if (user && user.isFirstLogin !== api.isFirstLogin()) {
-      setUser({ ...user, isFirstLogin: api.isFirstLogin() });
-      console.log("🔄 User state synced with cookies");
-    }
-  }, [user]);
-
-  // ✅ Carregamento inicial atualizado
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const token = Cookies.get("submita_token");
-
-        if (!token || isTokenExpired(token)) {
-          setIsLoading(false);
-          return;
-        }
-
-        // Buscar perfil do usuário
-        const profile = await api.get<User>("/auth/profile");
-
-        // ✅ CORREÇÃO: Sincronizar isFirstLogin com cookie
-        const isFirstLogin = api.isFirstLogin();
-        const userWithCorrectFirstLogin = { ...profile, isFirstLogin };
-
-        setUser(userWithCorrectFirstLogin);
-
-        console.log("👤 User loaded:", {
-          email: profile.email,
-          role: profile.role,
-          isFirstLogin,
-        });
-      } catch (error) {
-        console.error("Erro ao carregar usuário:", error);
-        api.clearToken();
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadUser();
-  }, []);
-
   return {
     user,
     isLoading,
@@ -232,6 +165,5 @@ export function useAuth(): UseAuthReturn {
     logout,
     changePassword,
     refreshProfile,
-    syncWithCookies,
   };
 }
