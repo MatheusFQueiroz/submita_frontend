@@ -76,13 +76,14 @@ export default function HomePage() {
           <div className="flex justify-between items-center py-6">
             {/* Logo */}
             <div className="flex items-center space-x-2">
-              <div className="submita-gradient w-10 h-10 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">S</span>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-primary">SUBMITA</h1>
-                <p className="text-xs text-gray-500">Biopark</p>
-              </div>
+              <Image
+                src="/images/logo-ia360-2.png"
+                alt="Logo SUBMITA"
+                width={180}
+                height={100}
+                className={`object-contain`} // Adiciona 'hidden' se 'user' existir
+                priority
+              />
             </div>
 
             {/* Navigation */}
@@ -109,11 +110,15 @@ export default function HomePage() {
 
             {/* Auth Buttons */}
             <div className="flex items-center space-x-3">
-              <Button variant="default" asChild>
-                <Link href={ROUTES.LOGIN}>Entrar</Link>
+              <Button variant="ghost" className="border" asChild>
+                <Link href={ROUTES.LOGIN} className="gradient-text-cool">
+                  Entrar
+                </Link>
               </Button>
-              <Button asChild>
-                <Link href={ROUTES.REGISTER}>Registrar</Link>
+              <Button className="border" asChild>
+                <Link href={ROUTES.REGISTER} className="gradient-text">
+                  Registrar
+                </Link>
               </Button>
             </div>
           </div>
@@ -142,8 +147,31 @@ export default function HomePage() {
                 asChild
               >
                 <Link href={ROUTES.REGISTER}>
-                  Começar Agora
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <span className="gradient-text">Começar Agora</span>
+                  <svg className="ml-2 h-5 w-5" viewBox="0 0 24 24" fill="none">
+                    <defs>
+                      <linearGradient
+                        id="arrowGradient"
+                        x1="0%"
+                        y1="0%"
+                        x2="100%"
+                        y2="100%"
+                      >
+                        <stop offset="0%" stopColor="#6366f1" />
+                        <stop offset="25%" stopColor="#3b82f6" />
+                        <stop offset="50%" stopColor="#06b6d4" />
+                        <stop offset="75%" stopColor="#10b981" />
+                        <stop offset="100%" stopColor="#84cc16" />
+                      </linearGradient>
+                    </defs>
+                    <path
+                      d="M5 12h14m-7-7l7 7-7 7"
+                      stroke="url(#arrowGradient)"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                 </Link>
               </Button>
               <Button

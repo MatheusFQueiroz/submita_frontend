@@ -15,7 +15,7 @@ export interface EventFormData {
 
 export interface ArticleFormData {
   title: string;
-  abstract: string;
+  summary: string;
   keywords: string[];
   relatedAuthors: string[];
   file?: File;

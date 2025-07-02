@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,19 +56,6 @@ export function Header({
               <Menu className="h-5 w-5" />
             </Button>
           )}
-
-          <Link
-            href={user ? ROUTES.DASHBOARD : ROUTES.HOME}
-            className="flex items-center space-x-2"
-          >
-            <div className="submita-gradient w-8 h-8 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">S</span>
-            </div>
-            <div className="hidden sm:block">
-              <h1 className="text-xl font-bold text-primary">SUBMITA</h1>
-              <p className="text-xs text-gray-500">Biopark</p>
-            </div>
-          </Link>
         </div>
 
         {/* Ações do Header */}

@@ -66,20 +66,28 @@ export const eventSchema = z.object({
 export const articleSchema = z.object({
   title: z
     .string()
-    .min(10, "Título deve ter pelo menos 10 caracteres")
-    .max(300, "Título deve ter no máximo 300 caracteres"),
-  abstract: z
+    .min(3, "Título deve ter pelo menos 3 caracteres")
+    .max(150, "Título deve ter no máximo 150 caracteres")
+    .transform((val) => val.trim()),
+  summary: z
     .string()
-    .min(100, "Resumo deve ter pelo menos 100 caracteres")
-    .max(2000, "Resumo deve ter no máximo 2000 caracteres"),
+    .min(10, "Resumo deve ter pelo menos 10 caracteres")
+    .max(300, "Resumo deve ter no máximo 300 caracteres")
+    .transform((val) => val.trim()),
+  thematicArea: z
+    .string()
+    .min(2, "Área temática deve ter pelo menos 2 caracteres")
+    .max(150, "Área temática deve ter no máximo 150 caracteres")
+    .transform((val) => val.trim()),
   keywords: z
-    .array(z.string())
-    .min(3, "Deve ter pelo menos 3 palavras-chave")
-    .max(10, "Deve ter no máximo 10 palavras-chave"),
+    .array(z.string().min(1, "Palavra-chave não pode estar vazia"))
+    .min(1, "Pelo menos uma palavra-chave é obrigatória")
+    .max(10, "Máximo de 10 palavras-chave permitidas"),
   relatedAuthors: z
-    .array(z.string())
-    .max(10, "Deve ter no máximo 10 autores relacionados"),
+    .array(z.string().min(1, "Nome do autor não pode estar vazio"))
+    .max(20, "Máximo de 20 autores relacionados"),
   eventId: z.string().min(1, "Evento é obrigatório"),
+  pdfPath: z.string().optional(), // Será preenchido após upload
 });
 
 // Schema de avaliação

@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { useAuthContext } from "@/providers/AuthProvider";
 import { loginSchema, LoginFormData } from "@/lib/validations";
+import Image from "next/image";
 import { ROUTES } from "@/lib/constants";
 import { useState } from "react";
 
@@ -41,9 +42,14 @@ export function LoginForm() {
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1 text-center">
         <div className="flex justify-center mb-4">
-          <div className="submita-gradient w-12 h-12 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xl">S</span>
-          </div>
+          <Image
+            src="/images/logo-ia360.png"
+            alt="Logo SUBMITA"
+            width={120}
+            height={100}
+            className={`object-contain`} // Adiciona 'hidden' se 'user' existir
+            priority
+          />
         </div>
         <CardTitle className="text-2xl font-bold">Entrar</CardTitle>
         <p className="text-sm text-gray-600">
@@ -112,7 +118,7 @@ export function LoginForm() {
           <div className="space-y-4">
             <Button
               type="submit"
-              className="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold"
+              className="w-full btn-gradient-primary text-white font-semibold"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Entrando..." : "Entrar"}
@@ -122,7 +128,7 @@ export function LoginForm() {
               <span className="text-gray-600">Não tem uma conta? </span>
               <Link
                 href={ROUTES.REGISTER}
-                className="text-primary hover:underline font-medium"
+                className="text-primary hover:underline font-medium gradient-text"
               >
                 Cadastre-se aqui
               </Link>

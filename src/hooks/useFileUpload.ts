@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from "react";
 import { api } from "@/lib/api";
-import { FileUploadResponse } from "@/types";
 import { FILE_CONFIG } from "@/lib/constants";
 import toast from "react-hot-toast";
 
@@ -55,9 +54,20 @@ export function useFileUpload(): UseFileUploadReturn {
           (progress) => setUploadProgress(progress)
         );
 
-        setUploadedFile(response);
+        // Mapear resposta da API para formato esperado
+        const mappedResponse: FileUploadResponse = {
+          success: true,
+          fileId: response.data?.id || response.id,
+          fileName: response.data?.fileName || response.fileName,
+          filePath: response.data?.fileName || response.fileName,
+          fileSize: response.data?.size || response.size || file.size,
+          mimeType: response.data?.mimeType || response.mimeType || file.type,
+          message: response.message || "Imagem enviada com sucesso!",
+        };
+
+        setUploadedFile(mappedResponse);
         toast.success("Imagem enviada com sucesso!");
-        return response;
+        return mappedResponse;
       } catch (error: any) {
         console.error("Erro no upload da imagem:", error);
         toast.error(error.message || "Erro ao enviar imagem");
@@ -83,9 +93,21 @@ export function useFileUpload(): UseFileUploadReturn {
           (progress) => setUploadProgress(progress)
         );
 
-        setUploadedFile(response);
+        // Mapear resposta da API para formato esperado
+        // Baseado no exemplo da resposta da API fornecida
+        const mappedResponse: FileUploadResponse = {
+          success: response.success || true,
+          fileId: response.data?.id || response.id,
+          fileName: response.data?.fileName || response.fileName,
+          filePath: response.data?.fileName || response.fileName, // Usar fileName como pdfPath
+          fileSize: response.data?.size || response.size || file.size,
+          mimeType: response.data?.mimeType || response.mimeType || file.type,
+          message: response.message || "PDF enviado com sucesso!",
+        };
+
+        setUploadedFile(mappedResponse);
         toast.success("PDF enviado com sucesso!");
-        return response;
+        return mappedResponse;
       } catch (error: any) {
         console.error("Erro no upload do PDF:", error);
         toast.error(error.message || "Erro ao enviar PDF");
@@ -111,5 +133,45 @@ export function useFileUpload(): UseFileUploadReturn {
     uploadImage,
     uploadPdf,
     reset,
+  };
+}
+
+// Tipos atualizados para garantir compatibilidade
+export interface FileUploadResponse {
+  success: boolean;
+  fileId: string;
+  fileName: string;
+  filePath: string; // Será usado como pdfPath na API de artigos
+  fileSize: number;
+  mimeType: string;
+  message?: string;
+}
+
+// Exemplo de como usar o hook corrigido
+export function useArticleUpload() {
+  const { uploadPdf, uploadedFile, isUploading, uploadProgress } =
+    useFileUpload();
+
+  const uploadArticlePdf = async (file: File) => {
+    try {
+      const response = await uploadPdf(file);
+
+      // Retorna o fileName/filePath que deve ser usado como pdfPath
+      return {
+        fileName: response.fileName,
+        filePath: response.filePath,
+        fileId: response.fileId,
+      };
+    } catch (error) {
+      console.error("Erro no upload do artigo:", error);
+      throw error;
+    }
+  };
+
+  return {
+    uploadArticlePdf,
+    uploadedFile,
+    isUploading,
+    uploadProgress,
   };
 }

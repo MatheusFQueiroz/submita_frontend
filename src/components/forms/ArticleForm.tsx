@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -18,14 +18,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { FileUpload } from "@/components/common/FileUpload";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Calendar, Clock } from "lucide-react";
 import { articleSchema, ArticleFormData } from "@/lib/validations";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { FILE_CONFIG } from "@/lib/constants";
 import { Event } from "@/types";
 
 interface ArticleFormProps {
-  onSubmit: (data: ArticleFormData & { fileId?: string }) => Promise<void>;
+  onSubmit: (data: ArticleFormData & { pdfPath?: string }) => Promise<void>;
   events: Event[];
   initialData?: Partial<ArticleFormData>;
   isSubmitting?: boolean;
@@ -42,6 +42,27 @@ export function ArticleForm({
   const [newAuthor, setNewAuthor] = useState("");
   const { uploadPdf, uploadedFile, uploadProgress, isUploading } =
     useFileUpload();
+
+  // ✅ DEBUG: Log dos eventos recebidos
+  useEffect(() => {
+    console.log("🔍 ArticleForm - Eventos recebidos:", events);
+    console.log("🔍 ArticleForm - Quantidade de eventos:", events.length);
+
+    if (events.length > 0) {
+      events.forEach((event, index) => {
+        console.log(`🔍 Evento ${index + 1}:`, {
+          id: event.id,
+          name: event.name,
+          isActive: event.isActive,
+          submissionStart: event.submissionStartDate,
+          submissionEnd: event.submissionEndDate,
+          now: new Date().toISOString(),
+        });
+      });
+    } else {
+      console.log("⚠️ ArticleForm - Nenhum evento disponível!");
+    }
+  }, [events]);
 
   const {
     register,
@@ -89,9 +110,10 @@ export function ArticleForm({
         return;
       }
 
+      // Usar fileName da resposta do upload como pdfPath
       const formData = {
         ...data,
-        fileId: uploadedFile?.fileId,
+        pdfPath: uploadedFile?.fileName || initialData?.pdfPath,
       };
 
       await onSubmit(formData);
@@ -136,38 +158,101 @@ export function ArticleForm({
     }
   };
 
+  // ✅ FUNÇÃO AUXILIAR: Formatar data para exibição
+  const formatEventDate = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return dateString;
+    }
+  };
+
+  // ✅ FUNÇÃO AUXILIAR: Verificar se evento está no período
+  const isEventInSubmissionPeriod = (event: Event) => {
+    const now = new Date();
+    const start = new Date(event.submissionStartDate);
+    const end = new Date(event.submissionEndDate);
+    return now >= start && now <= end;
+  };
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>
-          {initialData ? "Editar Artigo" : "Submeter Novo Artigo"}
+          {initialData ? "Editar Artigo" : "Submeter Artigo"}
         </CardTitle>
         <p className="text-sm text-gray-600">
-          Preencha todas as informações necessárias para submeter seu artigo
+          Preencha todos os campos obrigatórios para submeter seu artigo
         </p>
       </CardHeader>
-
       <CardContent>
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-          {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+        {error && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
 
-          {/* Evento */}
+        {/* ✅ DEBUG: Informações sobre eventos */}
+        {events.length === 0 && (
+          <Alert className="mb-4">
+            <AlertDescription>
+              ⚠️ DEBUG: Nenhum evento foi carregado no formulário. Verifique se
+              existem eventos no período de submissão.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+          {/* ✅ PRIMEIRO CAMPO: Evento */}
           <div className="space-y-2">
-            <Label>Evento *</Label>
+            <Label className="text-base font-semibold">
+              Evento de Submissão *
+            </Label>
             <Select onValueChange={(value) => setValue("eventId", value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione o evento" />
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecione o evento para submissão" />
               </SelectTrigger>
               <SelectContent>
-                {events.map((event) => (
-                  <SelectItem key={event.id} value={event.id}>
-                    {event.name}
+                {events.length === 0 ? (
+                  <SelectItem value="no-events" disabled>
+                    Nenhum evento disponível
                   </SelectItem>
-                ))}
+                ) : (
+                  events.map((event) => (
+                    <SelectItem key={event.id} value={event.id}>
+                      <div className="flex flex-col py-1">
+                        <span className="font-medium">{event.name}</span>
+                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                          <Calendar className="h-3 w-3" />
+                          <span>
+                            Até {formatEventDate(event.submissionEndDate)}
+                          </span>
+                          {isEventInSubmissionPeriod(event) ? (
+                            <Badge
+                              variant="outline"
+                              className="text-green-600 border-green-600"
+                            >
+                              Ativo
+                            </Badge>
+                          ) : (
+                            <Badge
+                              variant="outline"
+                              className="text-orange-600 border-orange-600"
+                            >
+                              Período Expirado
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
             {errors.eventId && (
@@ -180,8 +265,8 @@ export function ArticleForm({
             <Label htmlFor="title">Título do artigo *</Label>
             <Input
               id="title"
-              placeholder="Digite o título do seu artigo"
               {...register("title")}
+              placeholder="Digite o título do seu artigo"
             />
             {errors.title && (
               <p className="text-sm text-red-600">{errors.title.message}</p>
@@ -190,31 +275,42 @@ export function ArticleForm({
 
           {/* Resumo */}
           <div className="space-y-2">
-            <Label htmlFor="abstract">Resumo *</Label>
+            <Label htmlFor="summary">Resumo *</Label>
             <Textarea
-              id="abstract"
-              placeholder="Escreva um resumo detalhado do seu artigo (mínimo 100 caracteres)"
-              rows={6}
-              {...register("abstract")}
+              id="summary"
+              {...register("summary")}
+              placeholder="Descreva brevemente o conteúdo do seu artigo"
+              rows={4}
             />
-            {errors.abstract && (
-              <p className="text-sm text-red-600">{errors.abstract.message}</p>
+            {errors.summary && (
+              <p className="text-sm text-red-600">{errors.summary.message}</p>
             )}
-            <p className="text-xs text-gray-500">
-              O resumo deve apresentar claramente o objetivo, metodologia,
-              resultados e conclusões
-            </p>
+          </div>
+
+          {/* Área Temática */}
+          <div className="space-y-2">
+            <Label htmlFor="thematicArea">Área Temática *</Label>
+            <Input
+              id="thematicArea"
+              {...register("thematicArea")}
+              placeholder="Ex: Tecnologia Educacional, Inteligência Artificial, etc."
+            />
+            {errors.thematicArea && (
+              <p className="text-sm text-red-600">
+                {errors.thematicArea.message}
+              </p>
+            )}
           </div>
 
           {/* Palavras-chave */}
           <div className="space-y-2">
-            <Label>Palavras-chave * (mínimo 3)</Label>
+            <Label>Palavras-chave *</Label>
             <div className="flex space-x-2">
               <Input
                 value={newKeyword}
                 onChange={(e) => setNewKeyword(e.target.value)}
                 onKeyPress={handleKeywordKeyPress}
-                placeholder="Digite uma palavra-chave"
+                placeholder="Adicionar palavra-chave"
               />
               <Button type="button" onClick={addKeyword} size="sm">
                 <Plus className="h-4 w-4" />
@@ -226,7 +322,7 @@ export function ArticleForm({
               {keywordFields.map((field, index) => (
                 <Badge
                   key={field.id}
-                  variant="secondary"
+                  variant="outline"
                   className="flex items-center space-x-1"
                 >
                   <span>{watchedKeywords[index]}</span>

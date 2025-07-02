@@ -223,7 +223,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                   <div>
                     <h3 className="text-lg font-medium mb-3">Resumo</h3>
                     <p className="text-gray-700 leading-relaxed">
-                      {article.abstract}
+                      {article.summary}
                     </p>
                   </div>
 

@@ -20,5 +20,4 @@ export * from "./notification";
 export * from "./common";
 export * from "./route";
 export * from "./error";
-export * from "./theme";
 export * from "./search";

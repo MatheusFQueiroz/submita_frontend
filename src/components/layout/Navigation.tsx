@@ -30,7 +30,7 @@ export function Navigation({ items, className }: NavigationProps) {
       )}
     >
       <Link
-        href="/"
+        href="/dashboard"
         className="flex items-center hover:text-gray-700  transition-colors"
       >
         <Home className="h-4 w-4" />

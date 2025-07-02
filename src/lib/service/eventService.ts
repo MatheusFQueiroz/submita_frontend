@@ -2,27 +2,86 @@ import { api } from "@/lib/api";
 import { Event, User, Article } from "@/types";
 
 interface CreateEventRequest {
-  name: string; // ✅ MUDANÇA: title → name
+  name: string;
   description: string;
-  banner?: string; // ✅ MUDANÇA: imageUrl → banner
-  eventStartDate: Date; // ✅ ADICIONADO
-  eventEndDate: Date; // ✅ ADICIONADO
+  banner?: string;
+  eventStartDate: Date;
+  eventEndDate: Date;
   submissionStartDate: Date;
   submissionEndDate: Date;
   evaluationType: "DIRECT" | "PAIR" | "PANEL";
 }
 
+// ✅ CORREÇÃO: Interface para resposta paginada da API
+interface EventsApiResponse {
+  events: Event[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export const eventService = {
-  // Listar eventos
+  // ✅ CORRIGIDO: Listar eventos
   async getEvents(params?: {
     search?: string;
     status?: string;
+    page?: number;
+    limit?: number;
   }): Promise<Event[]> {
     const searchParams = new URLSearchParams();
     if (params?.search) searchParams.append("search", params.search);
     if (params?.status) searchParams.append("status", params.status);
+    if (params?.page) searchParams.append("page", params.page.toString());
+    if (params?.limit) searchParams.append("limit", params.limit.toString());
 
-    return api.get<Event[]>(`/events?${searchParams.toString()}`);
+    // API retorna formato paginado
+    const response = await api.get<EventsApiResponse>(
+      `/events?${searchParams.toString()}`
+    );
+
+    // ✅ CORREÇÃO: Extrair array events da resposta paginada
+    return response.events || [];
+  },
+
+  // ✅ NOVO: Método para buscar eventos com paginação completa
+  async getEventsWithPagination(params?: {
+    search?: string;
+    status?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<EventsApiResponse> {
+    const searchParams = new URLSearchParams();
+    if (params?.search) searchParams.append("search", params.search);
+    if (params?.status) searchParams.append("status", params.status);
+    if (params?.page) searchParams.append("page", params.page.toString());
+    if (params?.limit) searchParams.append("limit", params.limit.toString());
+
+    return api.get<EventsApiResponse>(`/events?${searchParams.toString()}`);
+  },
+
+  // ✅ NOVO: Método específico para eventos no período de submissão
+  async getEventsInSubmissionPeriod(): Promise<Event[]> {
+    try {
+      // Buscar todos os eventos ativos
+      const allEvents = await this.getEvents({
+        status: "SUBMISSIONS_OPEN", // Filtrar por status se disponível
+      });
+
+      // Filtrar eventos no período de submissão
+      const now = new Date();
+      const availableEvents = allEvents.filter((event) => {
+        const submissionStart = new Date(event.submissionStartDate);
+        const submissionEnd = new Date(event.submissionEndDate);
+
+        return event.isActive && now >= submissionStart && now <= submissionEnd;
+      });
+
+      return availableEvents;
+    } catch (error) {
+      console.error("Erro ao buscar eventos no período de submissão:", error);
+      throw error;
+    }
   },
 
   // Buscar evento por ID
@@ -30,11 +89,11 @@ export const eventService = {
     return api.get<Event>(`/events/${id}`);
   },
 
-  // Criar evento - ✅ CORRIGIDO
+  // Criar evento
   async createEvent(data: CreateEventRequest): Promise<Event> {
     return api.post<Event>("/events", {
-      name: data.name, // ✅ Usar "name"
-      banner: data.banner, // ✅ Usar "banner"
+      name: data.name,
+      banner: data.banner,
       description: data.description,
       eventStartDate: data.eventStartDate,
       eventEndDate: data.eventEndDate,

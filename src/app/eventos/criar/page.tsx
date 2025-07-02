@@ -18,7 +18,7 @@ export default function CreateEventPage() {
     try {
       await api.post("/events", {
         ...data,
-        imageUrl: data.imageId, // A API espera imageUrl
+        banner: data.imageId, // A API espera imageUrl
       });
 
       toast.success("Evento criado com sucesso!");

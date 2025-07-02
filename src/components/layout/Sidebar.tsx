@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -131,23 +132,20 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
       {/* Sidebar - SEMPRE FIXO */}
       <aside
         className={cn(
-          // ✅ FIXO: Sempre fixed, ocupa toda a altura da tela
           "fixed left-0 top-0 z-50 h-screen w-64 bg-white border-r border-gray-200 transform transition-transform duration-200 ease-in-out",
-          // ✅ MOBILE: Esconde/mostra baseado no estado
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
         {/* Header do Sidebar */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-[#243444] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">S</span>
-            </div>
-            <div>
-              <h1 className="font-bold text-lg text-gray-900">SUBMITA</h1>
-              <p className="text-xs text-gray-500">Biopark</p>
-            </div>
-          </div>
+        <div className="flex justify-center items-center p-4 border-b border-gray-200">
+          <Image
+            src="/images/logo-ia360.png"
+            alt="Logo SUBMITA"
+            width={100}
+            height={70}
+            className={`object-contain`}
+            priority
+          />
 
           {/* Botão fechar apenas no mobile */}
           <Button

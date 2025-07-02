@@ -200,7 +200,7 @@ export default function EventsPage() {
                         </div>
                         {event.banner && (
                           <Image
-                            src={event.imageUrl}
+                            src={event.banner}
                             alt={event.name}
                             width={80}
                             height={60}

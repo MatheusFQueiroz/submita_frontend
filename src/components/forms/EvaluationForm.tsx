@@ -183,7 +183,7 @@ export function EvaluationForm({
           </div>
           <div>
             <Label className="text-sm font-medium">Resumo:</Label>
-            <p className="text-sm text-gray-700 ">{article.abstract}</p>
+            <p className="text-sm text-gray-700 ">{article.summary}</p>
           </div>
           <div>
             <Label className="text-sm font-medium">Palavras-chave:</Label>

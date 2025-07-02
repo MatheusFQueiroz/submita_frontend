@@ -52,7 +52,7 @@ export default function RegisterPage() {
               rel="noopener noreferrer"
               className="text-primary hover:underline"
             >
-              Biopark
+              Cllick
             </a>
           </p>
         </div>

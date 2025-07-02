@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 import { useAuthContext } from "@/providers/AuthProvider";
+import Image from "next/image";
 import { registerSchema, RegisterFormData } from "@/lib/validations";
 import { ROUTES } from "@/lib/constants";
 
@@ -30,7 +31,7 @@ export function RegisterForm() {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      isFromBpk: false, // Atualizado para Biopark
+      isFromBpk: false,
     },
   });
 
@@ -49,9 +50,14 @@ export function RegisterForm() {
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1 text-center">
         <div className="flex justify-center mb-4">
-          <div className="submita-gradient w-12 h-12 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xl">S</span>
-          </div>
+          <Image
+            src="/images/logo-ia360.png"
+            alt="Logo SUBMITA"
+            width={120}
+            height={100}
+            className={`object-contain`}
+            priority
+          />
         </div>
         <CardTitle className="text-2xl font-bold">Criar Conta</CardTitle>
         <p className="text-sm text-gray-600">
@@ -183,7 +189,11 @@ export function RegisterForm() {
 
           {/* Botões */}
           <div className="space-y-4">
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              className="w-full btn-gradient-accent"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Criando conta..." : "Criar conta"}
             </Button>
 
@@ -191,7 +201,7 @@ export function RegisterForm() {
               <span className="text-gray-600">Já tem uma conta? </span>
               <Link
                 href={ROUTES.LOGIN}
-                className="text-primary hover:underline font-medium"
+                className="text-primary hover:underline font-medium gradient-text-cool"
               >
                 Faça login aqui
               </Link>

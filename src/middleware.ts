@@ -40,6 +40,15 @@ const roleRoutes = {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  if (
+    request.nextUrl.pathname.startsWith("/images/") ||
+    request.nextUrl.pathname.startsWith("/icons/") ||
+    request.nextUrl.pathname.startsWith("/_next/") ||
+    request.nextUrl.pathname.includes(".")
+  ) {
+    return NextResponse.next();
+  }
+
   // Permite acesso às rotas públicas
   if (publicRoutes.includes(pathname)) {
     return NextResponse.next();

@@ -1,16 +1,72 @@
 import { api } from "@/lib/api";
-import { Article, Evaluation } from "@/types";
+import { Article } from "@/types";
 
 interface CreateArticleRequest {
   title: string;
-  abstract: string;
+  summary: string;
+  thematicArea: string;
+  pdfPath: string;
+  eventId: string;
+  userId: string;
+  keywords: string[];
+  relatedAuthors: string[];
+}
+
+interface SubmitArticleData {
+  title: string;
+  summary: string;
+  thematicArea: string;
   keywords: string[];
   relatedAuthors: string[];
   eventId: string;
-  filePath: string;
+  pdfFile?: File;
+  pdfPath?: string; // Para edição
 }
 
 export const articleService = {
+  // Função integrada para submeter artigo (Upload PDF + Criar Artigo)
+  async submitArticleWithUpload(
+    data: SubmitArticleData,
+    userId: string
+  ): Promise<Article> {
+    try {
+      let pdfPath = data.pdfPath;
+
+      // Se tem arquivo PDF, fazer upload primeiro
+      if (data.pdfFile) {
+        const uploadResponse = await api.uploadFile(
+          "/files/upload/pdf",
+          data.pdfFile
+        );
+        pdfPath = uploadResponse.fileName;
+      }
+
+      if (!pdfPath) {
+        throw new Error("PDF é obrigatório para submissão");
+      }
+
+      // Montar payload conforme esperado pela API
+      const articleData: CreateArticleRequest = {
+        title: data.title,
+        summary: data.summary,
+        thematicArea: data.thematicArea,
+        pdfPath: pdfPath,
+        eventId: data.eventId,
+        userId: userId,
+        keywords: data.keywords,
+        relatedAuthors: data.relatedAuthors,
+      };
+
+      // Criar artigo
+      const article = await api.post<Article>("/articles", articleData);
+
+      return article;
+    } catch (error: any) {
+      console.error("Erro ao submeter artigo:", error);
+      throw new Error(error?.message || "Erro ao submeter artigo");
+    }
+  },
+
   // Listar artigos
   async getArticles(params?: {
     search?: string;
@@ -30,11 +86,6 @@ export const articleService = {
     return api.get<Article>(`/articles/${id}`);
   },
 
-  // Submeter artigo
-  async submitArticle(data: CreateArticleRequest): Promise<Article> {
-    return api.post<Article>("/articles", data);
-  },
-
   // Atualizar artigo
   async updateArticle(
     id: string,
@@ -43,27 +94,31 @@ export const articleService = {
     return api.put<Article>(`/articles/${id}`, data);
   },
 
+  // Atualizar artigo com nova versão (para ressalvas)
+  async updateArticleVersion(
+    id: string,
+    pdfFile: File,
+    userId: string
+  ): Promise<Article> {
+    try {
+      // Upload do novo PDF
+      const uploadResponse = await api.uploadFile("/files/upload/pdf", pdfFile);
+
+      // Atualizar versão do artigo
+      const updateData = {
+        pdfPath: uploadResponse.fileName,
+      };
+
+      return api.put<Article>(`/articles/${id}/new-version`, updateData);
+    } catch (error: any) {
+      console.error("Erro ao atualizar versão do artigo:", error);
+      throw new Error(error?.message || "Erro ao atualizar artigo");
+    }
+  },
+
   // Deletar/Retirar artigo
   async deleteArticle(id: string): Promise<void> {
     return api.delete(`/articles/${id}`);
-  },
-
-  // Buscar avaliações do artigo
-  async getArticleEvaluations(articleId: string): Promise<Evaluation[]> {
-    return api.get<Evaluation[]>(`/articles/${articleId}/evaluations`);
-  },
-
-  // Atribuir avaliadores ao artigo
-  async assignEvaluators(
-    articleId: string,
-    evaluatorIds: string[]
-  ): Promise<void> {
-    return api.post(`/articles/${articleId}/evaluators`, { evaluatorIds });
-  },
-
-  // Remover avaliador do artigo
-  async removeEvaluator(articleId: string, evaluatorId: string): Promise<void> {
-    return api.delete(`/articles/${articleId}/evaluators/${evaluatorId}`);
   },
 
   // Download do PDF

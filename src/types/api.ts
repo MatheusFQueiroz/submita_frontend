@@ -2,6 +2,7 @@ import { ArticleStatus, EvaluationType, EventStatus } from ".";
 import { User } from "./auth";
 
 export interface Event {
+  startSubmissionDate: string | number | Date;
   id: string;
   name: string;
   banner?: string;
@@ -25,7 +26,7 @@ export interface Event {
 export interface Article {
   id: string;
   title: string;
-  abstract: string;
+  summary: string;
   status: ArticleStatus;
   currentVersion: number;
   eventId: string;

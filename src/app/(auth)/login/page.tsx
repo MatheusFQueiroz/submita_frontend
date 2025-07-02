@@ -38,7 +38,7 @@ export default function LoginPage() {
               rel="noopener noreferrer"
               className="text-primary hover:underline"
             >
-              Biopark
+              Cliick
             </a>
           </p>
         </div>
