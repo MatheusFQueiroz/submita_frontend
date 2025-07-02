@@ -272,7 +272,11 @@
 }
 
 [data-radix-select-item] {
-  background-color: transparent !important;
+  background-color: white !important;
+}
+
+[data-radix-select-viewport] {
+  background-color: white !important;
 }
 
 [data-radix-select-item]:hover,
