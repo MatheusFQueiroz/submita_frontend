@@ -172,9 +172,9 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                     href={item.href}
                     onClick={onClose}
                     className={cn(
-                      "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                      "flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-colors",
                       active
-                        ? "bg-[#243444] text-white"
+                        ? "btn-gradient-primary text-white"
                         : "text-gray-700 hover:bg-gray-100"
                     )}
                   >

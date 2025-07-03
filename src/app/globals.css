@@ -369,7 +369,6 @@ select:focus {
   padding: 12px;
 }
 
-/* ✅ CLASSES UTILITÁRIAS PARA USO DIRETO */
 .gradient-bg-primary {
   background: var(--ia360-gradient-primary);
 }
@@ -399,7 +398,6 @@ select:focus {
 }
 /* ✅ ADICIONE ESSAS CLASSES AO SEU globals.css */
 
-/* 1. GRADIENTE PARA ÍCONES (MÉTODO MASK) */
 .gradient-icon {
   background: var(--ia360-gradient-primary);
   background-size: 200% 200%;

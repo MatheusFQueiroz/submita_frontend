@@ -51,9 +51,7 @@ export function StudentDashboard() {
       {/* Cabeçalho */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 ">
-            Dashboard do Aluno
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900 ">Dashboard</h1>
           <p className="text-gray-600">Acompanhe suas submissões e progresso</p>
         </div>
         <Button asChild>
