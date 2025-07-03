@@ -33,7 +33,7 @@ export default function LoginPage() {
           <p>
             Desenvolvido por{" "}
             <a
-              href="https://biopark.com.br"
+              href="https://www.instagram.com/cliick_sistemas/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline"
