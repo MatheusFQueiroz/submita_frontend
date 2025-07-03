@@ -84,9 +84,7 @@ export default function EventsPage() {
     return { label: "Ativo", color: "bg-green-100 text-green-800" };
   };
 
-  const breadcrumbs = [
-    { label: "Eventos" },
-  ];
+  const breadcrumbs = [{ label: "Eventos" }];
 
   if (loading) {
     return (
@@ -136,7 +134,7 @@ export default function EventsPage() {
       >
         <div className="space-y-6">
           {/* Filtros */}
-          <Card>
+          {/* <Card>
             <CardContent className="p-4">
               <div className="flex items-center space-x-4">
                 <div className="relative flex-1">
@@ -150,7 +148,7 @@ export default function EventsPage() {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
 
           {/* Informações de paginação */}
           {pagination && pagination.total > 0 && (
@@ -235,7 +233,7 @@ export default function EventsPage() {
 
                         <div className="flex items-center">
                           <FileText className="mr-2 h-4 w-4" />
-                          Status: {event.status}
+                          Status: {status.label}
                         </div>
                       </div>
 

@@ -35,9 +35,7 @@ export default function ProfilePage() {
     }
   };
 
-  const breadcrumbs = [
-    { label: "Perfil" },
-  ];
+  const breadcrumbs = [{ label: "Perfil" }];
 
   return (
     <AuthGuard>
@@ -54,7 +52,7 @@ export default function ProfilePage() {
         >
           <div className="max-w-4xl mx-auto space-y-6">
             <Tabs defaultValue="profile" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="profile">
                   <User className="mr-2 h-4 w-4" />
                   Perfil
@@ -62,10 +60,6 @@ export default function ProfilePage() {
                 <TabsTrigger value="security">
                   <Shield className="mr-2 h-4 w-4" />
                   Segurança
-                </TabsTrigger>
-                <TabsTrigger value="activity">
-                  <Calendar className="mr-2 h-4 w-4" />
-                  Atividade
                 </TabsTrigger>
               </TabsList>
 
@@ -178,50 +172,6 @@ export default function ProfilePage() {
                   </CardHeader>
                   <CardContent>
                     <ChangePasswordForm isFirstLogin={false} />
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Aba Atividade */}
-              <TabsContent value="activity">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Calendar className="mr-2 h-5 w-5" />
-                      Atividade Recente
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center space-x-4 p-4 border rounded-lg">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Login realizado</p>
-                          <p className="text-xs text-gray-500">
-                            Último acesso:{" "}
-                            {formatDate(new Date(), "dd/MM/yyyy 'às' HH:mm")}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center space-x-4 p-4 border rounded-lg">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">
-                            Perfil visualizado
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {formatDate(new Date(), "dd/MM/yyyy 'às' HH:mm")}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="text-center py-8 text-gray-500">
-                        <p className="text-sm">
-                          Histórico completo de atividades em desenvolvimento
-                        </p>
-                      </div>
-                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>

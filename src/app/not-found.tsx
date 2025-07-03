@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft } from "lucide-react";
+import Image from "next/image";
 
 export default function NotFound() {
   return (
@@ -11,9 +12,14 @@ export default function NotFound() {
       <div className="text-center space-y-6 max-w-md mx-auto px-4">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <div className="submita-gradient w-16 h-16 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-2xl">S</span>
-          </div>
+          <Image
+            src="/images/logo-ia360-2.png"
+            alt="Logo SUBMITA"
+            width={250}
+            height={100}
+            className={`object-contain`}
+            priority
+          />
         </div>
 
         {/* 404 */}
@@ -34,45 +40,11 @@ export default function NotFound() {
             Voltar
           </Button>
           <Button asChild>
-            <Link href="/">
+            <Link href="/dashboard" className="btn-gradient-primary text-white">
               <Home className="mr-2 h-4 w-4" />
               Página Inicial
             </Link>
           </Button>
-        </div>
-
-        {/* Helpful Links */}
-        <div className="pt-6 border-t border-gray-200">
-          <p className="text-sm text-gray-500 mb-3">Links úteis:</p>
-          <div className="flex flex-wrap gap-2 justify-center">
-            <Link
-              href="/login"
-              className="text-sm text-primary hover:underline"
-            >
-              Login
-            </Link>
-            <span className="text-gray-300">•</span>
-            <Link
-              href="/register"
-              className="text-sm text-primary hover:underline"
-            >
-              Registrar
-            </Link>
-            <span className="text-gray-300">•</span>
-            <Link
-              href="/dashboard"
-              className="text-sm text-primary hover:underline"
-            >
-              Dashboard
-            </Link>
-            <span className="text-gray-300">•</span>
-            <a
-              href="mailto:contato@biopark.com.br"
-              className="text-sm text-primary hover:underline"
-            >
-              Suporte
-            </a>
-          </div>
         </div>
       </div>
     </div>

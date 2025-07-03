@@ -30,24 +30,28 @@ import { ROUTES, formatDate, formatDateTime, USER_ROLES } from "@/lib/utils";
 import { api } from "@/lib/api";
 
 interface EventDetailPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default function EventDetailPage({ params }: EventDetailPageProps) {
   const { user } = useAuthContext();
 
+  // ✅ Desencapsular params usando React.use()
+  const resolvedParams = React.use(params);
+  const eventId = resolvedParams.id;
+
   const { data: event, loading: eventLoading } = useApi<Event>(
-    () => api.get(`/events/${params.id}`),
+    () => api.get(`/events/${eventId}`),
     { immediate: true }
   );
 
   const { data: articles, loading: articlesLoading } = useApi<Article[]>(
-    () => api.get(`/events/${params.id}/articles`),
+    () => api.get(`/events/${eventId}/articles`),
     { immediate: true }
   );
 
   const { data: eventStats, loading: statsLoading } = useApi<any>(
-    () => api.get(`/dashboard/coordinator/articles/${params.id}`),
+    () => api.get(`/dashboard/coordinator/articles/${eventId}`),
     { immediate: true }
   );
 
@@ -144,9 +148,21 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                 </Link>
               </Button>
               <Button variant="outline" asChild>
-                <Link href={ROUTES.EVENT_EVALUATORS(event.id)}>
+                <Link
+                  href={ROUTES.EVENT_EVALUATORS(event.id)}
+                  className="btn-gradient-accent"
+                >
                   <Users className="mr-2 h-4 w-4" />
                   Gerenciar Avaliadores
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link
+                  href={`/eventos/${event.id}/editar`}
+                  className="btn-gradient-primary"
+                >
+                  <Settings className="mr-2 h-4 w-4" />
+                  Editar Evento
                 </Link>
               </Button>
             </RoleGuard>
@@ -161,7 +177,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                 {event.banner && (
                   <div className="flex-shrink-0">
                     <Image
-                      src={event.imageUrl}
+                      src={event.banner}
                       alt={event.name}
                       width={200}
                       height={120}
@@ -312,7 +328,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                   {articles.slice(0, 5).map((article) => (
                     <div
                       key={article.id}
-                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50  transition-colors"
+                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <div className="flex-1">
                         <h3 className="font-medium">{article.title}</h3>
@@ -354,13 +370,13 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
 
           {/* Informações para Submissão */}
           {canSubmit && (
-            <Card className="bg-blue-50  border-blue-200 ">
+            <Card className="bg-blue-50 border-blue-200">
               <CardHeader>
-                <CardTitle className="text-blue-900 ">
+                <CardTitle className="text-blue-900">
                   Como Submeter seu Artigo
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-blue-800 ">
+              <CardContent className="text-blue-800">
                 <ol className="list-decimal list-inside space-y-2">
                   <li>Prepare seu artigo em formato PDF</li>
                   <li>Tenha em mãos o resumo e palavras-chave</li>

@@ -81,7 +81,7 @@ export default function HomePage() {
                 alt="Logo SUBMITA"
                 width={180}
                 height={100}
-                className={`object-contain`} // Adiciona 'hidden' se 'user' existir
+                className={`object-contain`}
                 priority
               />
             </div>

@@ -144,9 +144,7 @@ export default function ChecklistsPage() {
     }
   };
 
-  const breadcrumbs = [
-    { label: "Checklists" },
-  ];
+  const breadcrumbs = [{ label: "Checklists" }];
 
   const checklistColumns = [
     {
@@ -253,7 +251,7 @@ export default function ChecklistsPage() {
         actions={
           <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-[#243444] hover:bg-[#1a2631] text-white">
+              <Button className="btn-gradient-accent text-white">
                 <Plus className="mr-2 h-4 w-4" />
                 Criar Checklist
               </Button>

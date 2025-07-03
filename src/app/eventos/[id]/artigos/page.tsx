@@ -134,17 +134,16 @@ export default function EventArticlesPage({ params }: EventArticlesPageProps) {
           >
             {value}
           </Link>
-          <p className="text-sm text-gray-500 mt-1">por {article.user?.name}</p>
         </div>
       ),
     },
     {
       key: "status",
       title: "Status",
-      render: (value: string) => <StatusBadge status={value} />,
+      render: (value: any) => <StatusBadge status={value} />,
     },
     {
-      key: "submittedAt",
+      key: "createdAt",
       title: "Data de Submissão",
       render: (value: string) => formatDate(value),
     },
@@ -213,7 +212,10 @@ export default function EventArticlesPage({ params }: EventArticlesPageProps) {
               </p>
             </div>
             <Button asChild>
-              <Link href={ROUTES.EVENT_EVALUATORS(id)}>
+              <Link
+                href={ROUTES.EVENT_EVALUATORS(id)}
+                className="btn-gradient-accent"
+              >
                 <Users className="mr-2 h-4 w-4" />
                 Gerenciar Avaliadores
               </Link>
@@ -273,43 +275,6 @@ export default function EventArticlesPage({ params }: EventArticlesPageProps) {
               </CardContent>
             </Card>
           </div>
-
-          {/* Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Filtros</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      placeholder="Buscar artigos..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-full md:w-48">
-                    <SelectValue placeholder="Filtrar por status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos os Status</SelectItem>
-                    <SelectItem value="SUBMITTED">Submetidos</SelectItem>
-                    <SelectItem value="UNDER_REVIEW">Em Avaliação</SelectItem>
-                    <SelectItem value="APPROVED">Aprovados</SelectItem>
-                    <SelectItem value="REJECTED">Rejeitados</SelectItem>
-                    <SelectItem value="APPROVED_WITH_CORRECTIONS">
-                      Aprovados com Correções
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Articles Table */}
           <Card>

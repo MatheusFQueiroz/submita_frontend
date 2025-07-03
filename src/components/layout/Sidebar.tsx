@@ -87,18 +87,6 @@ const navigationItems: NavigationItem[] = [
     icon: History,
     roles: [USER_ROLES.EVALUATOR],
   },
-  {
-    title: "Atribuições",
-    href: "/atribuicoes",
-    icon: UserCheck,
-    roles: [USER_ROLES.COORDINATOR],
-  },
-  {
-    title: "Relatórios",
-    href: "/relatorios",
-    icon: BarChart3,
-    roles: [USER_ROLES.COORDINATOR],
-  },
 ];
 
 export function Sidebar({ isOpen = true, onClose }: SidebarProps) {

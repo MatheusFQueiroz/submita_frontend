@@ -12,6 +12,43 @@ export interface User {
   updatedAt?: Date;
 }
 
+export interface StudentUser extends User {
+  role: "STUDENT";
+  articlesCount: number;
+}
+
+export interface EvaluatorUser extends User {
+  role: "EVALUATOR";
+  evaluationsCount: number;
+}
+
+export interface Pagination {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: Pagination;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+  timestamp?: string;
+  pagination?: Pagination;
+}
+
+export interface UserSearchParams {
+  search?: string;
+  page?: number;
+  limit?: number;
+  isActive?: boolean;
+}
+
 export interface AuthResponse {
   token: string;
   user: User;
