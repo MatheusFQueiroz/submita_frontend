@@ -65,7 +65,6 @@ export default function ArticlesPage() {
   const isEvaluator = user?.role === USER_ROLES.EVALUATOR;
 
   const breadcrumbs = [
-    { label: "Dashboard", href: "/dashboard" },
     { label: "Artigos" },
   ];
 

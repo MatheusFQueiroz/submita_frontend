@@ -145,7 +145,6 @@ export default function ChecklistsPage() {
   };
 
   const breadcrumbs = [
-    { label: "Dashboard", href: "/dashboard" },
     { label: "Checklists" },
   ];
 

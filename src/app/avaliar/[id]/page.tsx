@@ -123,7 +123,6 @@ export default function EvaluateArticlePage({
   }
 
   const breadcrumbs = [
-    { label: "Dashboard", href: "/dashboard" },
     { label: "Artigos", href: "/artigos" },
     { label: "Avaliar Artigo" },
   ];

@@ -30,7 +30,6 @@ export default function CreateEventPage() {
   };
 
   const breadcrumbs = [
-    { label: "Dashboard", href: "/dashboard" },
     { label: "Eventos", href: "/eventos" },
     { label: "Criar Evento" },
   ];

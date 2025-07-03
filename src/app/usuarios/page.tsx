@@ -112,7 +112,6 @@ export default function UsersPage() {
   };
 
   const breadcrumbs = [
-    { label: "Dashboard", href: "/dashboard" },
     { label: "Usuários" },
   ];
 

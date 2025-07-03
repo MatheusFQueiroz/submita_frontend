@@ -36,7 +36,6 @@ export default function ProfilePage() {
   };
 
   const breadcrumbs = [
-    { label: "Dashboard", href: "/dashboard" },
     { label: "Perfil" },
   ];
 

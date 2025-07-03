@@ -84,7 +84,6 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
   }
 
   const breadcrumbs = [
-    { label: "Dashboard", href: "/dashboard" },
     { label: "Eventos", href: "/eventos" },
     { label: event.name },
   ];

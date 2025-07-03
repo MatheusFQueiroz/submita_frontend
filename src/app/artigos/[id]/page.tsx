@@ -117,7 +117,6 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
   }
 
   const breadcrumbs = [
-    { label: "Dashboard", href: "/dashboard" },
     { label: "Artigos", href: "/artigos" },
     { label: article.title },
   ];
