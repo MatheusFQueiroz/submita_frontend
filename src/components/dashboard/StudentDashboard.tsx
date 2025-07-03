@@ -46,6 +46,8 @@ export function StudentDashboard() {
     );
   }
 
+  const recentSubmissonsList = stats?.recentSubmissions || [];
+
   return (
     <div className="space-y-6">
       {/* Cabeçalho */}
@@ -206,9 +208,9 @@ export function StudentDashboard() {
         <CardContent>
           {articlesLoading ? (
             <LoadingSpinner text="Carregando artigos..." />
-          ) : recentArticles && recentArticles.length > 0 ? (
+          ) : recentSubmissonsList && recentSubmissonsList.length > 0 ? (
             <div className="space-y-4">
-              {recentArticles.map((article) => (
+              {recentSubmissonsList.map((article) => (
                 <div
                   key={article.id}
                   className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50  transition-colors"
