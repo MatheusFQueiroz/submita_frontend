@@ -13,6 +13,7 @@ import { ROUTES, USER_ROLES } from "@/lib/utils";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 interface EvaluateArticlePageProps {
   params: { id: string };
@@ -23,7 +24,7 @@ export default function EvaluateArticlePage({
 }: EvaluateArticlePageProps) {
   const router = useRouter();
 
-  const { data: article, loading: articleLoading } = useApi<Article>(
+  const { data: article, loading: articleLoading } = useApi<{article: Article}>(
     () => api.get(`/articles/${params.id}`),
     { immediate: true }
   );
@@ -34,24 +35,24 @@ export default function EvaluateArticlePage({
     execute: refetchQuestions,
   } = useApi<Question[]>(
     () =>
-      article?.eventId
-        ? api.get(`/events/${article.eventId}/checklist/questions`)
+      article?.article.eventId
+        ? api.get(`/events/${article.article.eventId}/checklist/questions`)
         : Promise.resolve([]),
     { immediate: false }
   );
 
   const { data: existingEvaluation, loading: evaluationLoading } =
     useApi<Evaluation>(
-      () => api.get(`/evaluations/article/${params.id}/my-evaluation`),
+      () => api.get(`/articles/${params.id}`),
       { immediate: true }
     );
 
   // Carrega perguntas quando artigo é carregado
   React.useEffect(() => {
-    if (article?.eventId) {
+    if (article?.article.eventId) {
       refetchQuestions();
     }
-  }, [article?.eventId, refetchQuestions]);
+  }, [article?.article.eventId, refetchQuestions]);
 
   const handleSubmitEvaluation = async (data: EvaluationFormData) => {
     try {
@@ -142,10 +143,10 @@ export default function EvaluateArticlePage({
 
   return (
     <AuthGuard requiredRoles={[USER_ROLES.EVALUATOR]}>
-      <PageLayout title={`Avaliar: ${article.title}`} breadcrumbs={breadcrumbs}>
+      <PageLayout title={`Avaliar: ${article.article.title}`} breadcrumbs={breadcrumbs}>
         <div className="max-w-4xl mx-auto">
           <EvaluationForm
-            article={article}
+            article={article.article}
             questions={questions || []}
             onSubmit={handleSubmitEvaluation}
             onSaveDraft={handleSaveDraft}

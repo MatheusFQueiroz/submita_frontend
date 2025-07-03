@@ -22,7 +22,7 @@ export interface FileUploadResponse {
   success: boolean;
   fileId: string;
   fileName: string;
-  filePath: string; // Será usado como pdfPath na API de artigos
+  pdfPath: string;
   fileSize: number;
   mimeType: string;
   originalName?: string;
@@ -87,7 +87,7 @@ export function mapApiResponseToFileUpload(
     success: apiResponse.success,
     fileId: apiResponse.data.id,
     fileName: apiResponse.data.fileName,
-    filePath: apiResponse.data.fileName, // Usar fileName como filePath
+    pdfPath: apiResponse.data.fileName, // Usar fileName como pdfPath
     fileSize: apiResponse.data.size,
     mimeType: apiResponse.data.mimeType,
     originalName: apiResponse.data.originalName,

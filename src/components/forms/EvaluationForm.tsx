@@ -188,8 +188,8 @@ export function EvaluationForm({
           <div>
             <Label className="text-sm font-medium">Palavras-chave:</Label>
             <p className="text-sm text-gray-700 ">
-              {article.keywords.join(", ")}
-            </p>
+              {/* {article.keywords.join(", ")} */}
+            não tem keyword na resposta da API</p>
           </div>
         </CardContent>
       </Card>

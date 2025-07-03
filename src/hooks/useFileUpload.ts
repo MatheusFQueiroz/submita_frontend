@@ -59,7 +59,7 @@ export function useFileUpload(): UseFileUploadReturn {
           success: true,
           fileId: response.data?.id || response.id,
           fileName: response.data?.fileName || response.fileName,
-          filePath: response.data?.fileName || response.fileName,
+          pdfPath: response.data?.fileName || response.fileName,
           fileSize: response.data?.size || response.size || file.size,
           mimeType: response.data?.mimeType || response.mimeType || file.type,
           message: response.message || "Imagem enviada com sucesso!",
@@ -99,7 +99,7 @@ export function useFileUpload(): UseFileUploadReturn {
           success: response.success || true,
           fileId: response.data?.id || response.id,
           fileName: response.data?.fileName || response.fileName,
-          filePath: response.data?.fileName || response.fileName, // Usar fileName como pdfPath
+          pdfPath: response.data?.fileName || response.fileName, // Usar fileName como pdfPath
           fileSize: response.data?.size || response.size || file.size,
           mimeType: response.data?.mimeType || response.mimeType || file.type,
           message: response.message || "PDF enviado com sucesso!",
@@ -141,7 +141,7 @@ export interface FileUploadResponse {
   success: boolean;
   fileId: string;
   fileName: string;
-  filePath: string; // Será usado como pdfPath na API de artigos
+  pdfPath: string; // Será usado como pdfPath na API de artigos
   fileSize: number;
   mimeType: string;
   message?: string;
@@ -156,10 +156,10 @@ export function useArticleUpload() {
     try {
       const response = await uploadPdf(file);
 
-      // Retorna o fileName/filePath que deve ser usado como pdfPath
+      // Retorna o fileName/pdfPath que deve ser usado como pdfPath
       return {
         fileName: response.fileName,
-        filePath: response.filePath,
+        pdfPath: response.pdfPath,
         fileId: response.fileId,
       };
     } catch (error) {

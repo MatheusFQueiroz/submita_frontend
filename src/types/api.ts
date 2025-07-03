@@ -33,7 +33,7 @@ export interface Article {
   userId: string;
   keywords: string[];
   relatedAuthors: string[];
-  filePath?: string;
+  pdfPath?: string;
   fileName?: string;
   createdAt: Date;
   updatedAt?: Date;
@@ -47,7 +47,7 @@ export interface Article {
 export interface ArticleVersion {
   id: string;
   version: number;
-  filePath: string;
+  pdfPath: string;
   fileName: string;
   articleId: string;
   createdAt: Date;

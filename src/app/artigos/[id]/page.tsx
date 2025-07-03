@@ -46,15 +46,15 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
     data: article,
     loading: articleLoading,
     execute: refetchArticle,
-  } = useApi<Article>(() => api.get(`/articles/${params.id}`), {
+  } = useApi<{article: Article}>(() => api.get(`/articles/${params.id}`), {
     immediate: true,
   });
 
   const { data: evaluations, loading: evaluationsLoading } = useApi<
     Evaluation[]
-  >(() => api.get(`/articles/${params.id}/evaluations`), { immediate: true });
+  >(() => api.get(`/articles/${params.id}`), { immediate: true });
 
-  const isAuthor = user?.id === article?.userId;
+  const isAuthor = user?.id === article?.article.userId;
   const isEvaluator = user?.role === USER_ROLES.EVALUATOR;
   const isCoordinator = user?.role === USER_ROLES.COORDINATOR;
 
@@ -71,12 +71,12 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
   const handleDownloadPDF = async () => {
     try {
       const blob = await api.downloadFile(
-        `/files/file/submita-pdfs?fileName=${article?.filePath}`
+        `/files/file/submita-pdfs?fileName=${article?.article.pdfPath}`
       );
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${article?.title || "artigo"}.pdf`;
+      a.download = `${article?.article.title || "artigo"}.pdf`;
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (error) {
@@ -118,22 +118,22 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
 
   const breadcrumbs = [
     { label: "Artigos", href: "/artigos" },
-    { label: article.title },
+    { label: article.article.title },
   ];
 
-  const canEdit = isAuthor && article.status === "SUBMITTED";
+  const canEdit = isAuthor && article.article.status === "SUBMITTED";
   const canWithdraw =
-    isAuthor && ["SUBMITTED", "UNDER_REVIEW"].includes(article.status);
-  const canEvaluate = isEvaluator && article.status === "UNDER_REVIEW";
+    isAuthor && ["SUBMITTED", "UNDER_REVIEW"].includes(article.article.status);
+  const canEvaluate = isEvaluator && article.article.status === "UNDER_REVIEW";
 
   return (
     <AuthGuard>
       <PageLayout
-        title={article.title}
+        title={article.article.title}
         breadcrumbs={breadcrumbs}
         actions={
           <div className="flex space-x-2">
-            {article.filePath && (
+            {article.article.pdfPath && (
               <Button variant="outline" onClick={handleDownloadPDF}>
                 <Download className="mr-2 h-4 w-4" />
                 Download PDF
@@ -142,7 +142,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
 
             {canEdit && (
               <Button variant="outline" asChild>
-                <Link href={ROUTES.ARTICLE_DETAILS(article.id)}>
+                <Link href={ROUTES.ARTICLE_DETAILS(article.article.id)}>
                   <Edit className="mr-2 h-4 w-4" />
                   Editar
                 </Link>
@@ -151,7 +151,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
 
             {canEvaluate && (
               <Button asChild>
-                <Link href={ROUTES.EVALUATE_ARTICLE(article.id)}>
+                <Link href={ROUTES.EVALUATE_ARTICLE(article.article.id)}>
                   <Star className="mr-2 h-4 w-4" />
                   Avaliar
                 </Link>
@@ -198,23 +198,23 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <CardTitle className="text-2xl">
-                        {article.title}
+                        {article.article.title}
                       </CardTitle>
                       <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
                         <span className="flex items-center">
                           <User className="mr-1 h-4 w-4" />
-                          {article.user?.name}
+                          {article.article.user?.name}
                         </span>
                         <span className="flex items-center">
                           <Calendar className="mr-1 h-4 w-4" />
-                          {formatDate(article.createdAt)}
+                          {formatDate(article.article.createdAt)}
                         </span>
                         <Badge variant="outline">
-                          Versão {article.currentVersion}
+                          Versão {article.article.currentVersion}
                         </Badge>
                       </div>
                     </div>
-                    <StatusBadge status={article.status} />
+                    <StatusBadge status={article.article.status} />
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -222,7 +222,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                   <div>
                     <h3 className="text-lg font-medium mb-3">Resumo</h3>
                     <p className="text-gray-700 leading-relaxed">
-                      {article.summary}
+                      {article.article.summary}
                     </p>
                   </div>
 
@@ -232,17 +232,19 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                   <div>
                     <h3 className="text-lg font-medium mb-3">Palavras-chave</h3>
                     <div className="flex flex-wrap gap-2">
-                      {article.keywords.map((keyword, index) => (
-                        <Badge key={index} variant="secondary">
-                          {keyword}
+                      {/* {article.article.keywords.map((keyword, index) => ( */}
+                        <Badge
+                        //  key={index}
+                         variant="secondary">
+                          Não vem nada na API, tem que arrumar isso aqui
                         </Badge>
-                      ))}
+                      {/* // ))} */}
                     </div>
                   </div>
 
                   {/* Autores Relacionados */}
-                  {article.relatedAuthors &&
-                    article.relatedAuthors.length > 0 && (
+                  {article.article.relatedAuthors &&
+                    article.article.relatedAuthors.length > 0 && (
                       <>
                         <Separator />
                         <div>
@@ -250,7 +252,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                             Co-autores
                           </h3>
                           <div className="flex flex-wrap gap-2">
-                            {article.relatedAuthors.map((author, index) => (
+                            {article.article.relatedAuthors.map((author, index) => (
                               <Badge key={index} variant="outline">
                                 {author}
                               </Badge>
@@ -268,30 +270,30 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                     <Card>
                       <CardContent className="pt-4">
                         <div className="flex items-start space-x-4">
-                          {article.event?.banner && (
+                          {article.article.event?.banner && (
                             <img
-                              src={article.event.imageUrl}
-                              alt={article.event.name}
+                              src={article.article.event.imageUrl}
+                              alt={article.article.event.name}
                               className="w-16 h-16 rounded-lg object-cover"
                             />
                           )}
                           <div className="flex-1">
                             <h4 className="font-medium">
-                              {article.event?.name}
+                              {article.article.event?.name}
                             </h4>
                             <p className="text-sm text-gray-600 mt-1">
-                              {article.event?.description}
+                              {article.article.event?.description}
                             </p>
                             <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
                               <span>
                                 Submissões:{" "}
-                                {formatDate(article.event?.submissionStartDate)}{" "}
-                                - {formatDate(article.event?.submissionEndDate)}
+                                {formatDate(article.article.event?.submissionStartDate)}{" "}
+                                - {formatDate(article.article.event?.submissionEndDate)}
                               </span>
                               <Badge variant="outline" className="text-xs">
-                                {article.event?.evaluationType === "DIRECT"
+                                {article.article.event?.evaluationType === "DIRECT"
                                   ? "Avaliação Direta"
-                                  : article.event?.evaluationType === "PAIR"
+                                  : article.article.event?.evaluationType === "PAIR"
                                   ? "Avaliação por Pares"
                                   : "Painel"}
                               </Badge>
@@ -312,10 +314,10 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                   <CardTitle>Documento PDF</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {article.filePath ? (
+                  {article.article.versions![0].pdfPath ? (
                     <PDFViewer
-                      fileUrl={`/api/files/file/submita-pdfs?fileName=${article.filePath}`}
-                      fileName={`${article.title}.pdf`}
+                      fileUrl={`/api/files/file/submita-pdfs?fileName=${article.article.versions![0].pdfPath}`}
+                      fileName={`${article.article.versions![0].pdfPath}.pdf`}
                       className="min-h-96"
                     />
                   ) : (
@@ -398,7 +400,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                     <div className="text-center py-12 text-gray-500">
                       <Star className="mx-auto h-12 w-12 mb-4" />
                       <p>Nenhuma avaliação disponível ainda</p>
-                      {article.status === "SUBMITTED" && (
+                      {article.article.status === "SUBMITTED" && (
                         <p className="text-sm mt-2">
                           O artigo está aguardando atribuição de avaliadores
                         </p>
@@ -422,15 +424,15 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                   <div className="space-y-4">
                     <div className="flex items-center space-x-4 p-4 border rounded-lg bg-blue-50">
                       <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium">
-                        {article.currentVersion}
+                        {article.article.currentVersion}
                       </div>
                       <div className="flex-1">
                         <p className="font-medium">Versão Atual</p>
                         <p className="text-sm text-gray-600">
-                          Submetido em {formatDate(article.createdAt)}
+                          Submetido em {formatDate(article.article.createdAt)}
                         </p>
                       </div>
-                      <StatusBadge status={article.status} />
+                      <StatusBadge status={article.article.status} />
                     </div>
 
                     {/* Versões anteriores seriam listadas aqui */}

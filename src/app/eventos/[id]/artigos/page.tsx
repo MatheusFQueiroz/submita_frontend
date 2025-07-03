@@ -181,10 +181,10 @@ export default function EventArticlesPage({ params }: EventArticlesPageProps) {
               <Eye className="h-4 w-4" />
             </Link>
           </Button>
-          {article.filePath && (
+          {article.pdfPath && (
             <Button variant="ghost" size="sm" asChild>
               <a
-                href={article.filePath}
+                href={article.pdfPath}
                 target="_blank"
                 rel="noopener noreferrer"
               >

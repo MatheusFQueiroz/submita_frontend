@@ -122,7 +122,7 @@ export const articleService = {
   },
 
   // Download do PDF
-  async downloadPDF(filePath: string): Promise<Blob> {
-    return api.downloadFile(`/files/file/submita-pdfs?fileName=${filePath}`);
+  async downloadPDF(pdfPath: string): Promise<Blob> {
+    return api.downloadFile(`/files/file/submita-pdfs?fileName=${pdfPath}`);
   },
 };
