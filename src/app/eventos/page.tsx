@@ -123,7 +123,7 @@ export default function EventsPage() {
         breadcrumbs={breadcrumbs}
         actions={
           <RoleGuard allowedRoles={[USER_ROLES.COORDINATOR]}>
-            <Button asChild>
+            <Button asChild className="btn-gradient-accent">
               <Link href={ROUTES.CREATE_EVENT}>
                 <Plus className="mr-2 h-4 w-4" />
                 Novo Evento

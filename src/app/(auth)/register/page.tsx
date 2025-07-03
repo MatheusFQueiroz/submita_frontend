@@ -15,17 +15,6 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-6">
-        {/* Link para voltar */}
-        <div className="text-center">
-          <Link
-            href="/"
-            className="inline-flex items-center text-sm text-gray-600 hover:text-primary transition-colors"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Voltar para página inicial
-          </Link>
-        </div>
-
         {/* Formulário de Registro */}
         <RegisterForm />
 
