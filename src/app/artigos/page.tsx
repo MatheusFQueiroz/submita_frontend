@@ -155,39 +155,6 @@ export default function ArticlesPage() {
         }
       >
         <div className="space-y-6">
-          {/* Filtros */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="relative flex-1 max-w-sm">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Buscar artigos..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-full sm:w-48">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos os status</SelectItem>
-                    <SelectItem value="SUBMITTED">Submetido</SelectItem>
-                    <SelectItem value="UNDER_REVIEW">Em Avaliação</SelectItem>
-                    <SelectItem value="APPROVED">Aprovado</SelectItem>
-                    <SelectItem value="REJECTED">Rejeitado</SelectItem>
-                    <SelectItem value="APPROVED_WITH_CORRECTIONS">
-                      Com Correções
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Lista de Artigos */}
           <Card>
             <CardHeader>

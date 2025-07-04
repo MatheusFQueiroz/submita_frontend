@@ -51,7 +51,7 @@ export function EvaluatorDashboard() {
             Gerencie suas avaliações e acompanhe seu progresso
           </p>
         </div>
-        <Button asChild>
+        <Button asChild className="btn-gradient-accent">
           <Link href={ROUTES.ARTICLES}>
             <BookOpen className="mr-2 h-4 w-4" />
             Ver Artigos

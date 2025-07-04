@@ -51,7 +51,7 @@ export function StudentDashboard() {
           <h1 className="text-2xl font-bold text-gray-900 ">Dashboard</h1>
           <p className="text-gray-600">Acompanhe suas submissões e progresso</p>
         </div>
-        <Button asChild>
+        <Button asChild className="btn-gradient-accent">
           <Link href={ROUTES.SUBMIT_ARTICLE}>
             <Upload className="mr-2 h-4 w-4" />
             Submeter Artigo
@@ -67,7 +67,10 @@ export function StudentDashboard() {
             <CardTitle className="text-sm font-medium">
               Total de Submissões
             </CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <FileText
+              className="h-4 w-4 text-muted-foreground"
+              stroke="url(#ia360-primary)"
+            />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -85,7 +88,7 @@ export function StudentDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Aprovados</CardTitle>
-            <CheckCircle className="h-4 w-4 text-green-600" />
+            <CheckCircle className="h-4 w-4" stroke="url(#ia360-primary)" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
@@ -106,7 +109,7 @@ export function StudentDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Em Avaliação</CardTitle>
-            <Clock className="h-4 w-4 text-yellow-600" />
+            <Clock className="h-4 w-4 " stroke="url(#ia360-primary)" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-600">
@@ -122,7 +125,10 @@ export function StudentDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Correções</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-orange-600" />
+            <AlertTriangle
+              className="h-4 w-4 text-orange-600"
+              stroke="url(#ia360-primary)"
+            />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-orange-600">

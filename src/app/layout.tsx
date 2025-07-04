@@ -70,6 +70,59 @@ export default function RootLayout({ children }: RootLayoutProps) {
           inter.className
         )}
       >
+        <svg width="0" height="0" className="absolute">
+          <defs>
+            {/* Gradiente Primary */}
+            <linearGradient
+              id="ia360-primary"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%"
+            >
+              <stop offset="0%" stopColor="#6366f1" />
+              <stop offset="25%" stopColor="#3b82f6" />
+              <stop offset="50%" stopColor="#06b6d4" />
+              <stop offset="75%" stopColor="#10b981" />
+              <stop offset="100%" stopColor="#84cc16" />
+            </linearGradient>
+
+            {/* Gradiente Secondary */}
+            <linearGradient
+              id="ia360-secondary"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%"
+            >
+              <stop offset="0%" stopColor="#8b5cf6" />
+              <stop offset="50%" stopColor="#3b82f6" />
+              <stop offset="100%" stopColor="#06b6d4" />
+            </linearGradient>
+
+            {/* Gradiente Accent */}
+            <linearGradient
+              id="ia360-accent"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%"
+            >
+              <stop offset="0%" stopColor="#ec4899" />
+              <stop offset="50%" stopColor="#f97316" />
+              <stop offset="100%" stopColor="#eab308" />
+            </linearGradient>
+
+            {/* Gradiente Cool */}
+            <linearGradient id="ia360-cool" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#6366f1" />
+              <stop offset="25%" stopColor="#8b5cf6" />
+              <stop offset="50%" stopColor="#d946ef" />
+              <stop offset="75%" stopColor="#ec4899" />
+              <stop offset="100%" stopColor="#f97316" />
+            </linearGradient>
+          </defs>
+        </svg>
         <Providers>{children}</Providers>
       </body>
     </html>
