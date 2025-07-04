@@ -33,11 +33,6 @@ export function StudentDashboard() {
     immediate: true,
   });
 
-  const { data: recentArticles, loading: articlesLoading } = useApi<Article[]>(
-    () => api.get("/articles"),
-    { immediate: true }
-  );
-
   if (statsLoading) {
     return (
       <div className="flex justify-center py-8">
@@ -204,7 +199,7 @@ export function StudentDashboard() {
           </Button>
         </CardHeader>
         <CardContent>
-          {articlesLoading ? (
+          {statsLoading ? (
             <LoadingSpinner text="Carregando artigos..." />
           ) : recentSubmissonsList && recentSubmissonsList.length > 0 ? (
             <div className="space-y-4">
