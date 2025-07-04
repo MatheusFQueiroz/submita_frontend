@@ -21,14 +21,16 @@ import {
   FileText,
   Settings,
   Eye,
+  Upload,
 } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useAuth } from "@/hooks/useAuth";
 import { Event } from "@/types";
 import { ROUTES, formatDate, USER_ROLES } from "@/lib/utils";
 import { api } from "@/lib/api";
 
-// ✅ CORREÇÃO 1: Interface para a resposta da API
+// Interface para a resposta da API
 interface EventsApiResponse {
   events: Event[];
   total: number;
@@ -40,6 +42,7 @@ interface EventsApiResponse {
 export default function EventsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearch = useDebounce(searchTerm, 300);
+  const { user } = useAuth();
 
   const fetchEvents = useCallback(() => {
     const url = `/events${
@@ -83,6 +86,22 @@ export default function EventsPage() {
       return { label: "Finalizado", color: "bg-gray-100 text-gray-800" };
     return { label: "Ativo", color: "bg-green-100 text-green-800" };
   };
+
+  const getEventType = (event: Event) => {
+    switch (event.evaluationType) {
+      case "DIRECT":
+        return "Direta";
+      case "PAIR":
+        return "Em par";
+      case "PANEL":
+        return "Por comitê";
+      default:
+        return "Desconhecido";
+    }
+  };
+
+  const isStudent = user?.role === USER_ROLES.STUDENT;
+  const isCoordinator = user?.role === USER_ROLES.COORDINATOR;
 
   const breadcrumbs = [{ label: "Eventos" }];
 
@@ -133,23 +152,6 @@ export default function EventsPage() {
         }
       >
         <div className="space-y-6">
-          {/* Filtros */}
-          {/* <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input
-                    placeholder="Buscar eventos..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card> */}
-
           {/* Informações de paginação */}
           {pagination && pagination.total > 0 && (
             <div className="text-sm text-gray-500">
@@ -167,41 +169,53 @@ export default function EventsPage() {
                   ? `Nenhum evento encontrado para "${searchTerm}"`
                   : "Não há eventos cadastrados ainda."
               }
-              action={{
-                label: "Criar Primeiro Evento",
-                onClick: () => (window.location.href = ROUTES.CREATE_EVENT),
-              }}
+              action={
+                isCoordinator
+                  ? {
+                      label: "Criar Primeiro Evento",
+                      onClick: () =>
+                        (window.location.href = ROUTES.CREATE_EVENT),
+                    }
+                  : undefined
+              }
             />
           ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {events.map((event) => {
                 const status = getEventStatus(event);
+                const now = new Date();
+                const startDate = new Date(event.submissionStartDate);
+                const endDate = new Date(event.submissionEndDate);
+                const isActive = now >= startDate && now <= endDate;
+                const canSubmit = isStudent && isActive;
 
                 return (
                   <Card
                     key={event.id}
-                    className="hover:shadow-lg transition-shadow"
+                    className="group hover:shadow-md transition-shadow"
                   >
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <CardTitle className="text-lg line-clamp-2">
-                            {event.name}
-                          </CardTitle>
-                          <Badge
-                            className={`mt-2 ${status.color}`}
-                            variant="secondary"
-                          >
-                            {status.label}
-                          </Badge>
-                        </div>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between mb-2">
+                        <Badge
+                          variant="secondary"
+                          className={`text-xs font-medium ${status.color}`}
+                        >
+                          {status.label}
+                        </Badge>
+                      </div>
+
+                      <CardTitle className="text-lg line-clamp-2">
+                        {event.name}
+                      </CardTitle>
+
+                      <div className="mt-2">
                         {event.banner && (
                           <Image
-                            src={event.banner}
+                            src="/images/logo-ia360.png"
                             alt={event.name}
-                            width={80}
-                            height={60}
-                            className="rounded-md object-cover"
+                            width={300}
+                            height={150}
+                            className="w-full h-32 rounded-md object-cover"
                           />
                         )}
                       </div>
@@ -222,34 +236,51 @@ export default function EventsPage() {
 
                         <div className="flex items-center">
                           <Clock className="mr-2 h-4 w-4" />
-                          Evento: {formatDate(event.submissionStartDate)} -{" "}
-                          {formatDate(event.submissionEndDate)}
+                          Evento: {formatDate(event.eventStartDate)} -{" "}
+                          {formatDate(event.eventEndDate)}
                         </div>
 
                         <div className="flex items-center">
                           <Users className="mr-2 h-4 w-4" />
-                          Tipo: {event.evaluationType}
-                        </div>
-
-                        <div className="flex items-center">
-                          <FileText className="mr-2 h-4 w-4" />
-                          Status: {status.label}
+                          Avaliação: {getEventType(event)}
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between pt-4 border-t">
-                        <div className="text-xs text-gray-500">
-                          Criado em {formatDate(event.createdAt)}
-                        </div>
-
                         <div className="flex space-x-2">
-                          <Button variant="outline" size="sm" asChild>
-                            <Link href={ROUTES.EVENT_DETAILS(event.id)}>
-                              <Eye className="mr-1 h-3 w-3" />
-                              Ver
-                            </Link>
-                          </Button>
+                          {/* Botão Ver - Apenas para coordenadores */}
+                          <RoleGuard allowedRoles={[USER_ROLES.COORDINATOR]}>
+                            <Button variant="outline" size="sm" asChild>
+                              <Link href={ROUTES.EVENT_DETAILS(event.id)}>
+                                <Eye className="mr-1 h-3 w-3" />
+                                Ver
+                              </Link>
+                            </Button>
+                          </RoleGuard>
 
+                          {/* Botão Submeter - Apenas para estudantes em eventos ativos */}
+                          {isStudent &&
+                            (isActive ? (
+                              <Button
+                                size="sm"
+                                asChild
+                                className="btn-gradient-accent"
+                              >
+                                <Link href={ROUTES.SUBMIT_ARTICLE}>
+                                  <Upload className="mr-1 h-3 w-3" />
+                                  Submeter
+                                </Link>
+                              </Button>
+                            ) : (
+                              <Badge
+                                variant="secondary"
+                                className="bg-orange-100 text-orange-800 text-xs"
+                              >
+                                Fora do prazo de submissão
+                              </Badge>
+                            ))}
+
+                          {/* Botão Gerenciar - Apenas para coordenadores */}
                           <RoleGuard allowedRoles={[USER_ROLES.COORDINATOR]}>
                             <Button variant="outline" size="sm" asChild>
                               <Link href={`/eventos/${event.id}/editar`}>

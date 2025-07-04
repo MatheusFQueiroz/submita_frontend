@@ -49,7 +49,7 @@ const navigationItems: NavigationItem[] = [
     title: "Eventos",
     href: ROUTES.EVENTS,
     icon: Calendar,
-    roles: [USER_ROLES.COORDINATOR],
+    roles: [USER_ROLES.COORDINATOR, USER_ROLES.STUDENT],
   },
   {
     title: "Artigos",

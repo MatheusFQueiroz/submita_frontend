@@ -17,6 +17,7 @@ const roleRoutes = {
     "/submeter-artigo",
     "/ressalvas",
     "/perfil",
+    "/eventos",
   ],
   EVALUATOR: [
     "/dashboard",

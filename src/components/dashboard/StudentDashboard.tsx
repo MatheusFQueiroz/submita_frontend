@@ -34,7 +34,7 @@ export function StudentDashboard() {
   });
 
   const { data: recentArticles, loading: articlesLoading } = useApi<Article[]>(
-    () => api.get("/articles?limit=5"),
+    () => api.get("/articles"),
     { immediate: true }
   );
 

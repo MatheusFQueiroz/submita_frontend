@@ -54,7 +54,7 @@ export default function ArticlesPage() {
       if (debouncedSearch) params.append("search", debouncedSearch);
       if (statusFilter !== "all") params.append("status", statusFilter);
 
-      return api.get(`/articles?${params.toString()}`);
+      return api.get(`dashboard/student/articles`);
     },
     {
       immediate: true,
@@ -64,9 +64,7 @@ export default function ArticlesPage() {
   const isStudent = user?.role === USER_ROLES.STUDENT;
   const isEvaluator = user?.role === USER_ROLES.EVALUATOR;
 
-  const breadcrumbs = [
-    { label: "Artigos" },
-  ];
+  const breadcrumbs = [{ label: "Artigos" }];
 
   const articleColumns = [
     {
@@ -88,16 +86,6 @@ export default function ArticlesPage() {
         <span className="text-sm">
           {article.event?.name || "Evento não encontrado"}
         </span>
-      ),
-    },
-    {
-      key: "user",
-      title: "Autor",
-      render: (_: any, article: Article) => (
-        <div className="text-sm">
-          <p className="font-medium">{article.user?.name}</p>
-          <p className="text-gray-500">{article.user?.email}</p>
-        </div>
       ),
     },
     {
@@ -157,7 +145,7 @@ export default function ArticlesPage() {
         breadcrumbs={breadcrumbs}
         actions={
           <RoleGuard allowedRoles={[USER_ROLES.STUDENT]}>
-            <Button asChild>
+            <Button asChild className="btn-gradient-accent">
               <Link href={ROUTES.SUBMIT_ARTICLE}>
                 <Plus className="mr-2 h-4 w-4" />
                 Submeter Artigo
@@ -225,7 +213,7 @@ export default function ArticlesPage() {
                     : "Nenhum artigo encontrado"
                 }
                 emptyIcon={FileText}
-                onRowClick={(article) =>
+                onRowClick={(article: any) =>
                   (window.location.href = ROUTES.ARTICLE_DETAILS(article.id))
                 }
               />
