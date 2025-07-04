@@ -170,285 +170,467 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
           </div>
         }
       >
-        <div className="space-y-6">
-          <Tabs defaultValue="details" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="details">
-                <FileText className="mr-2 h-4 w-4" />
-                Detalhes
-              </TabsTrigger>
-              <TabsTrigger value="document">
-                <Eye className="mr-2 h-4 w-4" />
-                Documento
-              </TabsTrigger>
-              <TabsTrigger value="evaluations">
-                <Star className="mr-2 h-4 w-4" />
-                Avaliações
-              </TabsTrigger>
-              <TabsTrigger value="history">
-                <Clock className="mr-2 h-4 w-4" />
-                Histórico
-              </TabsTrigger>
-            </TabsList>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Coluna do PDF - 2/3 da largura */}
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>PDF</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {article.article.versions![0].pdfPath ? (
+                <PDFViewer
+                  fileUrl={`/api/files/file/submita-pdfs?fileName=${article.article.versions![0].pdfPath}`}
+                  fileName={`${article.article.versions![0].pdfPath}.pdf`}
+                  className="min-h-[800px]"
+                />
+              ) : (
+                <div className="text-center py-12 text-gray-500">
+                  <FileText className="mx-auto h-12 w-12 mb-4" />
+                  <p>Nenhum documento disponível</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-            {/* Aba Detalhes */}
-            <TabsContent value="details" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-2xl">
-                        {article.article.title}
-                      </CardTitle>
-                      <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
-                        <span className="flex items-center">
-                          <User className="mr-1 h-4 w-4" />
-                          {article.article.user?.name}
-                        </span>
-                        <span className="flex items-center">
-                          <Calendar className="mr-1 h-4 w-4" />
-                          {formatDate(article.article.createdAt)}
-                        </span>
-                        <Badge variant="outline">
-                          Versão {article.article.currentVersion}
-                        </Badge>
-                      </div>
+          {/* Coluna da direita - 1/3 da largura */}
+          <div className="space-y-4">
+            <Tabs defaultValue="overview" className="w-full">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="overview" className="text-xs">
+                  <FileText className="mr-1 h-3 w-3" />
+                  Visão Geral
+                </TabsTrigger>
+                <TabsTrigger value="checklist" className="text-xs">
+                  <Users className="mr-1 h-3 w-3" />
+                  Checklist
+                </TabsTrigger>
+                <TabsTrigger value="evaluations" className="text-xs">
+                  <Star className="mr-1 h-3 w-3" />
+                  Avaliações
+                </TabsTrigger>
+                <TabsTrigger value="history" className="text-xs">
+                  <Clock className="mr-1 h-3 w-3" />
+                  Histórico
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Tab Visão Geral */}
+              <TabsContent value="overview" className="space-y-4 mt-4">
+                {/* Informações Gerais */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">Informações Gerais</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Status:</span>
+                      <StatusBadge status={article.article.status} />
                     </div>
-                    <StatusBadge status={article.article.status} />
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Resumo */}
-                  <div>
-                    <h3 className="text-lg font-medium mb-3">Resumo</h3>
-                    <p className="text-gray-700 leading-relaxed">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Versão:</span>
+                      <Badge variant="outline">{article.article.currentVersion}</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Autor:</span>
+                      <span className="text-sm text-gray-600">{article.article.user?.name}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Data:</span>
+                      <span className="text-sm text-gray-600">{formatDate(article.article.createdAt)}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Resumo */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">Resumo</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-700 leading-relaxed">
                       {article.article.summary}
                     </p>
-                  </div>
+                  </CardContent>
+                </Card>
 
-                  <Separator />
-
-                  {/* Palavras-chave */}
-                  <div>
-                    <h3 className="text-lg font-medium mb-3">Palavras-chave</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {/* {article.article.keywords.map((keyword, index) => ( */}
-                        <Badge
-                        //  key={index}
-                         variant="secondary">
-                          Não vem nada na API, tem que arrumar isso aqui
-                        </Badge>
-                      {/* // ))} */}
+                {/* Evento */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">Evento</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-sm">
+                        {article.article.event?.name}
+                      </h4>
+                      <p className="text-xs text-gray-600">
+                        {article.article.event?.description}
+                      </p>
+                      <div className="flex items-center space-x-2 text-xs text-gray-500">
+                        <span>
+                          Submissões: {formatDate(article.article.event?.submissionStartDate)} - {formatDate(article.article.event?.submissionEndDate)}
+                        </span>
+                      </div>
+                      <Badge variant="outline" className="text-xs">
+                        {article.article.event?.evaluationType === "DIRECT"
+                          ? "Avaliação Direta"
+                          : article.article.event?.evaluationType === "PAIR"
+                          ? "Avaliação por Pares"
+                          : "Painel"}
+                      </Badge>
                     </div>
-                  </div>
+                  </CardContent>
+                </Card>
 
-                  {/* Autores Relacionados */}
-                  {article.article.relatedAuthors &&
-                    article.article.relatedAuthors.length > 0 && (
-                      <>
-                        <Separator />
-                        <div>
-                          <h3 className="text-lg font-medium mb-3">
-                            Co-autores
-                          </h3>
-                          <div className="flex flex-wrap gap-2">
-                            {article.article.relatedAuthors.map((author, index) => (
-                              <Badge key={index} variant="outline">
-                                {author}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      </>
+                {/* Ações Rápidas */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">Ações Rápidas</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    {article.article.pdfPath && (
+                      <Button variant="outline" onClick={handleDownloadPDF} className="w-full" size="sm">
+                        <Download className="mr-2 h-4 w-4" />
+                        Download PDF
+                      </Button>
+                    )}
+                    
+                    {canEdit && (
+                      <Button variant="outline" asChild className="w-full" size="sm">
+                        <Link href={ROUTES.ARTICLE_DETAILS(article.article.id)}>
+                          <Edit className="mr-2 h-4 w-4" />
+                          Editar Artigo
+                        </Link>
+                      </Button>
                     )}
 
-                  <Separator />
+                    {canEvaluate && (
+                      <Button asChild className="w-full" size="sm">
+                        <Link href={ROUTES.EVALUATE_ARTICLE(article.article.id)}>
+                          <Star className="mr-2 h-4 w-4" />
+                          Avaliar Artigo
+                        </Link>
+                      </Button>
+                    )}
 
-                  {/* Informações do Evento */}
-                  <div>
-                    <h3 className="text-lg font-medium mb-3">Evento</h3>
-                    <Card>
-                      <CardContent className="pt-4">
-                        <div className="flex items-start space-x-4">
-                          {article.article.event?.banner && (
-                            <img
-                              src={article.article.event.imageUrl}
-                              alt={article.article.event.name}
-                              className="w-16 h-16 rounded-lg object-cover"
-                            />
-                          )}
-                          <div className="flex-1">
-                            <h4 className="font-medium">
-                              {article.article.event?.name}
-                            </h4>
-                            <p className="text-sm text-gray-600 mt-1">
-                              {article.article.event?.description}
-                            </p>
-                            <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                              <span>
-                                Submissões:{" "}
-                                {formatDate(article.article.event?.submissionStartDate)}{" "}
-                                - {formatDate(article.article.event?.submissionEndDate)}
-                              </span>
-                              <Badge variant="outline" className="text-xs">
-                                {article.article.event?.evaluationType === "DIRECT"
-                                  ? "Avaliação Direta"
-                                  : article.article.event?.evaluationType === "PAIR"
-                                  ? "Avaliação por Pares"
-                                  : "Painel"}
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                    {canWithdraw && (
+                      <Button
+                        variant="destructive"
+                        onClick={() => setWithdrawDialogOpen(true)}
+                        className="w-full"
+                        size="sm"
+                      >
+                        <AlertTriangle className="mr-2 h-4 w-4" />
+                        Retirar Artigo
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-            {/* Aba Documento */}
-            <TabsContent value="document">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Documento PDF</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {article.article.versions![0].pdfPath ? (
-                    <PDFViewer
-                      fileUrl={`/api/files/file/submita-pdfs?fileName=${article.article.versions![0].pdfPath}`}
-                      fileName={`${article.article.versions![0].pdfPath}.pdf`}
-                      className="min-h-96"
-                    />
-                  ) : (
-                    <div className="text-center py-12 text-gray-500">
-                      <FileText className="mx-auto h-12 w-12 mb-4" />
-                      <p>Nenhum documento disponível</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Aba Avaliações */}
-            <TabsContent value="evaluations">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Star className="mr-2 h-5 w-5" />
-                    Avaliações
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {evaluationsLoading ? (
-                    <LoadingSpinner text="Carregando avaliações..." />
-                  ) : evaluations && evaluations.length > 0 ? (
+              {/* Tab Checklist */}
+              <TabsContent value="checklist" className="space-y-4 mt-4">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">Checklist de Revisão</CardTitle>
+                  </CardHeader>
+                  <CardContent>
                     <div className="space-y-4">
-                      {evaluations.map((evaluation, index) => (
-                        <Card
-                          key={evaluation.id}
-                          className="border-l-4 border-l-primary"
-                        >
-                          <CardContent className="pt-4">
-                            <div className="flex items-start justify-between mb-3">
-                              <div>
-                                <p className="font-medium">
-                                  {evaluation.evaluator?.name ||
-                                    "Avaliador Anônimo"}
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                  {formatUserRole(
-                                    evaluation.evaluator?.role || "EVALUATOR"
-                                  )}
-                                </p>
-                              </div>
-                              <div className="text-right">
-                                {evaluation.grade && (
-                                  <div className="text-lg font-bold text-primary">
-                                    {evaluation.grade.toFixed(1)}/10
-                                  </div>
-                                )}
-                                <p className="text-xs text-gray-500">
-                                  {evaluation.evaluationDate
-                                    ? formatDate(evaluation.evaluationDate)
-                                    : "Em andamento"}
-                                </p>
-                              </div>
-                            </div>
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs">✓</span>
+                          </div>
+                          <span className="text-sm font-medium">Formatação ABNT</span>
+                        </div>
+                        <span className="text-xs text-green-600">Completo</span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs">✓</span>
+                          </div>
+                          <span className="text-sm font-medium">Resumo dentro do limite</span>
+                        </div>
+                        <span className="text-xs text-green-600">Completo</span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs">!</span>
+                          </div>
+                          <span className="text-sm font-medium">Palavras-chave</span>
+                        </div>
+                        <span className="text-xs text-orange-600">Atenção</span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-5 h-5 bg-gray-300 rounded-full flex items-center justify-center">
+                            <span className="text-gray-500 text-xs">○</span>
+                          </div>
+                          <span className="text-sm font-medium">Verificação plágio</span>
+                        </div>
+                        <span className="text-xs text-gray-500">Pendente</span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-5 h-5 bg-gray-300 rounded-full flex items-center justify-center">
+                            <span className="text-gray-500 text-xs">○</span>
+                          </div>
+                          <span className="text-sm font-medium">Aprovação final</span>
+                        </div>
+                        <span className="text-xs text-gray-500">Pendente</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
 
+                {/* Comentários do Checklist */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">Observações</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                        <p className="text-sm text-yellow-800">
+                          <strong>Palavras-chave:</strong> Revisar se as palavras-chave estão adequadas ao tema do artigo.
+                        </p>
+                      </div>
+                      <textarea
+                        className="w-full px-3 py-2 border rounded-md text-sm"
+                        rows={3}
+                        placeholder="Adicionar observação sobre o checklist..."
+                      />
+                      <Button size="sm" className="w-full">
+                        Adicionar Observação
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Tab Avaliações */}
+              <TabsContent value="evaluations" className="space-y-4 mt-4">
+                {/* Componente de Avaliação para Avaliadores */}
+                {canEvaluate && (
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg">Minha Avaliação</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">
+                          Nota (0-10):
+                        </label>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="number"
+                            min="0"
+                            max="10"
+                            step="0.1"
+                            className="w-20 px-3 py-2 border rounded-md text-center"
+                            placeholder="0.0"
+                          />
+                          <span className="text-sm text-gray-500">/ 10</span>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">
+                          Comentários:
+                        </label>
+                        <textarea
+                          className="w-full px-3 py-2 border rounded-md text-sm"
+                          rows={4}
+                          placeholder="Adicione seus comentários detalhados sobre o artigo..."
+                        />
+                      </div>
+                      <Button className="w-full" size="sm">
+                        Salvar Avaliação
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Avaliações Existentes */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">Avaliações Recebidas</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {evaluationsLoading ? (
+                      <div className="text-center py-4">
+                        <LoadingSpinner text="Carregando avaliações..." />
+                      </div>
+                    ) : evaluations && evaluations.length > 0 ? (
+                      <div className="space-y-4">
+                        {evaluations.map((evaluation, index) => (
+                          <div key={evaluation.id} className="border rounded-lg p-4 bg-gray-50">
+                            <div className="flex items-center justify-between mb-3">
+                              <div>
+                                <p className="font-medium text-sm">
+                                  {evaluation.evaluator?.name || "Avaliador Anônimo"}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  {formatUserRole(evaluation.evaluator?.role || "EVALUATOR")}
+                                </p>
+                              </div>
+                              {evaluation.grade && (
+                                <div className="text-right">
+                                  <div className="text-xl font-bold text-primary">
+                                    {evaluation.grade.toFixed(1)}
+                                  </div>
+                                  <div className="text-xs text-gray-500">/ 10</div>
+                                </div>
+                              )}
+                            </div>
+                            
                             {evaluation.evaluationDescription && (
-                              <div className="mt-3">
-                                <h4 className="text-sm font-medium mb-2">
-                                  Comentários:
-                                </h4>
-                                <p className="text-sm text-gray-700 bg-gray-50  p-3 rounded-md">
+                              <div className="mb-3">
+                                <p className="text-sm text-gray-700 leading-relaxed">
                                   {evaluation.evaluationDescription}
                                 </p>
                               </div>
                             )}
-
-                            {evaluation.status === "PENDING" && (
-                              <Badge variant="outline" className="mt-3">
-                                Avaliação Pendente
-                              </Badge>
-                            )}
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 text-gray-500">
-                      <Star className="mx-auto h-12 w-12 mb-4" />
-                      <p>Nenhuma avaliação disponível ainda</p>
-                      {article.article.status === "SUBMITTED" && (
-                        <p className="text-sm mt-2">
-                          O artigo está aguardando atribuição de avaliadores
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Aba Histórico */}
-            <TabsContent value="history">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Clock className="mr-2 h-5 w-5" />
-                    Histórico de Versões
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-4 p-4 border rounded-lg bg-blue-50">
-                      <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium">
-                        {article.article.currentVersion}
+                            
+                            <div className="flex items-center justify-between text-xs text-gray-500">
+                              <span>
+                                {evaluation.evaluationDate
+                                  ? formatDate(evaluation.evaluationDate)
+                                  : "Em andamento"}
+                              </span>
+                              {evaluation.status === "PENDING" && (
+                                <Badge variant="outline" className="text-xs">
+                                  Pendente
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                      <div className="flex-1">
-                        <p className="font-medium">Versão Atual</p>
-                        <p className="text-sm text-gray-600">
-                          Submetido em {formatDate(article.article.createdAt)}
-                        </p>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <Star className="mx-auto h-12 w-12 mb-3 text-gray-300" />
+                        <p className="text-sm">Nenhuma avaliação recebida ainda</p>
+                        {article.article.status === "SUBMITTED" && (
+                          <p className="text-xs mt-2">
+                            O artigo está aguardando atribuição de avaliadores
+                          </p>
+                        )}
                       </div>
-                      <StatusBadge status={article.article.status} />
-                    </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-                    {/* Versões anteriores seriam listadas aqui */}
-                    <div className="text-center py-8 text-gray-500">
-                      <p className="text-sm">
-                        Histórico completo de versões em desenvolvimento
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+              {/* Tab Histórico */}
+              <TabsContent value="history" className="space-y-4 mt-4">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">Histórico de Versões</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {/* Versão Atual */}
+                      <div className="border rounded-lg p-4 bg-blue-50 border-blue-200">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium">
+                            {article.article.currentVersion}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2">
+                              <p className="font-medium text-sm">Versão {article.article.currentVersion}</p>
+                              <Badge variant="secondary" className="text-xs">Atual</Badge>
+                            </div>
+                            <p className="text-xs text-gray-600">
+                              Submetido em {formatDate(article.article.createdAt)}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <StatusBadge status={article.article.status} />
+                          {article.article.pdfPath && (
+                            <Button variant="outline" size="sm" onClick={handleDownloadPDF}>
+                              <Download className="mr-1 h-3 w-3" />
+                              Download
+                            </Button>
+                          )}
+                        </div>
+                      </div>
 
-          {/* Dialog de Confirmação de Retirada */}
-          <ConfirmDialog
+                      {/* Versões Anteriores (exemplo) */}
+                      <div className="border rounded-lg p-4 bg-gray-50">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div className="w-8 h-8 bg-gray-400 text-white rounded-full flex items-center justify-center text-sm font-medium">
+                            1
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">Versão 1.0</p>
+                            <p className="text-xs text-gray-600">
+                              Submetido em {formatDate(new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000))}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <Badge variant="outline" className="text-xs">Versão Anterior</Badge>
+                          <Button variant="outline" size="sm" disabled>
+                            <Download className="mr-1 h-3 w-3" />
+                            Download
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Timeline de Eventos */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">Timeline de Eventos</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">Artigo Submetido</p>
+                          <p className="text-xs text-gray-500">
+                            {formatDate(article.article.createdAt)}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">Em Revisão</p>
+                          <p className="text-xs text-gray-500">
+                            {formatDate(new Date(new Date().getTime() - 5 * 24 * 60 * 60 * 1000))}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-gray-300 rounded-full mt-2"></div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-500">Aguardando Resultado</p>
+                          <p className="text-xs text-gray-400">Pendente</p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </div>
+
+        {/* Dialog de Confirmação de Retirada */}
+        <ConfirmDialog
             open={withdrawDialogOpen}
             onOpenChange={setWithdrawDialogOpen}
             title="Retirar Artigo"
@@ -458,7 +640,6 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
             variant="destructive"
             onConfirm={handleWithdrawArticle}
           />
-        </div>
       </PageLayout>
     </AuthGuard>
   );
