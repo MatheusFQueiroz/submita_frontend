@@ -113,7 +113,6 @@ export function ChecklistForm({ onSubmit, initialData }: ChecklistFormProps) {
 
       toast.success("Checklist criado! Agora adicione as perguntas.");
     } catch (error: any) {
-      console.error("Erro ao criar checklist:", error);
       toast.error(error.message || "Erro ao criar checklist");
     } finally {
       setIsSubmitting(false);
@@ -145,7 +144,6 @@ export function ChecklistForm({ onSubmit, initialData }: ChecklistFormProps) {
       toast.success("Checklist criado com sucesso!");
       onSubmit?.(checklistId);
     } catch (error: any) {
-      console.error("Erro ao adicionar perguntas:", error);
       toast.error(error.message || "Erro ao adicionar perguntas");
     } finally {
       setIsSubmitting(false);

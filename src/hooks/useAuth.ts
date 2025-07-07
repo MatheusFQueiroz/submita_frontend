@@ -47,7 +47,6 @@ export function useAuth(): UseAuthReturn {
         const profile = await api.get<User>("/auth/profile");
         setUser(profile);
       } catch (error) {
-        console.error("Erro ao carregar usuário:", error);
         Cookies.remove("submita_token");
       } finally {
         setIsLoading(false);
@@ -77,7 +76,6 @@ export function useAuth(): UseAuthReturn {
         const redirectPath = getRedirectPath(userWithFirstLogin);
         router.push(redirectPath);
       } catch (error: any) {
-        console.error("Erro no login:", error);
         toast.error(error.message || "Erro ao fazer login");
         throw error;
       } finally {
@@ -102,7 +100,6 @@ export function useAuth(): UseAuthReturn {
         toast.success("Cadastro realizado com sucesso!");
         router.push(ROUTES.DASHBOARD);
       } catch (error: any) {
-        console.error("Erro no registro:", error);
         toast.error(error.message || "Erro ao fazer cadastro");
         throw error;
       } finally {
@@ -136,7 +133,6 @@ export function useAuth(): UseAuthReturn {
         // Redireciona para dashboard após mudança de senha
         router.push(ROUTES.DASHBOARD);
       } catch (error: any) {
-        console.error("Erro ao alterar senha:", error);
         toast.error(error.message || "Erro ao alterar senha");
         throw error;
       } finally {
@@ -151,7 +147,7 @@ export function useAuth(): UseAuthReturn {
       const profile = await api.get<User>("/auth/profile");
       setUser(profile);
     } catch (error) {
-      console.error("Erro ao atualizar perfil:", error);
+      null;
     }
   }, []);
 

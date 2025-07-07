@@ -37,6 +37,27 @@ export const changePasswordSchema = z
     path: ["confirmPassword"],
   });
 
+export const eventFormSchema = z.object({
+  name: z
+    .string()
+    .min(5, "Título deve ter pelo menos 5 caracteres")
+    .max(200, "Título deve ter no máximo 200 caracteres"),
+  description: z
+    .string()
+    .min(10, "Descrição deve ter pelo menos 10 caracteres")
+    .max(1000, "Descrição deve ter no máximo 1000 caracteres"),
+  eventStartDate: z.string().min(1, "Data de início do evento é obrigatória"),
+  eventEndDate: z.string().min(1, "Data de fim do evento é obrigatória"),
+  submissionStartDate: z
+    .string()
+    .min(1, "Data de início das submissões é obrigatória"),
+  submissionEndDate: z
+    .string()
+    .min(1, "Data de fim das submissões é obrigatória"),
+  evaluationType: z.enum(["DIRECT", "PAIR", "PANEL"]),
+  banner: z.string().optional(),
+});
+
 // Schema de evento
 export const eventSchema = z.object({
   name: z
@@ -47,19 +68,20 @@ export const eventSchema = z.object({
     .string()
     .min(10, "Descrição deve ter pelo menos 10 caracteres")
     .max(1000, "Descrição deve ter no máximo 1000 caracteres"),
-  eventStartDate: z.date({
-    required_error: "Data de início do evento é obrigatória",
+  eventStartDate: z.union([z.string(), z.date()]).transform((val) => {
+    return typeof val === "string" ? new Date(val) : val;
   }),
-  eventEndDate: z.date({
-    required_error: "Data de fim do evento é obrigatória",
+  eventEndDate: z.union([z.string(), z.date()]).transform((val) => {
+    return typeof val === "string" ? new Date(val) : val;
   }),
-  submissionStartDate: z.date({
-    required_error: "Data de início das submissões é obrigatória",
+  submissionStartDate: z.union([z.string(), z.date()]).transform((val) => {
+    return typeof val === "string" ? new Date(val) : val;
   }),
-  submissionEndDate: z.date({
-    required_error: "Data de fim das submissões é obrigatória",
+  submissionEndDate: z.union([z.string(), z.date()]).transform((val) => {
+    return typeof val === "string" ? new Date(val) : val;
   }),
-  evaluationType: z.enum(["DIRECT", "PEER", "PANEL"]),
+  evaluationType: z.enum(["DIRECT", "PAIR", "PANEL"]),
+  banner: z.string().optional(),
 });
 
 // Schema de artigo
@@ -176,6 +198,7 @@ export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
 export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
 export type EventFormData = z.infer<typeof eventSchema>;
+export type EventFormFields = z.infer<typeof eventFormSchema>;
 export type ArticleFormData = z.infer<typeof articleSchema>;
 export type EvaluationFormData = z.infer<typeof evaluationSchema>;
 export type CreateEvaluatorFormData = z.infer<typeof createEvaluatorSchema>;

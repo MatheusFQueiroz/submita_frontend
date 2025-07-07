@@ -67,12 +67,12 @@ export function useUsers() {
   }, [activeTab, evaluatorsParams]);
 
   // Log para debug
-  useEffect(() => {
-    console.log("Students data:", studentsData);
-    console.log("Evaluators data:", evaluatorsData);
-    console.log("Students loading:", studentsLoading);
-    console.log("Evaluators loading:", evaluatorsLoading);
-  }, [studentsData, evaluatorsData, studentsLoading, evaluatorsLoading]);
+  useEffect(() => {}, [
+    studentsData,
+    evaluatorsData,
+    studentsLoading,
+    evaluatorsLoading,
+  ]);
 
   const isLoading = studentsLoading || evaluatorsLoading;
   const currentData = activeTab === "students" ? studentsData : evaluatorsData;

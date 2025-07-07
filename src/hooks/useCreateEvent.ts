@@ -17,10 +17,8 @@ export function useCreateEvent() {
 
       // 1️⃣ PRIMEIRO: Upload da imagem (se fornecida)
       if (formData.image) {
-        console.log("📤 Fazendo upload da imagem...");
         const uploadResponse = await uploadImage(formData.image);
         bannerUrl = uploadResponse.fileId;
-        console.log("✅ Upload concluído. ID da imagem:", bannerUrl);
       }
 
       // 2️⃣ SEGUNDO: Criar evento com ID da imagem
@@ -35,14 +33,11 @@ export function useCreateEvent() {
         evaluationType: formData.evaluationType,
       };
 
-      console.log("📝 Criando evento com dados:", eventData);
       const event = await eventService.createEvent(eventData);
 
       toast.success("Evento criado com sucesso!");
-      console.log("✅ Evento criado:", event);
       return event;
     } catch (error: any) {
-      console.error("❌ Erro ao criar evento:", error);
       toast.error(error.message || "Erro ao criar evento");
       throw error;
     } finally {

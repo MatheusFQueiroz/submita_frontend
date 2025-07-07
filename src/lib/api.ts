@@ -78,8 +78,6 @@ class ApiClient {
     } else {
       Cookies.remove("submita_first_login");
     }
-
-    console.log("💾 Login data saved:", { hasToken: !!token, isFirstLogin });
   }
 
   setToken(token: string) {
@@ -91,7 +89,6 @@ class ApiClient {
     this.token = null;
     Cookies.remove("submita_token");
     Cookies.remove("submita_first_login");
-    console.log("🗑️ All auth cookies cleared");
   }
 
   isFirstLogin(): boolean {
@@ -101,7 +98,6 @@ class ApiClient {
   // ✅ NOVO: Marcar que não é mais primeiro login
   clearFirstLoginFlag() {
     Cookies.remove("submita_first_login");
-    console.log("✅ First login flag cleared");
   }
 
   // Métodos HTTP (sem mudanças)

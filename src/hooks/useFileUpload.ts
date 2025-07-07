@@ -69,7 +69,6 @@ export function useFileUpload(): UseFileUploadReturn {
         toast.success("Imagem enviada com sucesso!");
         return mappedResponse;
       } catch (error: any) {
-        console.error("Erro no upload da imagem:", error);
         toast.error(error.message || "Erro ao enviar imagem");
         throw error;
       } finally {
@@ -109,7 +108,6 @@ export function useFileUpload(): UseFileUploadReturn {
         toast.success("PDF enviado com sucesso!");
         return mappedResponse;
       } catch (error: any) {
-        console.error("Erro no upload do PDF:", error);
         toast.error(error.message || "Erro ao enviar PDF");
         throw error;
       } finally {
@@ -163,7 +161,6 @@ export function useArticleUpload() {
         fileId: response.fileId,
       };
     } catch (error) {
-      console.error("Erro no upload do artigo:", error);
       throw error;
     }
   };

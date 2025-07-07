@@ -236,7 +236,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                             ? "Avaliação Direta"
                             : event.evaluationType === "PAIR"
                             ? "Avaliação por Pares"
-                            : "Painel de Avaliação"}
+                            : "Por Comitê"}
                         </p>
                       </div>
                     </div>

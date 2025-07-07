@@ -28,7 +28,7 @@ export function formatDate(
 }
 
 export function formatDateTime(date: Date | string | undefined | null): string {
-  return formatDate(date, "dd/MM/yyyy 'às' HH:mm");
+  return formatDate(date, "dd/MM/yyyy");
 }
 
 export function formatFileSize(bytes: number): string {

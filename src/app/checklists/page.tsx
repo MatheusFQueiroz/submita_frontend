@@ -103,7 +103,6 @@ export default function ChecklistsPage() {
       setSelectedChecklist(null);
       await refetchChecklists(); // Recarrega a lista
     } catch (error: any) {
-      console.error("Erro ao desativar checklist:", error);
       toast.error(error.message || "Erro ao desativar checklist");
     }
   };

@@ -27,8 +27,6 @@ export default function SubmitArticlePage() {
         setIsLoadingEvents(true);
         const eventsData = await eventService.getEvents();
 
-        console.log("Eventos carregados:", eventsData);
-
         // Filtrar apenas eventos ativos e dentro do prazo de submissão
         const availableEvents = eventsData.filter((event) => {
           const now = new Date();
@@ -86,7 +84,6 @@ export default function SubmitArticlePage() {
       // Redirecionar para página de detalhes do artigo ou dashboard
       router.push(`/artigos/${article.id}`);
     } catch (error: any) {
-      console.error("Erro na submissão:", error);
       toast.error(error.message || "Erro ao submeter artigo");
     } finally {
       setIsSubmitting(false);

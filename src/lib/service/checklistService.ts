@@ -129,7 +129,7 @@ export const checklistService = {
 
       return { checklist, questions };
     } catch (error) {
-      console.error("Erro ao criar checklist completo:", error);
+      null;
       throw error;
     }
   },
@@ -229,7 +229,6 @@ export const checklistService = {
         averageQuestionsPerChecklist,
       };
     } catch (error) {
-      console.error("Erro ao buscar estatísticas:", error);
       throw error;
     }
   },
@@ -247,7 +246,6 @@ export const checklistService = {
         )
       );
     } catch (error) {
-      console.error("Erro ao buscar checklists por tipo:", error);
       throw error;
     }
   },

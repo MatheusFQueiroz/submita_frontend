@@ -25,6 +25,13 @@ export default function EditEventPage() {
 
   const { updateEvent, isUpdating } = useUpdateEvent();
 
+  const formatDateForInput = (dateString: string | Date) => {
+    // Se for Date, converte para string ISO primeiro
+    const isoString =
+      typeof dateString === "string" ? dateString : dateString.toISOString();
+    return isoString.substring(0, 16);
+  };
+
   // Buscar dados do evento
   useEffect(() => {
     const fetchEvent = async () => {
@@ -35,7 +42,6 @@ export default function EditEventPage() {
         const event = await eventService.getEventById(eventId);
         setEvent(event);
       } catch (error: any) {
-        console.error("Erro ao buscar evento:", error);
         setError(error.message || "Erro ao carregar evento");
         toast.error("Erro ao carregar evento");
       } finally {
@@ -54,7 +60,7 @@ export default function EditEventPage() {
       router.push(ROUTES.EVENT_DETAILS(eventId));
     } catch (error) {
       // O hook já trata o erro e mostra o toast
-      console.error("Erro na submissão:", error);
+      null;
     }
   };
 
@@ -114,17 +120,18 @@ export default function EditEventPage() {
         <div className="max-w-4xl mx-auto">
           <EventForm
             onSubmit={handleSubmit}
-            defaultValues={{
+            initialData={{
               name: event.name,
               description: event.description,
-              eventStartDate: new Date(event.eventStartDate),
-              eventEndDate: new Date(event.eventEndDate),
-              submissionStartDate: new Date(event.submissionStartDate),
-              submissionEndDate: new Date(event.submissionEndDate),
+              eventStartDate: formatDateForInput(event.eventStartDate),
+              eventEndDate: formatDateForInput(event.eventEndDate),
+              submissionStartDate: formatDateForInput(
+                event.submissionStartDate
+              ),
+              submissionEndDate: formatDateForInput(event.submissionEndDate),
               evaluationType: event.evaluationType,
+              banner: event.banner || "",
             }}
-            isEdit={true}
-            isLoading={isUpdating}
           />
         </div>
       </PageLayout>

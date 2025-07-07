@@ -24,10 +24,9 @@ export default function EvaluateArticlePage({
 }: EvaluateArticlePageProps) {
   const router = useRouter();
 
-  const { data: article, loading: articleLoading } = useApi<{article: Article}>(
-    () => api.get(`/articles/${params.id}`),
-    { immediate: true }
-  );
+  const { data: article, loading: articleLoading } = useApi<{
+    article: Article;
+  }>(() => api.get(`/articles/${params.id}`), { immediate: true });
 
   const {
     data: questions,
@@ -42,10 +41,9 @@ export default function EvaluateArticlePage({
   );
 
   const { data: existingEvaluation, loading: evaluationLoading } =
-    useApi<Evaluation>(
-      () => api.get(`/articles/${params.id}`),
-      { immediate: true }
-    );
+    useApi<Evaluation>(() => api.get(`/articles/${params.id}`), {
+      immediate: true,
+    });
 
   // Carrega perguntas quando artigo é carregado
   React.useEffect(() => {
@@ -70,7 +68,6 @@ export default function EvaluateArticlePage({
       toast.success("Avaliação finalizada com sucesso!");
       router.push(ROUTES.ARTICLES);
     } catch (error: any) {
-      console.error("Erro ao finalizar avaliação:", error);
       throw new Error(error.message || "Erro ao finalizar avaliação");
     }
   };
@@ -88,7 +85,6 @@ export default function EvaluateArticlePage({
 
       toast.success("Rascunho salvo com sucesso!");
     } catch (error: any) {
-      console.error("Erro ao salvar rascunho:", error);
       toast.error(error.message || "Erro ao salvar rascunho");
     }
   };
@@ -143,7 +139,10 @@ export default function EvaluateArticlePage({
 
   return (
     <AuthGuard requiredRoles={[USER_ROLES.EVALUATOR]}>
-      <PageLayout title={`Avaliar: ${article.article.title}`} breadcrumbs={breadcrumbs}>
+      <PageLayout
+        title={`Avaliar: ${article.article.title}`}
+        breadcrumbs={breadcrumbs}
+      >
         <div className="max-w-4xl mx-auto">
           <EvaluationForm
             article={article.article}

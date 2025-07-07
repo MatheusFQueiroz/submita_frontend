@@ -31,7 +31,7 @@ export default function ProfilePage() {
       await refreshProfile();
       setIsEditing(false);
     } catch (error) {
-      console.error("Erro ao atualizar perfil:", error);
+      null;
     }
   };
 

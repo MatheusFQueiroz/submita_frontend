@@ -101,7 +101,7 @@ export function useForm<T extends Record<string, any>>({
         setIsSubmitting(true);
         await onSubmit(values);
       } catch (error) {
-        console.error("Erro no submit:", error);
+        null;
       } finally {
         setIsSubmitting(false);
       }

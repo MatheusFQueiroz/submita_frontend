@@ -84,7 +84,6 @@ export async function middleware(request: NextRequest) {
       user.isFirstLogin &&
       !passwordRoutes.some((route) => pathname.startsWith(route))
     ) {
-      console.log("Redirecionando para redefinir senha");
       return NextResponse.redirect(new URL("/redefinir-senha", request.url));
     }
 
@@ -105,14 +104,11 @@ export async function middleware(request: NextRequest) {
 
     if (!hasAccess) {
       // Redireciona para dashboard se não tem acesso à rota
-      console.log("Redirecionando para dashboard por falta de permissão");
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
 
     return NextResponse.next();
   } catch (error) {
-    console.error("Erro na verificação do token:", error);
-
     // Token inválido, redireciona para login
     const response = NextResponse.redirect(new URL("/login", request.url));
     response.cookies.delete("submita_token");

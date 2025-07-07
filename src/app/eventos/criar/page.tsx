@@ -14,17 +14,16 @@ import toast from "react-hot-toast";
 export default function CreateEventPage() {
   const router = useRouter();
 
-  const handleSubmit = async (data: EventFormData & { imageId?: string }) => {
+  const handleSubmit = async (data: EventFormData & { banner?: string }) => {
     try {
       await api.post("/events", {
         ...data,
-        banner: data.imageId, // A API espera imageUrl
+        banner: data.banner, // A API espera imageUrl
       });
 
       toast.success("Evento criado com sucesso!");
       router.push(ROUTES.EVENTS);
     } catch (error: any) {
-      console.error("Erro ao criar evento:", error);
       throw new Error(error.message || "Erro ao criar evento");
     }
   };

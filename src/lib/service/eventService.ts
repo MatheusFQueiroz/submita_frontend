@@ -79,7 +79,6 @@ export const eventService = {
 
       return availableEvents;
     } catch (error) {
-      console.error("Erro ao buscar eventos no período de submissão:", error);
       throw error;
     }
   },

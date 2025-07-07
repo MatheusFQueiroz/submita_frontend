@@ -42,9 +42,6 @@ export const userService = {
       `/students/users?${searchParams.toString()}`
     );
 
-    // Debug: log da resposta
-    console.log("Students response:", response);
-
     // Verificar se a resposta tem a estrutura esperada
     if (response && typeof response === "object") {
       // Se a resposta já tem data e pagination no primeiro nível
@@ -100,9 +97,6 @@ export const userService = {
     const response = await api.get(
       `/evaluators/users?${searchParams.toString()}`
     );
-
-    // Debug: log da resposta
-    console.log("Evaluators response:", response);
 
     // Verificar se a resposta tem a estrutura esperada
     if (response && typeof response === "object") {

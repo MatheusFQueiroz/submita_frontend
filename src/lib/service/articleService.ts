@@ -62,7 +62,6 @@ export const articleService = {
 
       return article;
     } catch (error: any) {
-      console.error("Erro ao submeter artigo:", error);
       throw new Error(error?.message || "Erro ao submeter artigo");
     }
   },
@@ -111,7 +110,6 @@ export const articleService = {
 
       return api.put<Article>(`/articles/${id}/new-version`, updateData);
     } catch (error: any) {
-      console.error("Erro ao atualizar versão do artigo:", error);
       throw new Error(error?.message || "Erro ao atualizar artigo");
     }
   },

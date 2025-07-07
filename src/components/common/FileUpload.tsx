@@ -10,7 +10,7 @@ import { cn, formatFileSize } from "@/lib/utils";
 interface FileUploadProps {
   accept: string;
   maxSize: number;
-  onFileSelect: (file: File) => void;
+  onUpload: (file: File) => void;
   onFileRemove?: () => void;
   multiple?: boolean;
   disabled?: boolean;
@@ -26,7 +26,7 @@ interface FileUploadProps {
 export function FileUpload({
   accept,
   maxSize,
-  onFileSelect,
+  onUpload,
   onFileRemove,
   multiple = false,
   disabled = false,
@@ -40,10 +40,10 @@ export function FileUpload({
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
-        onFileSelect(acceptedFiles[0]);
+        onUpload(acceptedFiles[0]);
       }
     },
-    [onFileSelect]
+    [onUpload]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

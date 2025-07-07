@@ -48,7 +48,6 @@ export default function EventsPage() {
     const url = `/events${
       debouncedSearch ? `?search=${encodeURIComponent(debouncedSearch)}` : ""
     }`;
-    console.log("🔍 Fazendo requisição para:", url);
     return api.get(url);
   }, [debouncedSearch]);
 
@@ -70,10 +69,6 @@ export default function EventsPage() {
         totalPages: apiResponse.totalPages,
       }
     : null;
-
-  console.log("🔍 API Response:", apiResponse);
-  console.log("🔍 Events extraídos:", events);
-  console.log("🔍 Quantidade de eventos:", events.length);
 
   const getEventStatus = (event: Event) => {
     const now = new Date();

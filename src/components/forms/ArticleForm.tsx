@@ -43,27 +43,6 @@ export function ArticleForm({
   const { uploadPdf, uploadedFile, uploadProgress, isUploading } =
     useFileUpload();
 
-  // ✅ DEBUG: Log dos eventos recebidos
-  useEffect(() => {
-    console.log("🔍 ArticleForm - Eventos recebidos:", events);
-    console.log("🔍 ArticleForm - Quantidade de eventos:", events.length);
-
-    if (events.length > 0) {
-      events.forEach((event, index) => {
-        console.log(`🔍 Evento ${index + 1}:`, {
-          id: event.id,
-          name: event.name,
-          isActive: event.isActive,
-          submissionStart: event.submissionStartDate,
-          submissionEnd: event.submissionEndDate,
-          now: new Date().toISOString(),
-        });
-      });
-    } else {
-      console.log("⚠️ ArticleForm - Nenhum evento disponível!");
-    }
-  }, [events]);
-
   const {
     register,
     control,
@@ -125,9 +104,7 @@ export function ArticleForm({
   const handlePdfUpload = async (file: File) => {
     try {
       await uploadPdf(file);
-    } catch (error) {
-      console.error("Erro no upload do PDF:", error);
-    }
+    } catch (error) {}
   };
 
   const addKeyword = () => {

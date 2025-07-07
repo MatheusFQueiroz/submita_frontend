@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import React, { useState, useEffect } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,14 +16,28 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { FileUpload } from "@/components/common/FileUpload";
-import { eventSchema, EventFormData } from "@/lib/validations";
+import { FileUpload } from "@/components/common/FileUpload"; // Assuming this is the correct path
+import {
+  eventSchema,
+  EventFormData,
+  EventFormFields,
+  eventFormSchema,
+} from "@/lib/validations";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { FILE_CONFIG } from "@/lib/constants";
 
+interface FileUploadProps {
+  accept: string;
+  maxSize: number;
+  onUpload: (file: File) => void; // Adjusted to not return Promise based on typical usage
+  isUploading: boolean;
+  uploadProgress?: number;
+  uploadedFile: { name: string; size: number } | null;
+}
+
 interface EventFormProps {
-  onSubmit: (data: EventFormData & { imageId?: string }) => Promise<void>;
-  initialData?: Partial<EventFormData>;
+  onSubmit: (data: EventFormData & { banner?: string }) => Promise<void>;
+  initialData?: Partial<EventFormFields>;
   isSubmitting?: boolean;
 }
 
@@ -42,33 +56,40 @@ export function EventForm({
     setValue,
     watch,
     formState: { errors },
-  } = useForm<EventFormData>({
-    resolver: zodResolver(eventSchema),
+  } = useForm<EventFormFields>({
+    // ← Use EventFormFields
+    resolver: zodResolver(eventFormSchema), // ← Use eventFormSchema
     defaultValues: initialData,
   });
 
-  const handleFormSubmit = async (data: EventFormData) => {
+  const handleFormSubmit: SubmitHandler<EventFormFields> = async (
+    data: EventFormFields
+  ) => {
     try {
       setError("");
 
-      const formData = {
+      // Converta as strings para Date
+      const formData: EventFormData = {
         ...data,
-        imageId: uploadedFile?.fileId,
+        eventStartDate: new Date(data.eventStartDate),
+        eventEndDate: new Date(data.eventEndDate),
+        submissionStartDate: new Date(data.submissionStartDate),
+        submissionEndDate: new Date(data.submissionEndDate),
       };
 
-      await onSubmit(formData);
+      await onSubmit({ ...formData, banner: uploadedFile?.fileId });
     } catch (err: any) {
       setError(err.message || "Erro ao salvar evento");
     }
   };
 
-  const handleImageUpload = async (file: File) => {
-    try {
-      await uploadImage(file);
-    } catch (error) {
-      console.error("Erro no upload da imagem:", error);
-    }
+  const handleImageUpload = (file: File) => {
+    uploadImage(file).catch((error) => {
+      setError("Erro ao fazer upload da imagem. Por favor, tente novamente.");
+    });
   };
+
+  const watchedEvaluationType = watch("evaluationType");
 
   return (
     <Card>
@@ -76,23 +97,26 @@ export function EventForm({
         <CardTitle>
           {initialData ? "Editar Evento" : "Criar Novo Evento"}
         </CardTitle>
+        <p className="text-sm text-gray-600">
+          Preencha todos os campos obrigatórios para{" "}
+          {initialData ? "atualizar" : "criar"} o evento
+        </p>
       </CardHeader>
-
       <CardContent>
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-          {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+        {error && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
 
-          {/* Título */}
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+          {/* Nome */}
           <div className="space-y-2">
-            <Label htmlFor="name">Título do evento *</Label>
+            <Label htmlFor="name">Nome do evento *</Label>
             <Input
               id="name"
-              placeholder="Ex: Simpósio de Tecnologia 2024"
               {...register("name")}
+              placeholder="Ex: Workshop de Inovação"
             />
             {errors.name && (
               <p className="text-sm text-red-600">{errors.name.message}</p>
@@ -104,9 +128,9 @@ export function EventForm({
             <Label htmlFor="description">Descrição *</Label>
             <Textarea
               id="description"
-              placeholder="Descreva o evento, seus objetivos e informações relevantes..."
-              rows={4}
               {...register("description")}
+              placeholder="Descreva o evento, objetivos e informações importantes"
+              rows={4}
             />
             {errors.description && (
               <p className="text-sm text-red-600">
@@ -115,13 +139,14 @@ export function EventForm({
             )}
           </div>
 
-          {/* Imagem */}
+          {/* Banner/Imagem */}
           <div className="space-y-2">
-            <Label>Imagem do evento</Label>
+            <Label>Banner do evento</Label>
+            {/* Added explicit type assertion for FileUploadProps */}
             <FileUpload
-              accept={FILE_CONFIG.allowedImageTypes.join(",")}
+              accept={FILE_CONFIG.allowedImageTypes.join(", ")}
               maxSize={FILE_CONFIG.maxSize}
-              onFileSelect={handleImageUpload}
+              onUpload={handleImageUpload as (file: File) => void}
               uploadProgress={isUploading ? uploadProgress : undefined}
               uploadedFile={
                 uploadedFile
@@ -133,19 +158,15 @@ export function EventForm({
               Imagem que será exibida na página do evento e nos destaques
             </p>
           </div>
- 
+
           {/* Datas do Evento */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="eventStartDate">
-                Data de início do evento *
-              </Label>
+              <Label htmlFor="eventStartDate">Data de início do evento *</Label>
               <Input
                 id="eventStartDate"
                 type="datetime-local"
-                {...register("eventStartDate", {
-                  valueAsDate: true,
-                })}
+                {...register("eventStartDate")} // ← Correto
               />
               {errors.eventStartDate && (
                 <p className="text-sm text-red-600">
@@ -155,15 +176,11 @@ export function EventForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="eventEndDate">
-                Data de fim do evento *
-              </Label>
+              <Label htmlFor="eventEndDate">Data de fim do evento *</Label>
               <Input
                 id="eventEndDate"
                 type="datetime-local"
-                {...register("eventEndDate", {
-                  valueAsDate: true,
-                })}
+                {...register("eventEndDate")} // ← Era "eventStartDate", agora "eventEndDate"
               />
               {errors.eventEndDate && (
                 <p className="text-sm text-red-600">
@@ -182,9 +199,7 @@ export function EventForm({
               <Input
                 id="submissionStartDate"
                 type="datetime-local"
-                {...register("submissionStartDate", {
-                  valueAsDate: true,
-                })}
+                {...register("submissionStartDate")} // ← Era "eventStartDate", agora "submissionStartDate"
               />
               {errors.submissionStartDate && (
                 <p className="text-sm text-red-600">
@@ -200,9 +215,7 @@ export function EventForm({
               <Input
                 id="submissionEndDate"
                 type="datetime-local"
-                {...register("submissionEndDate", {
-                  valueAsDate: true,
-                })}
+                {...register("submissionEndDate")} // ← Era "eventStartDate", agora "submissionEndDate"
               />
               {errors.submissionEndDate && (
                 <p className="text-sm text-red-600">
@@ -216,8 +229,12 @@ export function EventForm({
           <div className="space-y-2">
             <Label>Tipo de avaliação *</Label>
             <Select
+              value={watchedEvaluationType || ""}
               onValueChange={(value) =>
-                setValue("evaluationType", value as any)
+                setValue(
+                  "evaluationType",
+                  value as EventFormFields["evaluationType"]
+                )
               }
             >
               <SelectTrigger>
@@ -226,7 +243,7 @@ export function EventForm({
               <SelectContent>
                 <SelectItem value="DIRECT">Avaliação Direta</SelectItem>
                 <SelectItem value="PAIR">Avaliação por Pares</SelectItem>
-                <SelectItem value="PANEL">Painel de Avaliação</SelectItem>
+                <SelectItem value="PANEL">Por Comitê</SelectItem>
               </SelectContent>
             </Select>
             {errors.evaluationType && (
@@ -241,8 +258,16 @@ export function EventForm({
             <Button type="button" variant="outline">
               Cancelar
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Salvando..." : "Salvar evento"}
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="btn-gradient-accent"
+            >
+              {isSubmitting
+                ? "Salvando..."
+                : initialData
+                ? "Atualizar evento"
+                : "Criar evento"}
             </Button>
           </div>
         </form>
