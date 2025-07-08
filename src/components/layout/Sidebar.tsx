@@ -58,12 +58,6 @@ const navigationItems: NavigationItem[] = [
     roles: [USER_ROLES.STUDENT, USER_ROLES.EVALUATOR],
   },
   {
-    title: "Submeter Artigo",
-    href: ROUTES.SUBMIT_ARTICLE,
-    icon: Upload,
-    roles: [USER_ROLES.STUDENT],
-  },
-  {
     title: "Usuários",
     href: ROUTES.USERS,
     icon: Users,
