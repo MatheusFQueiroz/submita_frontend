@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,8 +13,33 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 import { useAuthContext } from "@/providers/AuthProvider";
 import Image from "next/image";
-import { registerSchema, RegisterFormData } from "@/lib/validations";
+import { z } from "zod";
 import { ROUTES } from "@/lib/constants";
+
+// Schema de registro atualizado com confirmPassword
+const registerSchema = z
+  .object({
+    name: z
+      .string()
+      .min(2, "Nome deve ter pelo menos 2 caracteres")
+      .max(100, "Nome deve ter no máximo 100 caracteres"),
+    email: z.string().min(1, "E-mail é obrigatório").email("E-mail inválido"),
+    password: z
+      .string()
+      .min(6, "Senha deve ter pelo menos 6 caracteres")
+      .max(50, "Senha deve ter no máximo 50 caracteres"),
+    confirmPassword: z.string().min(1, "Confirmação de senha é obrigatória"),
+    isFromBpk: z.boolean(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "As senhas não coincidem",
+    path: ["confirmPassword"],
+  });
+
+type RegisterFormData = z.infer<typeof registerSchema>;
+
+// Tipo para envio ao backend (sem confirmPassword)
+type RegisterApiData = Omit<RegisterFormData, "confirmPassword">;
 
 export function RegisterForm() {
   const { register: registerUser } = useAuthContext();
@@ -31,16 +56,23 @@ export function RegisterForm() {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
       isFromBpk: false,
     },
   });
 
   const watchIsFromBiopark = watch("isFromBpk");
 
-  const onSubmit = async (data: RegisterFormData) => {
+  const onSubmit: SubmitHandler<RegisterFormData> = async (data) => {
     try {
       setError("");
-      await registerUser(data);
+
+      // Remover confirmPassword antes de enviar para o backend
+      const { confirmPassword, ...apiData } = data;
+      await registerUser(apiData as RegisterApiData);
     } catch (err: any) {
       setError(err.message || "Erro ao fazer cadastro");
     }
@@ -179,7 +211,7 @@ export function RegisterForm() {
               id="isFromBiopark"
               checked={watchIsFromBiopark}
               onCheckedChange={(checked) =>
-                setValue("isFromBpk", checked as boolean)
+                setValue("isFromBpk", Boolean(checked))
               }
             />
             <Label htmlFor="isFromBiopark" className="text-sm">

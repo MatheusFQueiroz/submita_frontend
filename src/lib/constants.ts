@@ -1,9 +1,9 @@
 export const APP_CONFIG = {
-  name: "SUBMITA",
-  description: "Sistema de Submissão de Artigos Acadêmicos - Biopark",
+  name: "Submita",
+  description: "Sistema de Submissão de Artigos - Biopark",
   version: "1.0.0",
-  company: "Biopark",
-  email: "contato@biopark.com.br",
+  company: "Cliick",
+  email: "matheus.cliick@gmail.com",
 } as const;
 
 export const API_CONFIG = {
