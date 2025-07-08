@@ -127,9 +127,9 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
         {/* Header do Sidebar */}
         <div className="flex justify-center items-center p-4 border-b border-gray-200">
           <Image
-            src="/images/logo-ia360.png"
+            src="/images/biopark.jpg"
             alt="Logo SUBMITA"
-            width={100}
+            width={180}
             height={70}
             className={`object-contain`}
             priority

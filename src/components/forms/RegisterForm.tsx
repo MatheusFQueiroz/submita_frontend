@@ -51,9 +51,9 @@ export function RegisterForm() {
       <CardHeader className="space-y-1 text-center">
         <div className="flex justify-center mb-4">
           <Image
-            src="/images/logo-ia360.png"
+            src="/images/biopark.jpg"
             alt="Logo SUBMITA"
-            width={120}
+            width={220}
             height={100}
             className={`object-contain`}
             priority

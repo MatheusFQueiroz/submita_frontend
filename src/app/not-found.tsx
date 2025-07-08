@@ -13,7 +13,7 @@ export default function NotFound() {
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <Image
-            src="/images/logo-ia360-2.png"
+            src="/images/biopark.png"
             alt="Logo SUBMITA"
             width={250}
             height={100}

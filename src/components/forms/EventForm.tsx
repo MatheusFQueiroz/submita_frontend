@@ -77,7 +77,7 @@ export function EventForm({
         submissionEndDate: new Date(data.submissionEndDate),
       };
 
-      await onSubmit({ ...formData, banner: uploadedFile?.fileId });
+      await onSubmit({ ...formData, banner: uploadedFile?.fileName });
     } catch (err: any) {
       setError(err.message || "Erro ao salvar evento");
     }

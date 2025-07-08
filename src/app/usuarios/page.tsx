@@ -528,7 +528,7 @@ export default function UsersPage() {
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={onDeleteUser}
-                className="bg-red-600 hover:bg-red-700"
+                className="btn-gradient-accent"
               >
                 Excluir
               </AlertDialogAction>

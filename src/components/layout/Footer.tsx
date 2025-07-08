@@ -13,7 +13,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0">
           {/* Copyright */}
           <div className="flex items-center space-x-1 text-xs text-gray-500">
-            <span>© {currentYear} Biopark. Feito com</span>
+            <span>© {currentYear} Cliick. Feito com</span>
             <Heart className="h-3 w-3 text-red-500" />
             <span>para a comunidade acadêmica.</span>
           </div>

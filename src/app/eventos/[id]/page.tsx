@@ -35,26 +35,103 @@ interface EventDetailPageProps {
 
 export default function EventDetailPage({ params }: EventDetailPageProps) {
   const { user } = useAuthContext();
+  const [eventId, setEventId] = React.useState<string | null>(null);
+  const [paramsError, setParamsError] = React.useState<string | null>(null);
 
-  // ✅ Desencapsular params usando React.use()
-  const resolvedParams = React.use(params);
-  const eventId = resolvedParams.id;
+  // Tratamento seguro de params
+  React.useEffect(() => {
+    const resolveParams = async () => {
+      try {
+        const resolvedParams = await params;
+        setEventId(resolvedParams.id);
+      } catch (error) {
+        console.error("Erro ao resolver params:", error);
+        setParamsError("Erro ao carregar parâmetros da página");
+      }
+    };
 
-  const { data: event, loading: eventLoading } = useApi<Event>(
-    () => api.get(`/events/${eventId}`),
-    { immediate: true }
+    resolveParams();
+  }, [params]);
+
+  // Hooks de API com tratamento de erro
+  const {
+    data: event,
+    loading: eventLoading,
+    error: eventError,
+  } = useApi<Event>(() => api.get(`/events/${eventId}`), {
+    immediate: !!eventId,
+  });
+
+  const {
+    data: articles,
+    loading: articlesLoading,
+    error: articlesError,
+  } = useApi<Article[]>(
+    () =>
+      api.get(`/events/${eventId}/articles`).catch((error) => {
+        // Tratar 404 como array vazio ao invés de erro
+        if (error.response?.status === 404) {
+          return [];
+        }
+        throw error;
+      }),
+    { immediate: !!eventId }
   );
 
-  const { data: articles, loading: articlesLoading } = useApi<Article[]>(
-    () => api.get(`/events/${eventId}/articles`),
-    { immediate: true }
+  const {
+    data: eventStats,
+    loading: statsLoading,
+    error: statsError,
+  } = useApi<any>(
+    () =>
+      api.get(`/dashboard/coordinator/articles/${eventId}`).catch((error) => {
+        // Tratar 404 como dados vazios
+        if (error.response?.status === 404) {
+          return {
+            totalSubmissions: 0,
+            underReview: 0,
+            approved: 0,
+            evaluators: 0,
+          };
+        }
+        throw error;
+      }),
+    { immediate: !!eventId }
   );
 
-  const { data: eventStats, loading: statsLoading } = useApi<any>(
-    () => api.get(`/dashboard/coordinator/articles/${eventId}`),
-    { immediate: true }
-  );
+  // Loading inicial
+  if (!eventId && !paramsError) {
+    return (
+      <AuthGuard>
+        <PageLayout>
+          <div className="flex justify-center py-8">
+            <LoadingSpinner text="Carregando página..." />
+          </div>
+        </PageLayout>
+      </AuthGuard>
+    );
+  }
 
+  // Erro nos parâmetros
+  if (paramsError) {
+    return (
+      <AuthGuard>
+        <PageLayout>
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Erro ao carregar página
+            </h2>
+            <p className="text-gray-600 mt-2">{paramsError}</p>
+            <Button asChild className="mt-4">
+              <Link href={ROUTES.EVENTS}>Voltar para eventos</Link>
+            </Button>
+          </div>
+        </PageLayout>
+      </AuthGuard>
+    );
+  }
+
+  // Loading do evento
   if (eventLoading) {
     return (
       <AuthGuard>
@@ -67,6 +144,28 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
     );
   }
 
+  // Erro ao carregar evento
+  if (eventError) {
+    return (
+      <AuthGuard>
+        <PageLayout>
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Erro ao carregar evento
+            </h2>
+            <p className="text-gray-600 mt-2">
+              {eventError || "Ocorreu um erro inesperado"}
+            </p>
+            <Button asChild className="mt-4">
+              <Link href={ROUTES.EVENTS}>Voltar para eventos</Link>
+            </Button>
+          </div>
+        </PageLayout>
+      </AuthGuard>
+    );
+  }
+
+  // Evento não encontrado
   if (!event) {
     return (
       <AuthGuard>
@@ -86,6 +185,9 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
       </AuthGuard>
     );
   }
+
+  const banner =
+    process.env.NEXT_PUBLIC_API_MINIO + "/submita-images/" + event?.banner;
 
   const breadcrumbs = [
     { label: "Eventos", href: "/eventos" },
@@ -177,11 +279,14 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                 {event.banner && (
                   <div className="flex-shrink-0">
                     <Image
-                      src={event.banner}
+                      src={banner}
                       alt={event.name}
                       width={200}
                       height={120}
                       className="rounded-lg object-cover"
+                      onError={(e) => {
+                        console.error("Erro ao carregar imagem:", e);
+                      }}
                     />
                   </div>
                 )}

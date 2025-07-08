@@ -61,6 +61,13 @@ export default function EventsPage() {
   });
 
   const events = apiResponse?.events || [];
+
+  const banners = events.map((event) =>
+    event.banner
+      ? process.env.NEXT_PUBLIC_API_MINIO + "/submita-images/" + event.banner
+      : null
+  );
+
   const pagination = apiResponse
     ? {
         total: apiResponse.total,
@@ -206,7 +213,7 @@ export default function EventsPage() {
                       <div className="mt-2">
                         {event.banner && (
                           <Image
-                            src="/images/logo-ia360.png"
+                            src={banners[events.indexOf(event)] || ""}
                             alt={event.name}
                             width={300}
                             height={150}
