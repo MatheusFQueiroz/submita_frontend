@@ -82,7 +82,7 @@ export default function SubmitArticlePage() {
       toast.success("Artigo submetido com sucesso!");
 
       // Redirecionar para página de detalhes do artigo ou dashboard
-      router.push(`/artigos/${article.id}`);
+      router.push(`/dashboard`);
     } catch (error: any) {
       toast.error(error.message || "Erro ao submeter artigo");
     } finally {

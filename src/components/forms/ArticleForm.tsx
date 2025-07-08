@@ -367,7 +367,7 @@ export function ArticleForm({
             <FileUpload
               accept={FILE_CONFIG.allowedPdfTypes.join(",")}
               maxSize={FILE_CONFIG.maxSize}
-              onFileSelect={handlePdfUpload}
+              onUpload={handlePdfUpload}
               uploadProgress={isUploading ? uploadProgress : undefined}
               uploadedFile={
                 uploadedFile
