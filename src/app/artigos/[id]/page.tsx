@@ -194,17 +194,9 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                   <FileText className="mr-1 h-3 w-3" />
                   Visão Geral
                 </TabsTrigger>
-                <TabsTrigger value="checklist" className="text-xs">
-                  <Users className="mr-1 h-3 w-3" />
-                  Checklist
-                </TabsTrigger>
                 <TabsTrigger value="evaluations" className="text-xs">
                   <Star className="mr-1 h-3 w-3" />
                   Avaliações
-                </TabsTrigger>
-                <TabsTrigger value="history" className="text-xs">
-                  <Clock className="mr-1 h-3 w-3" />
-                  Histórico
                 </TabsTrigger>
               </TabsList>
 
@@ -227,12 +219,6 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                       <Badge variant="outline">
                         {article.article.currentVersion}
                       </Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Autor:</span>
-                      <span className="text-sm text-gray-600">
-                        {article.article.user?.name}
-                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">Data:</span>
@@ -290,35 +276,37 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                 </Card>
 
                 {/* Ações Rápidas */}
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg">Ações Rápidas</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    {article.article.pdfPath && (
-                      <Button
-                        variant="outline"
-                        onClick={handleDownloadPDF}
-                        className="w-full"
-                        size="sm"
-                      >
-                        <Download className="mr-2 h-4 w-4" />
-                        Download PDF
-                      </Button>
-                    )}
-
-                    {canEvaluate && (
-                      <Button asChild className="w-full" size="sm">
-                        <Link
-                          href={ROUTES.EVALUATE_ARTICLE(article.article.id)}
+                {canEvaluate && (
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg">Ações Rápidas</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      {article.article.pdfPath && (
+                        <Button
+                          variant="outline"
+                          onClick={handleDownloadPDF}
+                          className="w-full"
+                          size="sm"
                         >
-                          <Star className="mr-2 h-4 w-4" />
-                          Avaliar Artigo
-                        </Link>
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
+                          <Download className="mr-2 h-4 w-4" />
+                          Download PDF
+                        </Button>
+                      )}
+
+                      {canEvaluate && (
+                        <Button asChild className="w-full" size="sm">
+                          <Link
+                            href={ROUTES.EVALUATE_ARTICLE(article.article.id)}
+                          >
+                            <Star className="mr-2 h-4 w-4" />
+                            Avaliar Artigo
+                          </Link>
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
               </TabsContent>
 
               {/* Tab Checklist */}
