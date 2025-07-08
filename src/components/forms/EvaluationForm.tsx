@@ -189,7 +189,8 @@ export function EvaluationForm({
             <Label className="text-sm font-medium">Palavras-chave:</Label>
             <p className="text-sm text-gray-700 ">
               {/* {article.keywords.join(", ")} */}
-            não tem keyword na resposta da API</p>
+              não tem keyword na resposta da API
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -278,16 +279,6 @@ export function EvaluationForm({
 
             {/* Botões */}
             <div className="flex justify-end space-x-2">
-              {onSaveDraft && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleSaveDraft}
-                  disabled={isSubmitting}
-                >
-                  Salvar rascunho
-                </Button>
-              )}
               <Button
                 type="button"
                 onClick={handleFinalSubmit}

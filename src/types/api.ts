@@ -61,7 +61,7 @@ export interface Evaluation {
   grade?: number;
   evaluationDescription?: string;
   evaluationDate?: Date;
-  status: "PENDING" | "IN_PROGRESS" | "COMPLETED";
+  status: "TO_CORRECTION" | "APPROVED" | "REJECTED";
   userId: string; // Avaliador
   articleVersionId: string;
   createdAt: Date;

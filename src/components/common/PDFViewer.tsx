@@ -24,7 +24,7 @@ export function PDFViewer({
   // URL de teste mockada - TROCAR DEPOIS pela URL real do MinIO
   const testFileUrl =
     "https://bioparkeducacao.com/wp-content/uploads/2025/05/edital_IC_2025.pdf";
-  const actualFileUrl = testFileUrl; // TODO: Trocar por fileUrl quando MinIO estiver pronto
+  const actualFileUrl = testFileUrl;
 
   const handleIframeLoad = () => {
     setLoading(false);

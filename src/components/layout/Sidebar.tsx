@@ -81,18 +81,6 @@ const navigationItems: NavigationItem[] = [
     icon: ClipboardList,
     roles: [USER_ROLES.COORDINATOR],
   },
-  {
-    title: "Rascunhos",
-    href: "/rascunhos",
-    icon: FileText,
-    roles: [USER_ROLES.EVALUATOR],
-  },
-  {
-    title: "Histórico",
-    href: "/historico",
-    icon: History,
-    roles: [USER_ROLES.EVALUATOR],
-  },
 ];
 
 export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
@@ -141,7 +129,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
         {/* Header do Sidebar */}
         <div className="flex justify-center items-center p-4 border-b border-gray-200">
           <Image
-            src="/images/faculdade-donaduzzi.jpg"
+            src="/images/faculdade-donaduzzi-removebg.png"
             alt="Logo SUBMITA"
             width={180}
             height={70}

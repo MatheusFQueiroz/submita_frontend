@@ -31,7 +31,9 @@ export function EvaluatorDashboard() {
 
   const { data: pendingEvaluations, loading: evaluationsLoading } = useApi<
     Evaluation[]
-  >(() => api.get("/evaluations?status=PENDING&limit=5"), { immediate: true });
+  >(() => api.get("/evaluations?status=TO_CORRECTION&limit=5"), {
+    immediate: true,
+  });
 
   if (statsLoading) {
     return (

@@ -311,7 +311,7 @@ export default function UsersPage() {
                   Criar Avaliador
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="bg-white">
                 <DialogHeader>
                   <DialogTitle>Criar Novo Avaliador</DialogTitle>
                 </DialogHeader>
@@ -380,7 +380,9 @@ export default function UsersPage() {
                     >
                       Cancelar
                     </Button>
-                    <Button type="submit">Criar</Button>
+                    <Button type="submit" className="btn-gradient-accent">
+                      Criar
+                    </Button>
                   </div>
                 </form>
               </DialogContent>

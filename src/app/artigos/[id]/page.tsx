@@ -554,7 +554,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                                   ? formatDate(evaluation.evaluationDate)
                                   : "Em andamento"}
                               </span>
-                              {evaluation.status === "PENDING" && (
+                              {evaluation.status === "TO_CORRECTION" && (
                                 <Badge variant="outline" className="text-xs">
                                   Pendente
                                 </Badge>

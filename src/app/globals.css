@@ -320,8 +320,12 @@ input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus,
 input[type="search"]:focus,
+input:focus,
 textarea:focus,
-select:focus {
+select:focus,
+button[role="combobox"]:focus,
+[data-slot="select-trigger"]:focus,
+button[data-state]:focus {
   border-color: #6366f1 !important;
   background-color: white !important;
   box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.2) !important;
