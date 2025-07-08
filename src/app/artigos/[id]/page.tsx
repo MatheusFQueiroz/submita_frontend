@@ -55,6 +55,11 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
     Evaluation[]
   >(() => api.get(`/articles/${id}`), { immediate: true });
 
+  const fileUrl =
+    process.env.NEXT_PUBLIC_API_MINIO +
+    "/submita-pdfs/" +
+    article?.article.versions?.[0]?.pdfPath;
+
   const isAuthor = user?.id === article?.article.userId;
   const isEvaluator = user?.role === USER_ROLES.EVALUATOR;
   const isCoordinator = user?.role === USER_ROLES.COORDINATOR;
@@ -141,15 +146,6 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
               </Button>
             )}
 
-            {canEdit && (
-              <Button variant="outline" asChild>
-                <Link href={ROUTES.ARTICLE_DETAILS(article.article.id)}>
-                  <Edit className="mr-2 h-4 w-4" />
-                  Editar
-                </Link>
-              </Button>
-            )}
-
             {canEvaluate && (
               <Button asChild>
                 <Link href={ROUTES.EVALUATE_ARTICLE(article.article.id)}>
@@ -174,16 +170,11 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Coluna do PDF - 2/3 da largura */}
           <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>PDF</CardTitle>
-            </CardHeader>
             <CardContent>
               {article.article.versions![0].pdfPath ? (
                 <PDFViewer
-                  fileUrl={`/api/files/file/submita-pdfs?fileName=${
-                    article.article.versions![0].pdfPath
-                  }`}
-                  fileName={`${article.article.versions![0].pdfPath}.pdf`}
+                  fileUrl={fileUrl}
+                  fileName={fileUrl}
                   className="min-h-[800px]"
                 />
               ) : (
@@ -316,20 +307,6 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                       </Button>
                     )}
 
-                    {canEdit && (
-                      <Button
-                        variant="outline"
-                        asChild
-                        className="w-full"
-                        size="sm"
-                      >
-                        <Link href={ROUTES.ARTICLE_DETAILS(article.article.id)}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Editar Artigo
-                        </Link>
-                      </Button>
-                    )}
-
                     {canEvaluate && (
                       <Button asChild className="w-full" size="sm">
                         <Link
@@ -338,18 +315,6 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                           <Star className="mr-2 h-4 w-4" />
                           Avaliar Artigo
                         </Link>
-                      </Button>
-                    )}
-
-                    {canWithdraw && (
-                      <Button
-                        variant="destructive"
-                        onClick={() => setWithdrawDialogOpen(true)}
-                        className="w-full"
-                        size="sm"
-                      >
-                        <AlertTriangle className="mr-2 h-4 w-4" />
-                        Retirar Artigo
                       </Button>
                     )}
                   </CardContent>

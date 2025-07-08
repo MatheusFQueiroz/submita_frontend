@@ -22,9 +22,7 @@ export function PDFViewer({
   const [error, setError] = useState<boolean>(false);
 
   // URL de teste mockada - TROCAR DEPOIS pela URL real do MinIO
-  const testFileUrl =
-    "https://bioparkeducacao.com/wp-content/uploads/2025/05/edital_IC_2025.pdf";
-  const actualFileUrl = testFileUrl;
+  const actualFileUrl = fileUrl;
 
   const handleIframeLoad = () => {
     setLoading(false);
