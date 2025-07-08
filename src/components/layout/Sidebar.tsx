@@ -2,9 +2,18 @@
 
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -21,9 +30,12 @@ import {
   Settings,
   X,
   Heart,
+  User,
+  LogOut,
 } from "lucide-react";
 import { useAuthContext } from "@/providers/AuthProvider";
 import { ROUTES, USER_ROLES } from "@/lib/constants";
+import { getInitials } from "@/lib/auth";
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -84,9 +96,9 @@ const navigationItems: NavigationItem[] = [
 ];
 
 export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
-  const { user } = useAuthContext();
+  const { user, logout } = useAuthContext();
   const pathname = usePathname();
-  const currentYear = new Date().getFullYear();
+  const router = useRouter();
 
   if (!user) return null;
 
@@ -99,6 +111,14 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
       return pathname === href;
     }
     return pathname.startsWith(href);
+  };
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  const handleProfile = () => {
+    router.push(ROUTES.PROFILE);
   };
 
   return (
@@ -114,7 +134,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
       {/* Sidebar - SEMPRE FIXO */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 h-screen w-64 bg-white border-r border-gray-200 transform transition-transform duration-200 ease-in-out",
+          "fixed left-0 top-0 z-50 h-screen w-64 bg-white border-r border-gray-200 transform transition-transform duration-200 ease-in-out flex flex-col",
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
@@ -141,7 +161,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
         </div>
 
         {/* Área de Navegação com Scroll */}
-        <div className="flex-1 flex flex-col h-[calc(100vh-140px)]">
+        <div className="flex-1 flex flex-col">
           <ScrollArea className="flex-1 px-3 py-4">
             <nav className="space-y-1">
               {userNavigationItems.map((item) => {
@@ -174,6 +194,62 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
 
             <Separator className="my-4" />
           </ScrollArea>
+
+          {/* Menu do Usuário na parte inferior */}
+          <div className="p-3 border-t border-gray-200">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start p-2 h-auto hover:bg-gray-100"
+                >
+                  <div className="flex items-center w-full">
+                    <Avatar className="h-8 w-8 mr-3">
+                      <AvatarFallback className="ia360-gradient-primary text-white text-sm">
+                        {getInitials(user.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 text-left">
+                      <p className="text-sm font-medium truncate">
+                        {user.name}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {user.email}
+                      </p>
+                    </div>
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-56 bg-white border border-gray-200 shadow-lg rounded-md p-1"
+                align="end"
+                side="right"
+                sideOffset={8}
+                forceMount
+              >
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {user.name}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleProfile}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Perfil</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sair</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </aside>
     </>

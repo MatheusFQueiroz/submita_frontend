@@ -35,10 +35,11 @@ import { api } from "@/lib/api";
 import toast from "react-hot-toast";
 
 interface ArticleDetailPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
+  const { id } = React.use(params);
   const { user } = useAuthContext();
   const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false);
 
@@ -46,13 +47,13 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
     data: article,
     loading: articleLoading,
     execute: refetchArticle,
-  } = useApi<{article: Article}>(() => api.get(`/articles/${params.id}`), {
+  } = useApi<{ article: Article }>(() => api.get(`/articles/${id}`), {
     immediate: true,
   });
 
   const { data: evaluations, loading: evaluationsLoading } = useApi<
     Evaluation[]
-  >(() => api.get(`/articles/${params.id}`), { immediate: true });
+  >(() => api.get(`/articles/${id}`), { immediate: true });
 
   const isAuthor = user?.id === article?.article.userId;
   const isEvaluator = user?.role === USER_ROLES.EVALUATOR;
@@ -60,7 +61,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
 
   const handleWithdrawArticle = async () => {
     try {
-      await api.delete(`/articles/${params.id}`);
+      await api.delete(`/articles/${id}`);
       toast.success("Artigo retirado com sucesso!");
       window.location.href = ROUTES.ARTICLES;
     } catch (error: any) {
@@ -179,7 +180,9 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
             <CardContent>
               {article.article.versions![0].pdfPath ? (
                 <PDFViewer
-                  fileUrl={`/api/files/file/submita-pdfs?fileName=${article.article.versions![0].pdfPath}`}
+                  fileUrl={`/api/files/file/submita-pdfs?fileName=${
+                    article.article.versions![0].pdfPath
+                  }`}
                   fileName={`${article.article.versions![0].pdfPath}.pdf`}
                   className="min-h-[800px]"
                 />
@@ -219,7 +222,9 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                 {/* Informações Gerais */}
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg">Informações Gerais</CardTitle>
+                    <CardTitle className="text-lg">
+                      Informações Gerais
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex items-center justify-between">
@@ -228,15 +233,21 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">Versão:</span>
-                      <Badge variant="outline">{article.article.currentVersion}</Badge>
+                      <Badge variant="outline">
+                        {article.article.currentVersion}
+                      </Badge>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">Autor:</span>
-                      <span className="text-sm text-gray-600">{article.article.user?.name}</span>
+                      <span className="text-sm text-gray-600">
+                        {article.article.user?.name}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">Data:</span>
-                      <span className="text-sm text-gray-600">{formatDate(article.article.createdAt)}</span>
+                      <span className="text-sm text-gray-600">
+                        {formatDate(article.article.createdAt)}
+                      </span>
                     </div>
                   </CardContent>
                 </Card>
@@ -268,7 +279,12 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                       </p>
                       <div className="flex items-center space-x-2 text-xs text-gray-500">
                         <span>
-                          Submissões: {formatDate(article.article.event?.submissionStartDate)} - {formatDate(article.article.event?.submissionEndDate)}
+                          Submissões:{" "}
+                          {formatDate(
+                            article.article.event?.submissionStartDate
+                          )}{" "}
+                          -{" "}
+                          {formatDate(article.article.event?.submissionEndDate)}
                         </span>
                       </div>
                       <Badge variant="outline" className="text-xs">
@@ -289,14 +305,24 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                   </CardHeader>
                   <CardContent className="space-y-2">
                     {article.article.pdfPath && (
-                      <Button variant="outline" onClick={handleDownloadPDF} className="w-full" size="sm">
+                      <Button
+                        variant="outline"
+                        onClick={handleDownloadPDF}
+                        className="w-full"
+                        size="sm"
+                      >
                         <Download className="mr-2 h-4 w-4" />
                         Download PDF
                       </Button>
                     )}
-                    
+
                     {canEdit && (
-                      <Button variant="outline" asChild className="w-full" size="sm">
+                      <Button
+                        variant="outline"
+                        asChild
+                        className="w-full"
+                        size="sm"
+                      >
                         <Link href={ROUTES.ARTICLE_DETAILS(article.article.id)}>
                           <Edit className="mr-2 h-4 w-4" />
                           Editar Artigo
@@ -306,7 +332,9 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
 
                     {canEvaluate && (
                       <Button asChild className="w-full" size="sm">
-                        <Link href={ROUTES.EVALUATE_ARTICLE(article.article.id)}>
+                        <Link
+                          href={ROUTES.EVALUATE_ARTICLE(article.article.id)}
+                        >
                           <Star className="mr-2 h-4 w-4" />
                           Avaliar Artigo
                         </Link>
@@ -332,7 +360,9 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
               <TabsContent value="checklist" className="space-y-4 mt-4">
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg">Checklist de Revisão</CardTitle>
+                    <CardTitle className="text-lg">
+                      Checklist de Revisão
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -341,47 +371,57 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                           <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
                             <span className="text-white text-xs">✓</span>
                           </div>
-                          <span className="text-sm font-medium">Formatação ABNT</span>
+                          <span className="text-sm font-medium">
+                            Formatação ABNT
+                          </span>
                         </div>
                         <span className="text-xs text-green-600">Completo</span>
                       </div>
-                      
+
                       <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center space-x-3">
                           <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
                             <span className="text-white text-xs">✓</span>
                           </div>
-                          <span className="text-sm font-medium">Resumo dentro do limite</span>
+                          <span className="text-sm font-medium">
+                            Resumo dentro do limite
+                          </span>
                         </div>
                         <span className="text-xs text-green-600">Completo</span>
                       </div>
-                      
+
                       <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
                         <div className="flex items-center space-x-3">
                           <div className="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center">
                             <span className="text-white text-xs">!</span>
                           </div>
-                          <span className="text-sm font-medium">Palavras-chave</span>
+                          <span className="text-sm font-medium">
+                            Palavras-chave
+                          </span>
                         </div>
                         <span className="text-xs text-orange-600">Atenção</span>
                       </div>
-                      
+
                       <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center space-x-3">
                           <div className="w-5 h-5 bg-gray-300 rounded-full flex items-center justify-center">
                             <span className="text-gray-500 text-xs">○</span>
                           </div>
-                          <span className="text-sm font-medium">Verificação plágio</span>
+                          <span className="text-sm font-medium">
+                            Verificação plágio
+                          </span>
                         </div>
                         <span className="text-xs text-gray-500">Pendente</span>
                       </div>
-                      
+
                       <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center space-x-3">
                           <div className="w-5 h-5 bg-gray-300 rounded-full flex items-center justify-center">
                             <span className="text-gray-500 text-xs">○</span>
                           </div>
-                          <span className="text-sm font-medium">Aprovação final</span>
+                          <span className="text-sm font-medium">
+                            Aprovação final
+                          </span>
                         </div>
                         <span className="text-xs text-gray-500">Pendente</span>
                       </div>
@@ -398,7 +438,8 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                     <div className="space-y-3">
                       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                         <p className="text-sm text-yellow-800">
-                          <strong>Palavras-chave:</strong> Revisar se as palavras-chave estão adequadas ao tema do artigo.
+                          <strong>Palavras-chave:</strong> Revisar se as
+                          palavras-chave estão adequadas ao tema do artigo.
                         </p>
                       </div>
                       <textarea
@@ -459,7 +500,9 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                 {/* Avaliações Existentes */}
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg">Avaliações Recebidas</CardTitle>
+                    <CardTitle className="text-lg">
+                      Avaliações Recebidas
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     {evaluationsLoading ? (
@@ -469,14 +512,20 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                     ) : evaluations && evaluations.length > 0 ? (
                       <div className="space-y-4">
                         {evaluations.map((evaluation, index) => (
-                          <div key={evaluation.id} className="border rounded-lg p-4 bg-gray-50">
+                          <div
+                            key={evaluation.id}
+                            className="border rounded-lg p-4 bg-gray-50"
+                          >
                             <div className="flex items-center justify-between mb-3">
                               <div>
                                 <p className="font-medium text-sm">
-                                  {evaluation.evaluator?.name || "Avaliador Anônimo"}
+                                  {evaluation.evaluator?.name ||
+                                    "Avaliador Anônimo"}
                                 </p>
                                 <p className="text-xs text-gray-500">
-                                  {formatUserRole(evaluation.evaluator?.role || "EVALUATOR")}
+                                  {formatUserRole(
+                                    evaluation.evaluator?.role || "EVALUATOR"
+                                  )}
                                 </p>
                               </div>
                               {evaluation.grade && (
@@ -484,11 +533,13 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                                   <div className="text-xl font-bold text-primary">
                                     {evaluation.grade.toFixed(1)}
                                   </div>
-                                  <div className="text-xs text-gray-500">/ 10</div>
+                                  <div className="text-xs text-gray-500">
+                                    / 10
+                                  </div>
                                 </div>
                               )}
                             </div>
-                            
+
                             {evaluation.evaluationDescription && (
                               <div className="mb-3">
                                 <p className="text-sm text-gray-700 leading-relaxed">
@@ -496,7 +547,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                                 </p>
                               </div>
                             )}
-                            
+
                             <div className="flex items-center justify-between text-xs text-gray-500">
                               <span>
                                 {evaluation.evaluationDate
@@ -515,7 +566,9 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                     ) : (
                       <div className="text-center py-8 text-gray-500">
                         <Star className="mx-auto h-12 w-12 mb-3 text-gray-300" />
-                        <p className="text-sm">Nenhuma avaliação recebida ainda</p>
+                        <p className="text-sm">
+                          Nenhuma avaliação recebida ainda
+                        </p>
                         {article.article.status === "SUBMITTED" && (
                           <p className="text-xs mt-2">
                             O artigo está aguardando atribuição de avaliadores
@@ -531,7 +584,9 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
               <TabsContent value="history" className="space-y-4 mt-4">
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg">Histórico de Versões</CardTitle>
+                    <CardTitle className="text-lg">
+                      Histórico de Versões
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -543,18 +598,27 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center space-x-2">
-                              <p className="font-medium text-sm">Versão {article.article.currentVersion}</p>
-                              <Badge variant="secondary" className="text-xs">Atual</Badge>
+                              <p className="font-medium text-sm">
+                                Versão {article.article.currentVersion}
+                              </p>
+                              <Badge variant="secondary" className="text-xs">
+                                Atual
+                              </Badge>
                             </div>
                             <p className="text-xs text-gray-600">
-                              Submetido em {formatDate(article.article.createdAt)}
+                              Submetido em{" "}
+                              {formatDate(article.article.createdAt)}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center justify-between">
                           <StatusBadge status={article.article.status} />
                           {article.article.pdfPath && (
-                            <Button variant="outline" size="sm" onClick={handleDownloadPDF}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={handleDownloadPDF}
+                            >
                               <Download className="mr-1 h-3 w-3" />
                               Download
                             </Button>
@@ -571,12 +635,19 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                           <div className="flex-1">
                             <p className="font-medium text-sm">Versão 1.0</p>
                             <p className="text-xs text-gray-600">
-                              Submetido em {formatDate(new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000))}
+                              Submetido em{" "}
+                              {formatDate(
+                                new Date(
+                                  new Date().getTime() - 7 * 24 * 60 * 60 * 1000
+                                )
+                              )}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center justify-between">
-                          <Badge variant="outline" className="text-xs">Versão Anterior</Badge>
+                          <Badge variant="outline" className="text-xs">
+                            Versão Anterior
+                          </Badge>
                           <Button variant="outline" size="sm" disabled>
                             <Download className="mr-1 h-3 w-3" />
                             Download
@@ -590,34 +661,44 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                 {/* Timeline de Eventos */}
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg">Timeline de Eventos</CardTitle>
+                    <CardTitle className="text-lg">
+                      Timeline de Eventos
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
                       <div className="flex items-start space-x-3">
                         <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                         <div className="flex-1">
-                          <p className="text-sm font-medium">Artigo Submetido</p>
+                          <p className="text-sm font-medium">
+                            Artigo Submetido
+                          </p>
                           <p className="text-xs text-gray-500">
                             {formatDate(article.article.createdAt)}
                           </p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-start space-x-3">
                         <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                         <div className="flex-1">
                           <p className="text-sm font-medium">Em Revisão</p>
                           <p className="text-xs text-gray-500">
-                            {formatDate(new Date(new Date().getTime() - 5 * 24 * 60 * 60 * 1000))}
+                            {formatDate(
+                              new Date(
+                                new Date().getTime() - 5 * 24 * 60 * 60 * 1000
+                              )
+                            )}
                           </p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-start space-x-3">
                         <div className="w-2 h-2 bg-gray-300 rounded-full mt-2"></div>
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-500">Aguardando Resultado</p>
+                          <p className="text-sm font-medium text-gray-500">
+                            Aguardando Resultado
+                          </p>
                           <p className="text-xs text-gray-400">Pendente</p>
                         </div>
                       </div>
@@ -631,15 +712,15 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
 
         {/* Dialog de Confirmação de Retirada */}
         <ConfirmDialog
-            open={withdrawDialogOpen}
-            onOpenChange={setWithdrawDialogOpen}
-            title="Retirar Artigo"
-            description="Tem certeza que deseja retirar este artigo? Esta ação não pode ser desfeita e o artigo será removido permanentemente do evento."
-            confirmText="Retirar Artigo"
-            cancelText="Cancelar"
-            variant="destructive"
-            onConfirm={handleWithdrawArticle}
-          />
+          open={withdrawDialogOpen}
+          onOpenChange={setWithdrawDialogOpen}
+          title="Retirar Artigo"
+          description="Tem certeza que deseja retirar este artigo? Esta ação não pode ser desfeita e o artigo será removido permanentemente do evento."
+          confirmText="Retirar Artigo"
+          cancelText="Cancelar"
+          variant="destructive"
+          onConfirm={handleWithdrawArticle}
+        />
       </PageLayout>
     </AuthGuard>
   );

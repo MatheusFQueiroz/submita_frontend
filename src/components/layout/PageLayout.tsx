@@ -47,14 +47,8 @@ export function PageLayout({
           showSidebar && user ? "lg:pl-64" : ""
         )}
       >
-        {/* Header */}
-        <Header
-          onToggleSidebar={toggleSidebar}
-          showSidebarToggle={showSidebar && !!user}
-        />
-
         {/* Conteúdo Principal */}
-        <main className="flex-1 flex flex-col">
+        <main className="flex-1 flex flex-col mt-5">
           {/* Header da Página */}
           {(title || breadcrumbs || actions) && (
             <div className="bg-white border-b border-gray-200 px-4 py-4 lg:px-6">
