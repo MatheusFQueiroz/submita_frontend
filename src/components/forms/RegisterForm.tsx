@@ -83,7 +83,7 @@ export function RegisterForm() {
       <CardHeader className="space-y-1 text-center">
         <div className="flex justify-center mb-4">
           <Image
-            src="/images/biopark.jpg"
+            src="/images/faculdade-donaduzzi.jpg"
             alt="Logo SUBMITA"
             width={220}
             height={100}

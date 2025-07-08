@@ -141,7 +141,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
         {/* Header do Sidebar */}
         <div className="flex justify-center items-center p-4 border-b border-gray-200">
           <Image
-            src="/images/biopark.jpg"
+            src="/images/faculdade-donaduzzi.jpg"
             alt="Logo SUBMITA"
             width={180}
             height={70}
