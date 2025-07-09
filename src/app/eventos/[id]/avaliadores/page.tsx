@@ -81,7 +81,7 @@ export default function EventEvaluatorsPage({
   const handleAddEvaluators = async () => {
     try {
       await api.post(`/events/${id}/evaluators`, {
-        userIds: selectedEvaluatorIds, // Mudança aqui: userIds em vez de evaluatorIds
+        userIds: selectedEvaluatorIds,
       });
 
       toast.success(
@@ -99,9 +99,7 @@ export default function EventEvaluatorsPage({
     if (!selectedEvaluator) return;
 
     try {
-      await api.delete(
-        `/events/${id}/evaluators/${selectedEvaluator.id}` // user.id, não evaluator.id
-      );
+      await api.delete(`/events/${id}/evaluators/${selectedEvaluator.id}`);
       toast.success("Avaliador removido com sucesso!");
       setRemoveDialogOpen(false);
       setSelectedEvaluator(null);
@@ -111,18 +109,53 @@ export default function EventEvaluatorsPage({
     }
   };
 
-  const availableEvaluators =
-    (Array.isArray(allEvaluators)
-      ? allEvaluators
-      : (allEvaluators as any)?.evaluators || []
-    ).filter(
+  // Melhoria na validação de avaliadores disponíveis
+  const getEventEvaluatorsList = () => {
+    if (!eventEvaluators) return [];
+
+    // Se eventEvaluators é um array direto
+    if (Array.isArray(eventEvaluators)) {
+      return eventEvaluators;
+    }
+
+    // Se eventEvaluators tem uma propriedade evaluators
+    if ((eventEvaluators as any)?.evaluators) {
+      return (eventEvaluators as any).evaluators;
+    }
+
+    return [];
+  };
+
+  const getAllEvaluatorsList = () => {
+    if (!allEvaluators) return [];
+
+    // Se allEvaluators é um array direto
+    if (Array.isArray(allEvaluators)) {
+      return allEvaluators;
+    }
+
+    // Se allEvaluators tem uma propriedade evaluators
+    if ((allEvaluators as any)?.evaluators) {
+      return (allEvaluators as any).evaluators;
+    }
+
+    return [];
+  };
+
+  const availableEvaluators = (() => {
+    const currentEventEvaluators = getEventEvaluatorsList();
+    const allEvaluatorsList = getAllEvaluatorsList();
+
+    return allEvaluatorsList.filter(
       (evaluator: any) =>
-        !(
-          Array.isArray(eventEvaluators)
-            ? eventEvaluators
-            : (eventEvaluators as any)?.evaluators || []
-        ).some((eventEval: any) => eventEval.id === evaluator.id)
-    ) || [];
+        !currentEventEvaluators.some(
+          (eventEval: any) =>
+            eventEval.id === evaluator.id ||
+            eventEval.user?.id === evaluator.id ||
+            eventEval.userId === evaluator.id
+        )
+    );
+  })();
 
   if (eventLoading) {
     return (
@@ -144,40 +177,30 @@ export default function EventEvaluatorsPage({
 
   const evaluatorColumns = [
     {
-      key: "user", // Mudança aqui
+      key: "name",
       title: "Nome",
-      render: (user: any, evaluator: any) => (
+      render: (_: any, evaluator: any) => (
         <div>
-          <p className="font-medium">{user?.name || evaluator.name}</p>
-          <p className="text-sm text-gray-500">
-            {user?.email || evaluator.email}
-          </p>
+          <p className="font-medium">{evaluator?.user?.name}</p>
+          <p className="text-sm text-gray-500">{evaluator?.user?.email}</p>
         </div>
       ),
     },
     {
-      key: "user", // Mudança aqui
+      key: "institution",
       title: "Instituição",
-      render: (user: any, evaluator: any) => (
-        <Badge variant={user?.isFromBPK ? "default" : "outline"}>
-          {user?.isFromBPK ? "Biopark" : "Externa"}
+      render: (_: any, evaluator: any) => (
+        <Badge variant={evaluator?.user?.isFromBpk ? "default" : "outline"}>
+          {evaluator?.user?.isFromBpk ? "Biopark" : "Externa"}
         </Badge>
       ),
     },
     {
-      key: "user", // Mudança aqui
+      key: "status",
       title: "Status",
-      render: (user: any, evaluator: any) => (
-        <Badge
-          variant={
-            user?.isActive !== false && evaluator.isActive !== false
-              ? "default"
-              : "destructive"
-          }
-        >
-          {user?.isActive !== false && evaluator.isActive !== false
-            ? "Ativo"
-            : "Inativo"}
+      render: (_: any, evaluator: any) => (
+        <Badge variant={"default"}>
+          {evaluator?.user?.isActive ? "Ativo" : "Inativo"}
         </Badge>
       ),
     },
@@ -215,42 +238,42 @@ export default function EventEvaluatorsPage({
             </div>
             <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
               <DialogTrigger asChild>
-                <Button>
+                <Button className="btn-gradient-accent">
                   <Plus className="mr-2 h-4 w-4" />
                   Adicionar Avaliadores
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl">
+              <DialogContent className="max-w-2xl bg-white">
                 <DialogHeader>
                   <DialogTitle>Adicionar Avaliadores ao Evento</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4">
+                <div className="space-y-4 bg-white">
                   {allEvaluatorsLoading ? (
-                    <div className="flex justify-center py-8">
+                    <div className="flex justify-center py-8 bg-white">
                       <LoadingSpinner text="Carregando avaliadores..." />
                     </div>
                   ) : availableEvaluators.length > 0 ? (
                     <>
-                      <div className="relative">
+                      <div className="relative bg-white">
                         <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                         <Input
                           placeholder="Buscar avaliadores..."
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
-                          className="pl-10"
+                          className="pl-10 bg-white"
                         />
                       </div>
-                      <div className="max-h-96 overflow-y-auto space-y-2">
+                      <div className="max-h-96 overflow-y-auto space-y-2 bg-white">
                         {availableEvaluators
                           .filter((evaluator: { name: string }) =>
                             evaluator.name
                               .toLowerCase()
                               .includes(debouncedSearch.toLowerCase())
                           )
-                          .map((evaluator) => (
+                          .map((evaluator: any) => (
                             <div
                               key={evaluator.id}
-                              className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50"
+                              className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 bg-white"
                             >
                               <input
                                 type="checkbox"
@@ -297,7 +320,7 @@ export default function EventEvaluatorsPage({
                             </div>
                           ))}
                       </div>
-                      <div className="flex justify-end space-x-2 pt-4 border-t">
+                      <div className="flex justify-end space-x-2 pt-4 border-t bg-white">
                         <Button
                           variant="outline"
                           onClick={() => {
@@ -316,7 +339,7 @@ export default function EventEvaluatorsPage({
                       </div>
                     </>
                   ) : (
-                    <div className="text-center py-8 text-gray-500">
+                    <div className="text-center py-8 text-gray-500 bg-white">
                       <Users className="mx-auto h-12 w-12 mb-4" />
                       <p>
                         Todos os avaliadores já foram adicionados a este evento
@@ -339,7 +362,7 @@ export default function EventEvaluatorsPage({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {((eventEvaluators as any)?.evaluators || []).length || 0}
+                  {getEventEvaluatorsList().length || 0}
                 </div>
               </CardContent>
             </Card>
@@ -352,8 +375,9 @@ export default function EventEvaluatorsPage({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {((eventEvaluators as any)?.evaluators || []).filter(
-                    (e: any) => e.user?.isActive
+                  {getEventEvaluatorsList().filter(
+                    (e: any) =>
+                      e.user?.isActive !== false && e.isActive !== false
                   ).length || 0}
                 </div>
               </CardContent>
@@ -366,8 +390,8 @@ export default function EventEvaluatorsPage({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {((eventEvaluators as any)?.evaluators || []).filter(
-                    (e: any) => e.user?.isFromBPK
+                  {getEventEvaluatorsList().filter(
+                    (e: any) => e.user?.isFromBpk || e.isFromBpk
                   ).length || 0}
                 </div>
               </CardContent>
@@ -384,10 +408,9 @@ export default function EventEvaluatorsPage({
                 <div className="flex justify-center py-8">
                   <LoadingSpinner text="Carregando avaliadores..." />
                 </div>
-              ) : (eventEvaluators as any)?.evaluators &&
-                ((eventEvaluators as any)?.evaluators || []).length > 0 ? (
+              ) : getEventEvaluatorsList().length > 0 ? (
                 <DataTable
-                  data={(eventEvaluators as any)?.evaluators || []}
+                  data={getEventEvaluatorsList()}
                   columns={evaluatorColumns}
                 />
               ) : (
@@ -414,9 +437,10 @@ export default function EventEvaluatorsPage({
             open={removeDialogOpen}
             onOpenChange={setRemoveDialogOpen}
             title="Remover Avaliador"
-            description={`Tem certeza que deseja remover ${selectedEvaluator?.name} como avaliador deste evento? Esta ação não pode ser desfeita.`}
+            description={`Tem certeza que deseja remover este usuário como avaliador deste evento? Esta ação não pode ser desfeita.`}
             onConfirm={handleRemoveEvaluator}
             confirmText="Remover"
+            variant="destructive"
           />
         </div>
       </PageLayout>
