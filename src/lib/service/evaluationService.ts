@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import { Evaluation, QuestionResponse } from "@/types";
+import { Evaluation } from "@/types";
 
 interface CreateEvaluationRequest {
   grade: number;

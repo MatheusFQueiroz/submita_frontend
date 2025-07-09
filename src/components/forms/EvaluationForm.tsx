@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
@@ -71,10 +70,10 @@ export function EvaluationForm({
     }
   };
 
-  const handleSaveDraft = () => {
-    setIsDraft(true);
-    handleSubmit(handleFormSubmit)();
-  };
+  // const handleSaveDraft = () => {
+  //   setIsDraft(true);
+  //   handleSubmit(handleFormSubmit)();
+  // };
 
   const handleFinalSubmit = () => {
     setIsDraft(false);

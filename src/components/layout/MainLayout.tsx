@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface MainLayoutProps {
   children: React.ReactNode;

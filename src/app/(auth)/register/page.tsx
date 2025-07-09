@@ -1,10 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
-import Link from "next/link";
 import { RegisterForm } from "@/components/forms/RegisterForm";
-import { Card, CardContent } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ArrowLeft, Info } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Criar Conta",

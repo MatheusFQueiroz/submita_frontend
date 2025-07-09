@@ -7,16 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Users,
-  FileText,
   Calendar,
   ClipboardList,
-  TrendingUp,
-  UserCheck,
-  Building,
   BarChart3,
   Plus,
 } from "lucide-react";
-import { EmptyState } from "@/components/common/EmptyState";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { useApi } from "@/hooks/useApi";
 import { CoordinatorStats } from "@/types";

@@ -32,7 +32,6 @@ import { Pagination } from "@/components/common/Pagination";
 import {
   UserPlus,
   Search,
-  Filter,
   UserX,
   GraduationCap,
   ClipboardList,

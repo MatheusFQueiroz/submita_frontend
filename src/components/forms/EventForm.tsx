@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FileUpload } from "@/components/common/FileUpload"; // Assuming this is the correct path
 import {
-  eventSchema,
   EventFormData,
   EventFormFields,
   eventFormSchema,
@@ -26,14 +25,14 @@ import {
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { FILE_CONFIG } from "@/lib/constants";
 
-interface FileUploadProps {
-  accept: string;
-  maxSize: number;
-  onUpload: (file: File) => void; // Adjusted to not return Promise based on typical usage
-  isUploading: boolean;
-  uploadProgress?: number;
-  uploadedFile: { name: string; size: number } | null;
-}
+// interface FileUploadProps {
+//   accept: string;
+//   maxSize: number;
+//   onUpload: (file: File) => void; // Adjusted to not return Promise based on typical usage
+//   isUploading: boolean;
+//   uploadProgress?: number;
+//   uploadedFile: { name: string; size: number } | null;
+// }
 
 interface EventFormProps {
   onSubmit: (data: EventFormData & { banner?: string }) => Promise<void>;
@@ -84,7 +83,7 @@ export function EventForm({
   };
 
   const handleImageUpload = (file: File) => {
-    uploadImage(file).catch((error) => {
+    uploadImage(file).catch(() => {
       setError("Erro ao fazer upload da imagem. Por favor, tente novamente.");
     });
   };

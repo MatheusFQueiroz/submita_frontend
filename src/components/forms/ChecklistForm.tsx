@@ -27,7 +27,6 @@ import {
 } from "lucide-react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
@@ -92,7 +91,7 @@ export function ChecklistForm({ onSubmit, initialData }: ChecklistFormProps) {
     },
   });
 
-  const { fields, append, remove, move } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: questionsForm.control,
     name: "questions",
   });

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { FileUpload } from "@/components/common/FileUpload";
-import { Plus, X, Calendar, Clock } from "lucide-react";
+import { Plus, X, Calendar } from "lucide-react";
 import { articleSchema, ArticleFormData } from "@/lib/validations";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { FILE_CONFIG } from "@/lib/constants";
@@ -104,7 +104,9 @@ export function ArticleForm({
   const handlePdfUpload = async (file: File) => {
     try {
       await uploadPdf(file);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Erro ao fazer upload do PDF:", error);
+    }
   };
 
   const addKeyword = () => {

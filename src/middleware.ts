@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
-import { is } from "date-fns/locale";
 
 // Rotas que não precisam de autenticação
 const publicRoutes = ["/", "/login", "/register"];
@@ -110,6 +109,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   } catch (error) {
     // Token inválido, redireciona para login
+    console.log("Token inválido ou expirado:", error);
     const response = NextResponse.redirect(new URL("/login", request.url));
     response.cookies.delete("submita_token");
     return response;

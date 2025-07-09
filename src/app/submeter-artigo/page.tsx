@@ -41,7 +41,8 @@ export default function SubmitArticlePage() {
 
         setEvents(availableEvents);
       } catch (error) {
-        null;
+        console.error("Erro ao carregar eventos:", error);
+        toast.error("Erro ao carregar eventos disponíveis");
       } finally {
         setIsLoadingEvents(false);
       }
@@ -74,6 +75,7 @@ export default function SubmitArticlePage() {
       };
 
       // Submeter artigo usando o serviço integrado
+      // eslint-disable-next-line
       const article = await articleService.submitArticleWithUpload(
         submissionData,
         user.id

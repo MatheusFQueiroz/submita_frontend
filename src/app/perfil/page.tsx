@@ -12,7 +12,7 @@ import { ChangePasswordForm } from "@/components/forms/ChangePasswordForm";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { AuthGuard } from "@/components/guards/AuthGuard";
 import { PasswordGuard } from "@/components/guards/PasswordGuard";
-import { User, Settings, Shield, Calendar } from "lucide-react";
+import { User, Settings, Shield } from "lucide-react";
 import { useAuthContext } from "@/providers/AuthProvider";
 import { formatUserRole, formatDate } from "@/lib/utils";
 
@@ -31,7 +31,7 @@ export default function ProfilePage() {
       await refreshProfile();
       setIsEditing(false);
     } catch (error) {
-      null;
+      console.error("Erro ao salvar perfil:", error);
     }
   };
 

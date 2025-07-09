@@ -10,7 +10,7 @@ import {
   ChangePasswordRequest,
 } from "@/types";
 import { ROUTES } from "@/lib/constants";
-import { isTokenExpired, decodeToken, getRedirectPath } from "@/lib/auth";
+import { isTokenExpired, getRedirectPath } from "@/lib/auth";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 
@@ -47,6 +47,7 @@ export function useAuth(): UseAuthReturn {
         const profile = await api.get<User>("/auth/profile");
         setUser(profile);
       } catch (error) {
+        console.error("Erro ao carregar usuário:", error);
         Cookies.remove("submita_token");
       } finally {
         setIsLoading(false);
@@ -147,7 +148,7 @@ export function useAuth(): UseAuthReturn {
       const profile = await api.get<User>("/auth/profile");
       setUser(profile);
     } catch (error) {
-      null;
+      console.error("Erro ao atualizar perfil:", error);
     }
   }, []);
 

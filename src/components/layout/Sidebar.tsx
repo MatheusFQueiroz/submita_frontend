@@ -23,13 +23,7 @@ import {
   FileText,
   Users,
   ClipboardList,
-  Upload,
-  BarChart3,
-  UserCheck,
-  History,
-  Settings,
   X,
-  Heart,
   User,
   LogOut,
 } from "lucide-react";

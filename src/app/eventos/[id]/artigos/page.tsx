@@ -10,7 +10,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { AuthGuard } from "@/components/guards/AuthGuard";
@@ -38,7 +37,9 @@ interface EventArticlesPageProps {
 
 export default function EventArticlesPage({ params }: EventArticlesPageProps) {
   const { id } = React.use(params);
+  // eslint-disable-next-line
   const [searchTerm, setSearchTerm] = useState("");
+  // eslint-disable-next-line
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [assignDialogOpen, setAssignDialogOpen] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);

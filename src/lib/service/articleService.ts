@@ -97,7 +97,6 @@ export const articleService = {
   async updateArticleVersion(
     id: string,
     pdfFile: File,
-    userId: string
   ): Promise<Article> {
     try {
       // Upload do novo PDF

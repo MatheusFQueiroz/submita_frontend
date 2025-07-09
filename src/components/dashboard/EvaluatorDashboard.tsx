@@ -15,7 +15,6 @@ import {
   AlertCircle,
   BookOpen,
 } from "lucide-react";
-import { StatusBadge } from "@/components/common/StatusBadge";
 import { EmptyState } from "@/components/common/EmptyState";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { useApi } from "@/hooks/useApi";

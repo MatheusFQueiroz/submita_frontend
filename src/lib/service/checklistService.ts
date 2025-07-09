@@ -129,7 +129,7 @@ export const checklistService = {
 
       return { checklist, questions };
     } catch (error) {
-      null;
+      // null;
       throw error;
     }
   },

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { api } from "@/lib/api";
 
 interface UseApiOptions {
   immediate?: boolean;

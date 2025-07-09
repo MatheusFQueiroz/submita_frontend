@@ -29,7 +29,6 @@ export function PageLayout({
   const { user } = useAuthContext();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const closeSidebar = () => setSidebarOpen(false);
 
   return (

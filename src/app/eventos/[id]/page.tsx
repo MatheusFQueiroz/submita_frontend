@@ -6,7 +6,6 @@ import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { AuthGuard } from "@/components/guards/AuthGuard";
 import { RoleGuard } from "@/components/guards/RoleGuard";
@@ -65,7 +64,6 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
   const {
     data: articles,
     loading: articlesLoading,
-    error: articlesError,
   } = useApi<Article[]>(
     () =>
       api.get(`/events/${eventId}/articles`).catch((error) => {
@@ -80,7 +78,9 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
 
   const {
     data: eventStats,
+    // eslint-disable-next-line
     loading: statsLoading,
+    // eslint-disable-next-line
     error: statsError,
   } = useApi<any>(
     () =>
@@ -200,7 +200,6 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
 
   const isActive = now >= startDate && now <= endDate;
   const isUpcoming = now < startDate;
-  const isFinished = now > endDate;
 
   const getEventStatus = () => {
     if (isUpcoming)
@@ -486,7 +485,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                   <li>Prepare seu artigo em formato PDF</li>
                   <li>Tenha em mãos o resumo e palavras-chave</li>
                   <li>Liste todos os co-autores (se houver)</li>
-                  <li>Clique em "Submeter Artigo" e preencha o formulário</li>
+                  <li>Clique em &quot;Submeter Artigo&quot; e preencha o formulário</li>
                   <li>Aguarde a confirmação de submissão</li>
                 </ol>
                 <div className="mt-4">

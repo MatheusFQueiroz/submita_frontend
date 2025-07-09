@@ -4,30 +4,18 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { AuthGuard } from "@/components/guards/AuthGuard";
 import { RoleGuard } from "@/components/guards/RoleGuard";
-import { LoadingSpinner } from "@/components/common/LoadingSpinner";
-import { EmptyState } from "@/components/common/EmptyState";
 import { DataTable } from "@/components/common/DataTable";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import {
   FileText,
   Plus,
-  Search,
   Calendar,
   User,
   Eye,
-  Download,
   Edit,
 } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
@@ -39,15 +27,14 @@ import { api } from "@/lib/api";
 
 export default function ArticlesPage() {
   const { user } = useAuthContext();
+  // eslint-disable-next-line
   const [searchTerm, setSearchTerm] = useState("");
+  // eslint-disable-next-line
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const debouncedSearch = useDebounce(searchTerm, 300);
 
   const {
     data: articles,
-    loading,
-    error,
-    execute: refetchArticles,
   } = useApi<Article[]>(
     () => {
       const params = new URLSearchParams();
@@ -171,18 +158,18 @@ export default function ArticlesPage() {
               <DataTable
                 data={articles || []}
                 columns={articleColumns}
-                loading={loading}
-                emptyMessage={
-                  isStudent
-                    ? "Você ainda não submeteu nenhum artigo"
-                    : isEvaluator
-                    ? "Nenhum artigo atribuído para avaliação"
-                    : "Nenhum artigo encontrado"
-                }
-                emptyIcon={FileText}
-                onRowClick={(article: any) =>
-                  (window.location.href = ROUTES.ARTICLE_DETAILS(article.id))
-                }
+                // loading={loading}
+                // emptyMessage={
+                //   isStudent
+                //     ? "Você ainda não submeteu nenhum artigo"
+                //     : isEvaluator
+                //     ? "Nenhum artigo atribuído para avaliação"
+                //     : "Nenhum artigo encontrado"
+                // }
+                // emptyIcon={FileText}
+                // onRowClick={(article: any) =>
+                //   (window.location.href = ROUTES.ARTICLE_DETAILS(article.id))
+                // }
               />
             </CardContent>
           </Card>

@@ -23,6 +23,7 @@ export default function EditEventPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // eslint-disable-next-line
   const { updateEvent, isUpdating } = useUpdateEvent();
 
   const formatDateForInput = (dateString: string | Date) => {
@@ -59,8 +60,7 @@ export default function EditEventPage() {
       await updateEvent(eventId, data);
       router.push(ROUTES.EVENT_DETAILS(eventId));
     } catch (error) {
-      // O hook já trata o erro e mostra o toast
-      null;
+      console.error("Erro ao atualizar evento:", error);
     }
   };
 

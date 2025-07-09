@@ -3,7 +3,6 @@
 import React from "react";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { AuthGuard } from "@/components/guards/AuthGuard";
-import { RoleGuard } from "@/components/guards/RoleGuard";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { EvaluationForm } from "@/components/forms/EvaluationForm";
 import { useApi } from "@/hooks/useApi";
@@ -13,10 +12,10 @@ import { ROUTES, USER_ROLES } from "@/lib/utils";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 
 interface EvaluateArticlePageProps {
   params: { id: string };
+  searchParams: { [key: string]: string | string[] | undefined };
 }
 
 export default function EvaluateArticlePage({

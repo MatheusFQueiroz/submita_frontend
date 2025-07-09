@@ -12,13 +12,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { AuthGuard } from "@/components/guards/AuthGuard";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
@@ -29,14 +22,11 @@ import {
   Plus,
   Search,
   UserMinus,
-  Mail,
-  Calendar,
-  FileText,
 } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
 import { useDebounce } from "@/hooks/useDebounce";
 import { User, Event } from "@/types";
-import { ROUTES, formatDate, formatUserRole, USER_ROLES } from "@/lib/utils";
+import { ROUTES, USER_ROLES } from "@/lib/utils";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
 

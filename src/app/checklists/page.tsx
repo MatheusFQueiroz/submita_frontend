@@ -1,10 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -15,15 +13,12 @@ import {
 } from "@/components/ui/dialog";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { AuthGuard } from "@/components/guards/AuthGuard";
-import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { DataTable } from "@/components/common/DataTable";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { ChecklistForm } from "@/components/forms/ChecklistForm";
 import {
   ClipboardList,
   Plus,
-  Search,
-  Edit,
   Trash2,
   Eye,
   FileText,
@@ -60,6 +55,7 @@ interface ChecklistWithQuestions {
 }
 
 export default function ChecklistsPage() {
+  // eslint-disable-next-line
   const [searchTerm, setSearchTerm] = useState("");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [viewQuestionsDialogOpen, setViewQuestionsDialogOpen] = useState(false);
@@ -71,7 +67,6 @@ export default function ChecklistsPage() {
   // ✅ Buscar checklists COM questões em uma única requisição
   const {
     data: checklists,
-    loading,
     execute: refetchChecklists,
   } = useApi<ChecklistWithQuestions[]>(
     () => {
@@ -84,7 +79,7 @@ export default function ChecklistsPage() {
   );
 
   // Callback do formulário - recebe o ID do checklist criado
-  const handleCreateChecklist = async (checklistId: string) => {
+  const handleCreateChecklist = async () => {
     setCreateDialogOpen(false);
     await refetchChecklists(); // Recarrega a lista
     toast.success("Checklist criado com sucesso!");
@@ -166,6 +161,7 @@ export default function ChecklistsPage() {
       render: (_: any, checklist: ChecklistWithQuestions) => {
         const activeQuestions =
           checklist.questions?.filter((q) => q.isActive) || [];
+          // eslint-disable-next-line
         const requiredCount = activeQuestions.filter(
           (q) => q.isRequired
         ).length;
@@ -285,9 +281,9 @@ export default function ChecklistsPage() {
               <DataTable
                 data={checklists || []}
                 columns={checklistColumns}
-                loading={loading}
-                emptyMessage="Nenhum checklist encontrado"
-                emptyIcon={ClipboardList}
+                // loading={loading}
+                // emptyMessage="Nenhum checklist encontrado"
+                // emptyIcon={ClipboardList}
               />
             </CardContent>
           </Card>
@@ -428,7 +424,7 @@ export default function ChecklistsPage() {
                 <div className="space-y-3">
                   <p>
                     Tem certeza que deseja desativar o checklist{" "}
-                    <strong>"{selectedChecklist.name}"</strong>?
+                    <strong>&rsquo;{selectedChecklist.name}&rsquo;</strong>?
                   </p>
                   <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
                     <div className="flex">

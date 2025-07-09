@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { AuthGuard } from "@/components/guards/AuthGuard";
@@ -15,10 +14,8 @@ import { EmptyState } from "@/components/common/EmptyState";
 import {
   Calendar,
   Plus,
-  Search,
   Clock,
   Users,
-  FileText,
   Settings,
   Eye,
   Upload,
@@ -40,6 +37,7 @@ interface EventsApiResponse {
 }
 
 export default function EventsPage() {
+  // eslint-disable-next-line
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearch = useDebounce(searchTerm, 300);
   const { user } = useAuth();
@@ -189,6 +187,7 @@ export default function EventsPage() {
                 const startDate = new Date(event.submissionStartDate);
                 const endDate = new Date(event.submissionEndDate);
                 const isActive = now >= startDate && now <= endDate;
+                // eslint-disable-next-line
                 const canSubmit = isStudent && isActive;
 
                 return (

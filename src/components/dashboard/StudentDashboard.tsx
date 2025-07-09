@@ -4,13 +4,11 @@ import React from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   FileText,
   Upload,
   CheckCircle,
-  XCircle,
   Clock,
   AlertTriangle,
   TrendingUp,
@@ -20,7 +18,7 @@ import { StatusBadge } from "@/components/common/StatusBadge";
 import { EmptyState } from "@/components/common/EmptyState";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { useApi } from "@/hooks/useApi";
-import { Article, StudentStats } from "@/types";
+import { StudentStats } from "@/types";
 import { ROUTES, formatDate } from "@/lib/utils";
 import { api } from "@/lib/api";
 
@@ -28,7 +26,6 @@ export function StudentDashboard() {
   const {
     data: stats,
     loading: statsLoading,
-    error: statsError,
   } = useApi<StudentStats>(() => api.get("/dashboard/student/stats"), {
     immediate: true,
   });

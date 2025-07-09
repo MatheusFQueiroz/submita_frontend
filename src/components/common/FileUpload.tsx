@@ -35,6 +35,7 @@ export function FileUpload({
   uploadedFile,
   error,
 }: FileUploadProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [dragActive, setDragActive] = useState(false);
 
   const onDrop = useCallback(

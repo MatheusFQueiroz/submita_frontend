@@ -58,12 +58,14 @@ export function useUsers() {
     if (activeTab === "students") {
       executeStudents();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, studentsParams]);
 
   useEffect(() => {
     if (activeTab === "evaluators") {
       executeEvaluators();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, evaluatorsParams]);
 
   // Log para debug

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { EventForm } from "@/components/forms/EventForm";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { AuthGuard } from "@/components/guards/AuthGuard";
-import { RoleGuard } from "@/components/guards/RoleGuard";
 import { EventFormData } from "@/lib/validations";
 import { ROUTES, USER_ROLES } from "@/lib/utils";
 import { api } from "@/lib/api";

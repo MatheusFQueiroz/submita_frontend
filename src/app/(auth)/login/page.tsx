@@ -1,9 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
-import Link from "next/link";
 import { LoginForm } from "@/components/forms/LoginForm";
-import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Login",
