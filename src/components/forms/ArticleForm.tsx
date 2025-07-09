@@ -136,9 +136,10 @@ export function ArticleForm({
   };
 
   // ✅ FUNÇÃO AUXILIAR: Formatar data para exibição
-  const formatEventDate = (dateString: string) => {
+  const formatEventDate = (date: string | Date) => {
     try {
-      return new Date(dateString).toLocaleDateString("pt-BR", {
+      const dateObj = typeof date === "string" ? new Date(date) : date;
+      return dateObj.toLocaleDateString("pt-BR", {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
@@ -146,15 +147,21 @@ export function ArticleForm({
         minute: "2-digit",
       });
     } catch {
-      return dateString;
+      return typeof date === "string" ? date : date.toString();
     }
   };
 
   // ✅ FUNÇÃO AUXILIAR: Verificar se evento está no período
   const isEventInSubmissionPeriod = (event: Event) => {
     const now = new Date();
-    const start = new Date(event.submissionStartDate);
-    const end = new Date(event.submissionEndDate);
+    const start =
+      typeof event.submissionStartDate === "string"
+        ? new Date(event.submissionStartDate)
+        : event.submissionStartDate;
+    const end =
+      typeof event.submissionEndDate === "string"
+        ? new Date(event.submissionEndDate)
+        : event.submissionEndDate;
     return now >= start && now <= end;
   };
 
@@ -186,13 +193,13 @@ export function ArticleForm({
         )}
 
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-          {/* ✅ PRIMEIRO CAMPO: Evento */}
+          {/* ✅ PRIMEIRO CAMPO: Evento - SELECT MAIOR */}
           <div className="space-y-2">
             <Label className="text-base font-semibold">
               Evento de Submissão *
             </Label>
             <Select onValueChange={(value) => setValue("eventId", value)}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full !h-16">
                 <SelectValue placeholder="Selecione o evento para submissão" />
               </SelectTrigger>
               <SelectContent>
@@ -389,7 +396,11 @@ export function ArticleForm({
             <Button type="button" variant="outline">
               Salvar como rascunho
             </Button>
-            <Button type="submit" disabled={isSubmitting || isUploading}>
+            <Button
+              type="submit"
+              disabled={isSubmitting || isUploading}
+              className="btn-gradient-accent"
+            >
               {isSubmitting ? "Submetendo..." : "Submeter artigo"}
             </Button>
           </div>

@@ -16,8 +16,6 @@ import {
   FileText,
   Download,
   Star,
-  Clock,
-  Users,
 } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
 import { useAuthContext } from "@/providers/AuthProvider";
@@ -45,6 +43,11 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
   const { data: evaluations, loading: evaluationsLoading } = useApi<
     Evaluation[]
   >(() => api.get(`/articles/${id}`), { immediate: true });
+
+  const fileUrl =
+    process.env.NEXT_PUBLIC_API_MINIO +
+    "/submita-pdfs/" +
+    article?.article.versions?.[0]?.pdfPath;
 
   // const isAuthor = user?.id === article?.article.userId;
   const isEvaluator = user?.role === USER_ROLES.EVALUATOR;
@@ -132,24 +135,14 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
               </Button>
             )}
 
-            {/* 
-            {canEdit && (
-              <Button variant="outline" asChild>
-                <Link href={ROUTES.ARTICLE_DETAILS(article.article.id)}>
-                  <Edit className="mr-2 h-4 w-4" />
-                  Editar
-                </Link>
-              </Button>
-            )} */}
-
-            {/* {canEvaluate && (
+            {canEvaluate && (
               <Button asChild>
                 <Link href={ROUTES.EVALUATE_ARTICLE(article.article.id)}>
                   <Star className="mr-2 h-4 w-4" />
                   Avaliar
                 </Link>
               </Button>
-            )} */}
+            )}
 
             {/* {canWithdraw && (
               <Button
@@ -166,16 +159,11 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Coluna do PDF - 2/3 da largura */}
           <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>PDF</CardTitle>
-            </CardHeader>
             <CardContent>
               {article.article.versions![0].pdfPath ? (
                 <PDFViewer
-                  fileUrl={`/api/files/file/submita-pdfs?fileName=${
-                    article.article.versions![0].pdfPath
-                  }`}
-                  fileName={`${article.article.versions![0].pdfPath}.pdf`}
+                  fileUrl={fileUrl}
+                  fileName={fileUrl}
                   className="min-h-[800px]"
                 />
               ) : (
@@ -195,17 +183,9 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                   <FileText className="mr-1 h-3 w-3" />
                   Visão Geral
                 </TabsTrigger>
-                <TabsTrigger value="checklist" className="text-xs">
-                  <Users className="mr-1 h-3 w-3" />
-                  Checklist
-                </TabsTrigger>
                 <TabsTrigger value="evaluations" className="text-xs">
                   <Star className="mr-1 h-3 w-3" />
                   Avaliações
-                </TabsTrigger>
-                <TabsTrigger value="history" className="text-xs">
-                  <Clock className="mr-1 h-3 w-3" />
-                  Histórico
                 </TabsTrigger>
               </TabsList>
 
@@ -228,12 +208,6 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                       <Badge variant="outline">
                         {article.article.currentVersion}
                       </Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Autor:</span>
-                      <span className="text-sm text-gray-600">
-                        {article.article.user?.name}
-                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">Data:</span>
@@ -541,7 +515,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                                   ? formatDate(evaluation.evaluationDate)
                                   : "Em andamento"}
                               </span>
-                              {evaluation.status === "PENDING" && (
+                              {evaluation.status === "TO_CORRECTION" && (
                                 <Badge variant="outline" className="text-xs">
                                   Pendente
                                 </Badge>
