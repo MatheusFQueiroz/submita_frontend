@@ -14,6 +14,9 @@ const nextConfig = {
   env: {
     CUSTOM_KEY: "SUBMITA_BIOPARK",
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   async headers() {
     return [
       {

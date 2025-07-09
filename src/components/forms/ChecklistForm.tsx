@@ -23,19 +23,21 @@ import {
   ArrowLeft,
   ClipboardList,
   HelpCircle,
-  GripVertical,
 } from "lucide-react";
-import { useForm, useFieldArray } from "react-hook-form";
+import {
+  useForm,
+  useFieldArray,
+  FieldError,
+  LiteralUnion,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import {
   checklistBasicSchema,
-  questionsSchema,
   ChecklistBasicFormData,
-  QuestionsFormData,
-  QuestionFormData,
 } from "@/lib/validations";
 
 // Tipos de pergunta disponíveis (baseado na API)
@@ -47,17 +49,38 @@ const QUESTION_TYPES = {
 
 type QuestionType = keyof typeof QUESTION_TYPES;
 
-// Schema para validação (usando os schemas do arquivo de validações)
+// Schema local para perguntas - corrigido para evitar conflitos de tipo
+const questionFormSchema = z.object({
+  description: z
+    .string()
+    .min(3, "Pergunta deve ter pelo menos 3 caracteres")
+    .max(200, "Pergunta deve ter no máximo 200 caracteres")
+    .transform((val) => val.trim()),
+  type: z.enum(["YES_NO", "TEXT", "SCALE"], {
+    required_error: "Tipo de pergunta é obrigatório",
+    invalid_type_error: "Tipo de pergunta inválido",
+  }),
+  isRequired: z.boolean(),
+});
+
+const questionsFormSchema = z.object({
+  questions: z
+    .array(questionFormSchema)
+    .min(1, "Pelo menos uma pergunta é obrigatória")
+    .max(20, "Máximo de 20 perguntas permitidas"),
+});
+
+// Tipos inferidos localmente
+type QuestionFormData = z.infer<typeof questionFormSchema>;
+type QuestionsFormData = z.infer<typeof questionsFormSchema>;
 type ChecklistBasicData = ChecklistBasicFormData;
-type QuestionData = QuestionFormData;
-type QuestionsData = QuestionsFormData;
 
 interface ChecklistFormProps {
   onSubmit?: (checklistId: string) => void;
   initialData?: {
     title?: string;
     description?: string;
-    questions?: QuestionData[];
+    questions?: QuestionFormData[];
   };
 }
 
@@ -78,8 +101,8 @@ export function ChecklistForm({ onSubmit, initialData }: ChecklistFormProps) {
   });
 
   // Form para perguntas
-  const questionsForm = useForm<QuestionsData>({
-    resolver: zodResolver(questionsSchema),
+  const questionsForm = useForm<QuestionsFormData>({
+    resolver: zodResolver(questionsFormSchema),
     defaultValues: {
       questions: initialData?.questions || [
         {
@@ -91,7 +114,7 @@ export function ChecklistForm({ onSubmit, initialData }: ChecklistFormProps) {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, move } = useFieldArray({
     control: questionsForm.control,
     name: "questions",
   });
@@ -101,9 +124,8 @@ export function ChecklistForm({ onSubmit, initialData }: ChecklistFormProps) {
     try {
       setIsSubmitting(true);
 
-      // ✅ Mapear dados do frontend para API (title -> name)
       const response = await api.post("/checklists", {
-        name: data.title, // API espera 'name', não 'title'
+        name: data.title,
         description: data.description,
       });
 
@@ -119,7 +141,7 @@ export function ChecklistForm({ onSubmit, initialData }: ChecklistFormProps) {
   };
 
   // Etapa 2: Adicionar perguntas
-  const handleQuestionsSubmit = async (data: QuestionsData) => {
+  const handleQuestionsSubmit = async (data: QuestionsFormData) => {
     if (!checklistId) {
       toast.error("ID do checklist não encontrado");
       return;
@@ -128,7 +150,6 @@ export function ChecklistForm({ onSubmit, initialData }: ChecklistFormProps) {
     try {
       setIsSubmitting(true);
 
-      // ✅ Preparar perguntas com dados corretos da API
       const questionsWithOrder = data.questions.map((question, index) => ({
         description: question.description,
         type: question.type,
@@ -143,12 +164,13 @@ export function ChecklistForm({ onSubmit, initialData }: ChecklistFormProps) {
       toast.success("Checklist criado com sucesso!");
       onSubmit?.(checklistId);
     } catch (error: any) {
-      toast.error(error.message || "Erro ao adicionar perguntas");
+      toast.error(error.message || "Erro ao criar checklist");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // Função para adicionar nova pergunta
   const addQuestion = () => {
     append({
       description: "",
@@ -157,384 +179,349 @@ export function ChecklistForm({ onSubmit, initialData }: ChecklistFormProps) {
     });
   };
 
-  const getQuestionPreview = (question: QuestionData) => {
-    switch (question.type) {
-      case "YES_NO":
-        return "Resposta: Sim / Não";
-      case "TEXT":
-        return "Resposta: Campo de texto livre";
-      case "SCALE":
-        return "Resposta: Escala de 1 a 10";
-      default:
-        return "";
+  // Função para remover pergunta
+  const removeQuestion = (index: number) => {
+    if (fields.length > 1) {
+      remove(index);
+    } else {
+      toast.error("É necessário ter pelo menos uma pergunta");
     }
   };
 
-  if (currentStep === "basic") {
-    return (
-      <div className="space-y-6 bg-white p-6">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-[#243444] rounded-full flex items-center justify-center text-white font-bold">
-            1
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">
-              Informações Básicas
-            </h3>
-            <p className="text-sm text-gray-500">
-              Defina o título e descrição do checklist
-            </p>
-          </div>
-        </div>
+  // Função para mover pergunta para cima
+  const moveQuestionUp = (index: number) => {
+    if (index > 0) {
+      move(index, index - 1);
+    }
+  };
 
-        <form
-          onSubmit={basicForm.handleSubmit(handleBasicSubmit)}
-          className="space-y-4"
-        >
-          <div className="space-y-2">
-            <Label
-              htmlFor="title"
-              className="text-sm font-medium text-gray-700"
-            >
-              Título do Checklist *
-            </Label>
-            <Input
-              id="title"
-              placeholder="Ex: Checklist de Avaliação de Artigos Científicos"
-              className="bg-white border-gray-300"
-              {...basicForm.register("title")}
-            />
-            {basicForm.formState.errors.title && (
-              <p className="text-sm text-red-600">
-                {basicForm.formState.errors.title.message}
-              </p>
-            )}
-          </div>
+  // Função para mover pergunta para baixo
+  const moveQuestionDown = (index: number) => {
+    if (index < fields.length - 1) {
+      move(index, index + 1);
+    }
+  };
 
-          <div className="space-y-2">
-            <Label
-              htmlFor="description"
-              className="text-sm font-medium text-gray-700"
-            >
-              Descrição (Opcional)
-            </Label>
-            <Textarea
-              id="description"
-              placeholder="Descreva o propósito e contexto deste checklist..."
-              className="bg-white border-gray-300 min-h-[80px]"
-              {...basicForm.register("description")}
-            />
-            {basicForm.formState.errors.description && (
-              <p className="text-sm text-red-600">
-                {basicForm.formState.errors.description.message}
-              </p>
-            )}
-          </div>
-
-          <div className="flex justify-end pt-4">
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="bg-[#243444] hover:bg-[#1a2631] text-white"
-            >
-              {isSubmitting ? (
-                <>
-                  <LoadingSpinner size="sm" className="mr-2" />
-                  Criando...
-                </>
-              ) : (
-                <>
-                  Próximo
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </>
-              )}
-            </Button>
-          </div>
-        </form>
-      </div>
-    );
-  }
+  // Helper para obter mensagem de erro
+  const getErrorMessage = (error: any): string | undefined => {
+    if (!error) return undefined;
+    if (typeof error === "string") return error;
+    if (typeof error === "object" && error.message) return error.message;
+    return undefined;
+  };
 
   return (
-    <div className="space-y-6 bg-white p-6">
-      {/* Header da Etapa 2 */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-[#243444] rounded-full flex items-center justify-center text-white font-bold">
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Progress Indicator */}
+      <div className="flex items-center justify-center space-x-4 mb-8">
+        <div className="flex items-center">
+          <div
+            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+              currentStep === "basic"
+                ? "bg-blue-600 text-white"
+                : "bg-green-600 text-white"
+            }`}
+          >
+            1
+          </div>
+          <span className="ml-2 text-sm font-medium text-gray-900">
+            Informações Básicas
+          </span>
+        </div>
+        <div className="flex-1 h-px bg-gray-300"></div>
+        <div className="flex items-center">
+          <div
+            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+              currentStep === "questions"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-300 text-gray-500"
+            }`}
+          >
             2
           </div>
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">
-              Adicionar Perguntas
-            </h3>
-            <p className="text-sm text-gray-500">
-              Configure as perguntas do checklist
-            </p>
-          </div>
+          <span className="ml-2 text-sm font-medium text-gray-900">
+            Perguntas
+          </span>
         </div>
-
-        <Button
-          variant="outline"
-          onClick={() => setCurrentStep("basic")}
-          className="bg-white border-gray-300"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Voltar
-        </Button>
       </div>
 
-      <form
-        onSubmit={questionsForm.handleSubmit(handleQuestionsSubmit)}
-        className="space-y-6"
-      >
-        {/* Lista de Perguntas */}
-        <div className="space-y-4">
-          {fields.map((field, index) => (
-            <Card
-              key={field.id}
-              className="bg-gray-50 border border-gray-200 question-card"
+      {/* Etapa 1: Informações Básicas */}
+      {currentStep === "basic" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <ClipboardList className="mr-2 h-5 w-5" />
+              Criar Checklist - Informações Básicas
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form
+              onSubmit={basicForm.handleSubmit(handleBasicSubmit)}
+              className="space-y-4"
             >
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium text-gray-700 flex items-center">
-                    <span
-                      className={`status-indicator mr-2 ${
-                        questionsForm.watch(`questions.${index}.isRequired`)
-                          ? "required"
-                          : "optional"
-                      }`}
-                    />
-                    Pergunta {index + 1}
-                    <Badge
-                      className={`ml-2 text-xs ${
-                        questionsForm.watch(`questions.${index}.isRequired`)
-                          ? "required-badge"
-                          : "optional-badge"
-                      }`}
-                    >
-                      {questionsForm.watch(`questions.${index}.isRequired`)
-                        ? "Obrigatória"
-                        : "Opcional"}
-                    </Badge>
-                  </CardTitle>
-                  <div className="flex items-center space-x-2">
-                    {fields.length > 1 && (
+              {/* Título */}
+              <div className="space-y-2">
+                <Label htmlFor="title">Título do Checklist *</Label>
+                <Input
+                  id="title"
+                  placeholder="Ex: Avaliação de Artigos Científicos"
+                  {...basicForm.register("title")}
+                />
+                {basicForm.formState.errors.title && (
+                  <p className="text-sm text-red-600">
+                    {getErrorMessage(basicForm.formState.errors.title)}
+                  </p>
+                )}
+              </div>
+
+              {/* Descrição */}
+              <div className="space-y-2">
+                <Label htmlFor="description">Descrição (Opcional)</Label>
+                <Textarea
+                  id="description"
+                  placeholder="Descreva o propósito e contexto deste checklist..."
+                  rows={3}
+                  {...basicForm.register("description")}
+                />
+                {basicForm.formState.errors.description && (
+                  <p className="text-sm text-red-600">
+                    {getErrorMessage(basicForm.formState.errors.description)}
+                  </p>
+                )}
+              </div>
+
+              {/* Botões */}
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex items-center"
+                >
+                  {isSubmitting ? (
+                    <LoadingSpinner className="mr-2" />
+                  ) : (
+                    <ArrowRight className="mr-2 h-4 w-4" />
+                  )}
+                  Próximo: Perguntas
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Etapa 2: Perguntas */}
+      {currentStep === "questions" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center">
+                <HelpCircle className="mr-2 h-5 w-5" />
+                Criar Checklist - Perguntas
+              </div>
+              <Badge variant="outline">{fields.length} pergunta(s)</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form
+              onSubmit={questionsForm.handleSubmit(handleQuestionsSubmit)}
+              className="space-y-6"
+            >
+              {/* Lista de Perguntas */}
+              <div className="space-y-4">
+                {fields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="border border-gray-200 rounded-lg p-4 bg-gray-50"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="secondary">Pergunta {index + 1}</Badge>
+                        {/* Botões de reordenação */}
+                        <div className="flex space-x-1">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => moveQuestionUp(index)}
+                            disabled={index === 0}
+                          >
+                            ↑
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => moveQuestionDown(index)}
+                            disabled={index === fields.length - 1}
+                          >
+                            ↓
+                          </Button>
+                        </div>
+                      </div>
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
-                        onClick={() => remove(index)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => removeQuestion(index)}
+                        disabled={fields.length <= 1}
+                        className="text-red-600 hover:text-red-700"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
-                    )}
-                    <GripVertical className="h-4 w-4 text-gray-400" />
-                  </div>
-                </div>
-              </CardHeader>
+                    </div>
 
-              <CardContent className="space-y-4">
-                {/* Texto da Pergunta */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">
-                    Texto da Pergunta *
-                  </Label>
-                  <Textarea
-                    placeholder="Digite a pergunta que será feita ao avaliador..."
-                    className="question-textarea"
-                    {...questionsForm.register(
-                      `questions.${index}.description`
-                    )}
-                  />
-                  {questionsForm.formState.errors.questions?.[index]
-                    ?.description && (
-                    <p className="text-sm text-red-600">
-                      {
-                        questionsForm.formState.errors.questions[index]
-                          .description.message
-                      }
-                    </p>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Tipo de Resposta */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-700">
-                      Tipo de Resposta *
-                    </Label>
-                    <Select
-                      value={questionsForm.watch(`questions.${index}.type`)}
-                      onValueChange={(value: QuestionType) =>
-                        questionsForm.setValue(`questions.${index}.type`, value)
-                      }
-                    >
-                      <SelectTrigger className="question-type-select">
-                        <SelectValue placeholder="Selecione o tipo" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white border border-gray-200 shadow-lg">
-                        {Object.entries(QUESTION_TYPES).map(([key, label]) => (
-                          <SelectItem
-                            key={key}
-                            value={key}
-                            className="hover:bg-gray-50"
-                          >
-                            {label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {questionsForm.formState.errors.questions?.[index]
-                      ?.type && (
-                      <p className="text-sm text-red-600">
-                        {
-                          questionsForm.formState.errors.questions[index]?.type
-                            ?.message
-                        }
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Campo Obrigatório com Melhor Visibilidade */}
-                  <div className="space-y-3">
-                    <Label className="text-sm font-medium text-gray-700">
-                      Resposta
-                    </Label>
-                    <div className="flex items-center justify-between p-3 bg-white rounded-lg border-2 border-gray-200">
-                      <div className="flex items-center space-x-3">
-                        <div
-                          className={`status-indicator ${
-                            questionsForm.watch(`questions.${index}.isRequired`)
-                              ? "required"
-                              : "optional"
-                          }`}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Descrição da pergunta */}
+                      <div className="md:col-span-2">
+                        <Label htmlFor={`questions.${index}.description`}>
+                          Pergunta *
+                        </Label>
+                        <Textarea
+                          id={`questions.${index}.description`}
+                          placeholder="Digite sua pergunta..."
+                          rows={2}
+                          {...questionsForm.register(
+                            `questions.${index}.description`
+                          )}
                         />
-                        <span className="text-sm font-medium text-gray-900">
-                          {questionsForm.watch(`questions.${index}.isRequired`)
-                            ? "Obrigatória"
-                            : "Opcional"}
-                        </span>
+                        {questionsForm.formState.errors.questions?.[index]
+                          ?.description && (
+                          <p className="text-sm text-red-600 mt-1">
+                            {getErrorMessage(
+                              questionsForm.formState.errors.questions[index]
+                                ?.description
+                            )}
+                          </p>
+                        )}
                       </div>
-                      <Switch
-                        checked={questionsForm.watch(
-                          `questions.${index}.isRequired`
+
+                      {/* Tipo de pergunta */}
+                      <div>
+                        <Label htmlFor={`questions.${index}.type`}>
+                          Tipo de Resposta *
+                        </Label>
+                        <Select
+                          value={questionsForm.watch(`questions.${index}.type`)}
+                          onValueChange={(value: QuestionType) =>
+                            questionsForm.setValue(
+                              `questions.${index}.type`,
+                              value
+                            )
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o tipo" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Object.entries(QUESTION_TYPES).map(
+                              ([key, label]) => (
+                                <SelectItem key={key} value={key}>
+                                  {label}
+                                </SelectItem>
+                              )
+                            )}
+                          </SelectContent>
+                        </Select>
+                        {questionsForm.formState.errors.questions?.[index]
+                          ?.type && (
+                          <p className="text-sm text-red-600 mt-1">
+                            {getErrorMessage(
+                              questionsForm.formState.errors.questions[index]
+                                ?.type
+                            )}
+                          </p>
                         )}
-                        onCheckedChange={(checked) =>
-                          questionsForm.setValue(
-                            `questions.${index}.isRequired`,
-                            checked
-                          )
-                        }
-                        className={
-                          questionsForm.watch(`questions.${index}.isRequired`)
-                            ? "switch-required"
-                            : "switch-optional"
-                        }
-                      />
+                      </div>
+
+                      {/* Obrigatória */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-col">
+                          <Label
+                            htmlFor={`questions.${index}.isRequired`}
+                            className={`text-sm font-medium ${
+                              questionsForm.watch(
+                                `questions.${index}.isRequired`
+                              )
+                                ? "text-red-600"
+                                : "text-gray-600"
+                            }`}
+                          >
+                            {questionsForm.watch(
+                              `questions.${index}.isRequired`
+                            )
+                              ? "Obrigatória"
+                              : "Opcional"}
+                          </Label>
+                          <span className="text-xs text-gray-500">
+                            {questionsForm.watch(
+                              `questions.${index}.isRequired`
+                            )
+                              ? "Avaliador deve responder"
+                              : "Resposta opcional"}
+                          </span>
+                        </div>
+                        <Switch
+                          checked={questionsForm.watch(
+                            `questions.${index}.isRequired`
+                          )}
+                          onCheckedChange={(checked) =>
+                            questionsForm.setValue(
+                              `questions.${index}.isRequired`,
+                              checked
+                            )
+                          }
+                        />
+                      </div>
                     </div>
-                    <p className="text-xs text-gray-500">
-                      {questionsForm.watch(`questions.${index}.isRequired`)
-                        ? "Esta pergunta deve ser respondida obrigatoriamente"
-                        : "Esta pergunta pode ser deixada em branco"}
-                    </p>
                   </div>
-                </div>
-
-                {/* Preview */}
-                <div className="question-preview">
-                  <div className="flex items-start space-x-2">
-                    <HelpCircle className="h-4 w-4 question-preview-icon mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium question-preview-text">
-                        Preview:
-                      </p>
-                      <p className="text-sm question-preview-text">
-                        {getQuestionPreview(
-                          questionsForm.watch(`questions.${index}`)
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Botão Adicionar Pergunta */}
-        <Button
-          type="button"
-          variant="outline"
-          onClick={addQuestion}
-          className="w-full bg-white border-gray-300 border-dashed"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Adicionar Nova Pergunta
-        </Button>
-
-        {/* Resumo */}
-        <Card className="bg-gray-50 border border-gray-200">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-900">
-                  Total de Perguntas: {fields.length}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Obrigatórias:{" "}
-                  {
-                    fields.filter((_, index) =>
-                      questionsForm.watch(`questions.${index}.isRequired`)
-                    ).length
-                  }
-                </p>
+                ))}
               </div>
-              <Badge variant="secondary" className="ml-2">
-                <ClipboardList className="mr-1 h-3 w-3" />
-                {fields.length} {fields.length === 1 ? "pergunta" : "perguntas"}
-              </Badge>
-            </div>
+
+              {/* Botão Adicionar Pergunta */}
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={addQuestion}
+                  disabled={fields.length >= 20}
+                  className="flex items-center"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Adicionar Pergunta
+                  {fields.length >= 20 && " (Máximo atingido)"}
+                </Button>
+              </div>
+
+              {/* Botões de Ação */}
+              <div className="flex justify-between pt-6 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCurrentStep("basic")}
+                  disabled={isSubmitting}
+                  className="flex items-center"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Voltar
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting || fields.length === 0}
+                  className="flex items-center"
+                >
+                  {isSubmitting ? (
+                    <LoadingSpinner className="mr-2" />
+                  ) : (
+                    <Save className="mr-2 h-4 w-4" />
+                  )}
+                  Criar Checklist
+                </Button>
+              </div>
+            </form>
           </CardContent>
         </Card>
-
-        {/* Botões de Ação */}
-        <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setCurrentStep("basic")}
-            className="bg-white border-gray-300"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Voltar
-          </Button>
-          <Button
-            type="submit"
-            disabled={isSubmitting || fields.length === 0}
-            className="bg-[#243444] hover:bg-[#1a2631] text-white"
-          >
-            {isSubmitting ? (
-              <>
-                <LoadingSpinner size="sm" className="mr-2" />
-                Finalizando...
-              </>
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                Finalizar Checklist
-              </>
-            )}
-          </Button>
-        </div>
-
-        {/* Erros gerais do formulário */}
-        {questionsForm.formState.errors.questions && (
-          <div className="text-sm text-red-600 mt-2">
-            {questionsForm.formState.errors.questions.message}
-          </div>
-        )}
-      </form>
+      )}
     </div>
   );
 }

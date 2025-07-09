@@ -12,20 +12,37 @@ import { ROUTES, USER_ROLES } from "@/lib/utils";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 interface EvaluateArticlePageProps {
-  params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<{ id: string }>;
 }
 
 export default function EvaluateArticlePage({
   params,
 }: EvaluateArticlePageProps) {
   const router = useRouter();
+  const [articleId, setArticleId] = React.useState<string | null>(null);
+  const [paramsError, setParamsError] = React.useState<string | null>(null);
+
+  // Resolver params assíncronos
+  React.useEffect(() => {
+    const resolveParams = async () => {
+      try {
+        const resolvedParams = await params;
+        setArticleId(resolvedParams.id);
+      } catch (error) {
+        console.error("Erro ao resolver params:", error);
+        setParamsError("Erro ao carregar parâmetros da página");
+      }
+    };
+
+    resolveParams();
+  }, [params]);
 
   const { data: article, loading: articleLoading } = useApi<{
     article: Article;
-  }>(() => api.get(`/articles/${params.id}`), { immediate: true });
+  }>(() => api.get(`/articles/${articleId}`), { immediate: !!articleId });
 
   const {
     data: questions,
@@ -40,8 +57,8 @@ export default function EvaluateArticlePage({
   );
 
   const { data: existingEvaluation, loading: evaluationLoading } =
-    useApi<Evaluation>(() => api.get(`/articles/${params.id}`), {
-      immediate: true,
+    useApi<Evaluation>(() => api.get(`/articles/${articleId}`), {
+      immediate: !!articleId,
     });
 
   // Carrega perguntas quando artigo é carregado
@@ -52,6 +69,8 @@ export default function EvaluateArticlePage({
   }, [article?.article.eventId, refetchQuestions]);
 
   const handleSubmitEvaluation = async (data: EvaluationFormData) => {
+    if (!articleId) return;
+
     try {
       if (existingEvaluation) {
         // Atualiza avaliação existente
@@ -60,7 +79,7 @@ export default function EvaluateArticlePage({
         // Cria nova avaliação
         await api.post(`/evaluations`, {
           ...data,
-          articleId: params.id,
+          articleId,
         });
       }
 
@@ -72,31 +91,49 @@ export default function EvaluateArticlePage({
   };
 
   const handleSaveDraft = async (data: Partial<EvaluationFormData>) => {
+    if (!articleId) return;
+
     try {
       if (existingEvaluation) {
         await api.put(`/evaluations/${existingEvaluation.id}/draft`, data);
       } else {
         await api.post(`/evaluations/draft`, {
           ...data,
-          articleId: params.id,
+          articleId,
         });
       }
 
       toast.success("Rascunho salvo com sucesso!");
     } catch (error: any) {
-      toast.error(error.message || "Erro ao salvar rascunho");
+      throw new Error(error.message || "Erro ao salvar rascunho");
     }
   };
 
-  if (articleLoading || questionsLoading || evaluationLoading) {
+  // Show error if params failed to resolve
+  if (paramsError) {
     return (
-      <AuthGuard requiredRoles={[USER_ROLES.EVALUATOR]}>
-        <PageLayout>
-          <div className="flex justify-center py-8">
-            <LoadingSpinner text="Carregando avaliação..." />
+      <PageLayout>
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold text-red-600 mb-2">
+              Erro ao carregar página
+            </h2>
+            <p className="text-gray-600 mb-4">{paramsError}</p>
+            <Button onClick={() => router.back()}>Voltar</Button>
           </div>
-        </PageLayout>
-      </AuthGuard>
+        </div>
+      </PageLayout>
+    );
+  }
+
+  // Show loading while resolving params
+  if (!articleId) {
+    return (
+      <PageLayout>
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <LoadingSpinner />
+        </div>
+      </PageLayout>
     );
   }
 

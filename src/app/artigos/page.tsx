@@ -10,14 +10,7 @@ import { AuthGuard } from "@/components/guards/AuthGuard";
 import { RoleGuard } from "@/components/guards/RoleGuard";
 import { DataTable } from "@/components/common/DataTable";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import {
-  FileText,
-  Plus,
-  Calendar,
-  User,
-  Eye,
-  Edit,
-} from "lucide-react";
+import { FileText, Plus, Calendar, User, Eye, Edit } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useAuthContext } from "@/providers/AuthProvider";
@@ -33,9 +26,7 @@ export default function ArticlesPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const debouncedSearch = useDebounce(searchTerm, 300);
 
-  const {
-    data: articles,
-  } = useApi<Article[]>(
+  const { data: articles } = useApi<Article[]>(
     () => {
       const params = new URLSearchParams();
       if (debouncedSearch) params.append("search", debouncedSearch);

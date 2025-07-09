@@ -159,7 +159,7 @@ export const createEvaluatorSchema = z.object({
   email: z.string().min(1, "E-mail é obrigatório").email("E-mail inválido"),
 });
 
-// ===== NOVOS SCHEMAS PARA CHECKLISTS =====
+// ===== SCHEMAS PARA CHECKLISTS =====
 
 // Schema para dados básicos do checklist (Etapa 1)
 export const checklistBasicSchema = z.object({
@@ -167,16 +167,15 @@ export const checklistBasicSchema = z.object({
     .string()
     .min(3, "Título deve ter pelo menos 3 caracteres")
     .max(100, "Título deve ter no máximo 100 caracteres")
-    .transform((val) => val.trim()),
+    .transform((val) => (val === undefined ? val : val?.trim())),
   description: z
     .string()
-    .max(300, "Descrição deve ter no máximo 300 caracteres")
+    .max(500, "Descrição deve ter no máximo 500 caracteres")
     .optional()
-    .or(z.literal(""))
-    .transform((val) => (val === "" ? undefined : val?.trim())),
+    .transform((val) => (val === undefined ? val : val?.trim())),
 });
 
-// Schema para uma questão individual
+// Schema para uma questão individual - VERSÃO COMPATÍVEL
 export const questionSchema = z.object({
   description: z
     .string()
@@ -187,13 +186,34 @@ export const questionSchema = z.object({
     required_error: "Tipo de pergunta é obrigatório",
     invalid_type_error: "Tipo de pergunta inválido",
   }),
-  isRequired: z.boolean().default(true),
+  isRequired: z.boolean(),
 });
 
 // Schema para múltiplas questões (Etapa 2)
 export const questionsSchema = z.object({
   questions: z
     .array(questionSchema)
+    .min(1, "Pelo menos uma pergunta é obrigatória")
+    .max(20, "Máximo de 20 perguntas permitidas"),
+});
+
+// Schema alternativo para formulários com possível undefined
+export const questionFormSchema = z.object({
+  description: z
+    .string()
+    .min(3, "Pergunta deve ter pelo menos 3 caracteres")
+    .max(200, "Pergunta deve ter no máximo 200 caracteres")
+    .transform((val) => val.trim()),
+  type: z.enum(["YES_NO", "TEXT", "SCALE"], {
+    required_error: "Tipo de pergunta é obrigatório",
+    invalid_type_error: "Tipo de pergunta inválido",
+  }),
+  isRequired: z.preprocess((val) => val ?? true, z.boolean()),
+});
+
+export const questionsFormSchema = z.object({
+  questions: z
+    .array(questionFormSchema)
     .min(1, "Pelo menos uma pergunta é obrigatória")
     .max(20, "Máximo de 20 perguntas permitidas"),
 });
@@ -214,19 +234,11 @@ export const checklistFiltersSchema = z.object({
 
 // ===== TIPOS INFERIDOS DOS SCHEMAS =====
 
-export type LoginFormData = z.infer<typeof loginSchema>;
-export type RegisterFormData = z.infer<typeof registerSchema>;
-export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
-export type EventFormData = z.infer<typeof eventSchema>;
-export type EventFormFields = z.infer<typeof eventFormSchema>;
-export type ArticleFormData = z.infer<typeof articleSchema>;
-export type EvaluationFormData = z.infer<typeof evaluationSchema>;
-export type CreateEvaluatorFormData = z.infer<typeof createEvaluatorSchema>;
-
-// ✅ Novos tipos para checklists
 export type ChecklistBasicFormData = z.infer<typeof checklistBasicSchema>;
 export type QuestionFormData = z.infer<typeof questionSchema>;
 export type QuestionsFormData = z.infer<typeof questionsSchema>;
+export type QuestionFormSchemaData = z.infer<typeof questionFormSchema>;
+export type QuestionsFormSchemaData = z.infer<typeof questionsFormSchema>;
 export type CompleteChecklistFormData = z.infer<typeof completeChecklistSchema>;
 export type ChecklistFiltersData = z.infer<typeof checklistFiltersSchema>;
 
@@ -344,3 +356,14 @@ export const validateChecklistBeforeSubmit = (
     warnings,
   };
 };
+
+// ===== TIPOS INFERIDOS DOS SCHEMAS =====
+
+export type LoginFormData = z.infer<typeof loginSchema>;
+export type RegisterFormData = z.infer<typeof registerSchema>;
+export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
+export type EventFormData = z.infer<typeof eventSchema>;
+export type EventFormFields = z.infer<typeof eventFormSchema>;
+export type ArticleFormData = z.infer<typeof articleSchema>;
+export type EvaluationFormData = z.infer<typeof evaluationSchema>;
+export type CreateEvaluatorFormData = z.infer<typeof createEvaluatorSchema>;

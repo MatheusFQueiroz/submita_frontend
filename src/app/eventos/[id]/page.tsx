@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { AuthGuard } from "@/components/guards/AuthGuard";
 import { RoleGuard } from "@/components/guards/RoleGuard";
@@ -64,6 +65,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
   const {
     data: articles,
     loading: articlesLoading,
+    error: articlesError,
   } = useApi<Article[]>(
     () =>
       api.get(`/events/${eventId}/articles`).catch((error) => {
@@ -78,9 +80,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
 
   const {
     data: eventStats,
-    // eslint-disable-next-line
     loading: statsLoading,
-    // eslint-disable-next-line
     error: statsError,
   } = useApi<any>(
     () =>
@@ -96,85 +96,51 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
         }
         throw error;
       }),
-    { immediate: !!eventId }
+    { immediate: !!eventId && user?.role === USER_ROLES.COORDINATOR }
   );
 
-  // Loading inicial
-  if (!eventId && !paramsError) {
-    return (
-      <AuthGuard>
-        <PageLayout>
-          <div className="flex justify-center py-8">
-            <LoadingSpinner text="Carregando página..." />
-          </div>
-        </PageLayout>
-      </AuthGuard>
-    );
-  }
-
-  // Erro nos parâmetros
+  // Show error if params failed to resolve
   if (paramsError) {
     return (
       <AuthGuard>
         <PageLayout>
-          <div className="text-center py-12">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Erro ao carregar página
-            </h2>
-            <p className="text-gray-600 mt-2">{paramsError}</p>
-            <Button asChild className="mt-4">
-              <Link href={ROUTES.EVENTS}>Voltar para eventos</Link>
-            </Button>
+          <div className="flex items-center justify-center min-h-[50vh]">
+            <div className="text-center">
+              <h2 className="text-xl font-semibold text-red-600 mb-2">
+                Erro ao carregar página
+              </h2>
+              <p className="text-gray-600 mb-4">{paramsError}</p>
+              <Button onClick={() => window.history.back()}>Voltar</Button>
+            </div>
           </div>
         </PageLayout>
       </AuthGuard>
     );
   }
 
-  // Loading do evento
-  if (eventLoading) {
+  // Show loading while resolving params or loading event
+  if (!eventId || eventLoading) {
     return (
       <AuthGuard>
         <PageLayout>
-          <div className="flex justify-center py-8">
-            <LoadingSpinner text="Carregando evento..." />
+          <div className="flex items-center justify-center min-h-[50vh]">
+            <LoadingSpinner />
           </div>
         </PageLayout>
       </AuthGuard>
     );
   }
 
-  // Erro ao carregar evento
-  if (eventError) {
+  // Handle event error
+  if (eventError || !event) {
     return (
       <AuthGuard>
         <PageLayout>
           <div className="text-center py-12">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Erro ao carregar evento
-            </h2>
-            <p className="text-gray-600 mt-2">
-              {eventError || "Ocorreu um erro inesperado"}
-            </p>
-            <Button asChild className="mt-4">
-              <Link href={ROUTES.EVENTS}>Voltar para eventos</Link>
-            </Button>
-          </div>
-        </PageLayout>
-      </AuthGuard>
-    );
-  }
-
-  // Evento não encontrado
-  if (!event) {
-    return (
-      <AuthGuard>
-        <PageLayout>
-          <div className="text-center py-12">
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Evento não encontrado
             </h2>
-            <p className="text-gray-600 mt-2">
+            <p className="text-gray-600 mb-4">
               O evento que você está procurando não existe ou foi removido.
             </p>
             <Button asChild className="mt-4">
@@ -200,6 +166,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
 
   const isActive = now >= startDate && now <= endDate;
   const isUpcoming = now < startDate;
+  const isFinished = now > endDate;
 
   const getEventStatus = () => {
     if (isUpcoming)
@@ -245,260 +212,179 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
               <Button variant="outline" asChild>
                 <Link href={ROUTES.EVENT_ARTICLES(event.id)}>
                   <FileText className="mr-2 h-4 w-4" />
-                  Ver Artigos
+                  Artigos
                 </Link>
               </Button>
-              <Button variant="outline" asChild>
-                <Link
-                  href={ROUTES.EVENT_EVALUATORS(event.id)}
-                  className="btn-gradient-accent"
-                >
-                  <Users className="mr-2 h-4 w-4" />
-                  Gerenciar Avaliadores
-                </Link>
-              </Button>
-              <Button variant="outline" asChild>
-                <Link
-                  href={`/eventos/${event.id}/editar`}
-                  className="btn-gradient-primary"
-                >
+              {/* <Button variant="outline" asChild>
+                <Link href={ROUTES.EVENT_MANAGE(event.id)}>
                   <Settings className="mr-2 h-4 w-4" />
-                  Editar Evento
+                  Gerenciar
                 </Link>
-              </Button>
+              </Button> */}
             </RoleGuard>
           </div>
         }
       >
-        <div className="space-y-6">
-          {/* Card Principal do Evento */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-start space-x-6">
-                {event.banner && (
-                  <div className="flex-shrink-0">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Event Banner */}
+            {event.banner && (
+              <Card>
+                <CardContent className="p-0">
+                  <div className="relative h-64 w-full">
                     <Image
                       src={banner}
                       alt={event.name}
-                      width={200}
-                      height={120}
-                      className="rounded-lg object-cover"
-                      onError={(e) => {
-                        console.error("Erro ao carregar imagem:", e);
-                      }}
+                      fill
+                      className="object-cover rounded-t-lg"
                     />
                   </div>
-                )}
-
-                <div className="flex-1 space-y-4">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h1 className="text-3xl font-bold text-gray-900">
-                        {event.name}
-                      </h1>
-                      <p className="text-lg text-gray-600 mt-2">
-                        {event.description}
-                      </p>
-                    </div>
-                    <Badge className="flex items-center">
-                      <status.icon className="mr-1 h-4 w-4" />
-                      {status.label}
-                    </Badge>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="h-5 w-5 text-primary" />
-                      <div>
-                        <p className="text-sm font-medium">
-                          Início das Submissões
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {formatDateTime(event.submissionStartDate)}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      <Clock className="h-5 w-5 text-primary" />
-                      <div>
-                        <p className="text-sm font-medium">
-                          Fim das Submissões
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {formatDateTime(event.submissionEndDate)}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      <BarChart3 className="h-5 w-5 text-primary" />
-                      <div>
-                        <p className="text-sm font-medium">Tipo de Avaliação</p>
-                        <p className="text-sm text-gray-600">
-                          {event.evaluationType === "DIRECT"
-                            ? "Avaliação Direta"
-                            : event.evaluationType === "PAIR"
-                            ? "Avaliação por Pares"
-                            : "Por Comitê"}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Estatísticas do Evento (Coordenador) */}
-          <RoleGuard allowedRoles={[USER_ROLES.COORDINATOR]}>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Total de Submissões
-                  </CardTitle>
-                  <FileText className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {eventStats?.totalSubmissions || 0}
-                  </div>
                 </CardContent>
               </Card>
+            )}
 
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Em Avaliação
-                  </CardTitle>
-                  <Clock className="h-4 w-4 text-yellow-600" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-yellow-600">
-                    {eventStats?.underReview || 0}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Aprovados
-                  </CardTitle>
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-green-600">
-                    {eventStats?.approved || 0}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Avaliadores
-                  </CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {eventStats?.evaluators || 0}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </RoleGuard>
-
-          {/* Submissões Recentes */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center">
-                <FileText className="mr-2 h-5 w-5" />
-                Submissões Recentes
-              </CardTitle>
-              <RoleGuard allowedRoles={[USER_ROLES.COORDINATOR]}>
-                <Button variant="outline" size="sm" asChild>
-                  <Link href={ROUTES.EVENT_ARTICLES(event.id)}>Ver todas</Link>
-                </Button>
-              </RoleGuard>
-            </CardHeader>
-            <CardContent>
-              {articlesLoading ? (
-                <LoadingSpinner text="Carregando submissões..." />
-              ) : articles && articles.length > 0 ? (
-                <div className="space-y-4">
-                  {articles.slice(0, 5).map((article) => (
-                    <div
-                      key={article.id}
-                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="flex-1">
-                        <h3 className="font-medium">{article.title}</h3>
-                        <div className="flex items-center space-x-4 mt-1 text-sm text-gray-500">
-                          <span>Por {article.user?.name}</span>
-                          <span>{formatDate(article.createdAt)}</span>
-                          <Badge variant="outline" className="text-xs">
-                            Versão {article.currentVersion}
-                          </Badge>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <StatusBadge status={article.status} />
-                        <Button variant="ghost" size="sm" asChild>
-                          <Link href={ROUTES.ARTICLE_DETAILS(article.id)}>
-                            Ver detalhes
-                          </Link>
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 text-gray-500">
-                  <FileText className="mx-auto h-12 w-12 mb-4" />
-                  <p>Nenhuma submissão ainda</p>
-                  {canSubmit && (
-                    <Button asChild className="mt-4">
-                      <Link href={ROUTES.SUBMIT_ARTICLE}>
-                        Seja o primeiro a submeter!
-                      </Link>
-                    </Button>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Informações para Submissão */}
-          {canSubmit && (
-            <Card className="bg-blue-50 border-blue-200">
+            {/* Event Description */}
+            <Card>
               <CardHeader>
-                <CardTitle className="text-blue-900">
-                  Como Submeter seu Artigo
-                </CardTitle>
+                <CardTitle>Sobre o Evento</CardTitle>
               </CardHeader>
-              <CardContent className="text-blue-800">
-                <ol className="list-decimal list-inside space-y-2">
-                  <li>Prepare seu artigo em formato PDF</li>
-                  <li>Tenha em mãos o resumo e palavras-chave</li>
-                  <li>Liste todos os co-autores (se houver)</li>
-                  <li>Clique em &quot;Submeter Artigo&quot; e preencha o formulário</li>
-                  <li>Aguarde a confirmação de submissão</li>
-                </ol>
-                <div className="mt-4">
-                  <Button asChild>
-                    <Link href={ROUTES.SUBMIT_ARTICLE}>
-                      <Upload className="mr-2 h-4 w-4" />
-                      Submeter Artigo Agora
-                    </Link>
-                  </Button>
-                </div>
+              <CardContent>
+                <p className="text-gray-700 leading-relaxed">
+                  {event.description}
+                </p>
               </CardContent>
             </Card>
-          )}
+
+            {/* Articles Statistics (Coordinator Only) */}
+            <RoleGuard allowedRoles={[USER_ROLES.COORDINATOR]}>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <BarChart3 className="mr-2 h-5 w-5" />
+                    Estatísticas de Submissões
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {statsLoading ? (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="animate-pulse">
+                          <div className="bg-gray-200 h-8 rounded mb-2"></div>
+                          <div className="bg-gray-200 h-4 rounded"></div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-blue-600">
+                          {eventStats?.totalSubmissions || 0}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Total de Submissões
+                        </div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-yellow-600">
+                          {eventStats?.underReview || 0}
+                        </div>
+                        <div className="text-sm text-gray-600">Em Análise</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-600">
+                          {eventStats?.approved || 0}
+                        </div>
+                        <div className="text-sm text-gray-600">Aprovados</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-purple-600">
+                          {eventStats?.evaluators || 0}
+                        </div>
+                        <div className="text-sm text-gray-600">Avaliadores</div>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </RoleGuard>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Event Status */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <status.icon className="mr-2 h-5 w-5" />
+                  Status do Evento
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Badge className={status.color}>{status.label}</Badge>
+                <Separator className="my-4" />
+                <div className="space-y-3">
+                  <div className="flex items-center text-sm">
+                    <Calendar className="mr-2 h-4 w-4 text-gray-500" />
+                    <div>
+                      <p className="font-medium">Início das Submissões</p>
+                      <p className="text-gray-600">
+                        {formatDateTime(event.submissionStartDate)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-sm">
+                    <Clock className="mr-2 h-4 w-4 text-gray-500" />
+                    <div>
+                      <p className="font-medium">Fim das Submissões</p>
+                      <p className="text-gray-600">
+                        {formatDateTime(event.submissionEndDate)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {canSubmit && (
+                  <div className="mt-4">
+                    <Button asChild className="w-full">
+                      <Link href={ROUTES.SUBMIT_ARTICLE}>
+                        <Upload className="mr-2 h-4 w-4" />
+                        Submeter Artigo
+                      </Link>
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Informações para Submissão */}
+            {canSubmit && (
+              <Card className="bg-blue-50 border-blue-200">
+                <CardHeader>
+                  <CardTitle className="text-blue-900">
+                    Como Submeter seu Artigo
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-blue-800">
+                  <ol className="list-decimal list-inside space-y-2">
+                    <li>Prepare seu artigo em formato PDF</li>
+                    <li>Tenha em mãos o resumo e palavras-chave</li>
+                    <li>Liste todos os co-autores (se houver)</li>
+                    <li>Clique em "Submeter Artigo" e preencha o formulário</li>
+                    <li>Aguarde a confirmação de submissão</li>
+                  </ol>
+                  <div className="mt-4">
+                    <Button asChild>
+                      <Link href={ROUTES.SUBMIT_ARTICLE}>
+                        <Upload className="mr-2 h-4 w-4" />
+                        Submeter Artigo Agora
+                      </Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
       </PageLayout>
     </AuthGuard>
