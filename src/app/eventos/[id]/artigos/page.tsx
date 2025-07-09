@@ -4,14 +4,6 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -27,7 +19,6 @@ import { DataTable } from "@/components/common/DataTable";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import {
   FileText,
-  Search,
   Users,
   Eye,
   Download,
@@ -54,6 +45,9 @@ export default function EventArticlesPage({ params }: EventArticlesPageProps) {
   const [selectedEvaluatorIds, setSelectedEvaluatorIds] = useState<string[]>(
     []
   );
+  const [evaluators, setEvaluators] = useState<User[]>([]);
+  const [evaluatorsLoading, setEvaluatorsLoading] = useState(false);
+  const [evaluatorsError, setEvaluatorsError] = useState<string | null>(null);
   const debouncedSearch = useDebounce(searchTerm, 300);
 
   // Busca informações do evento
@@ -80,18 +74,68 @@ export default function EventArticlesPage({ params }: EventArticlesPageProps) {
     }
   );
 
-  // Busca avaliadores do evento
-  const { data: evaluators, loading: evaluatorsLoading } = useApi<User[]>(
-    () => api.get(`/events/${id}/evaluators`),
-    { immediate: true }
-  );
+  // Função para carregar avaliadores
+  const loadEvaluators = async () => {
+    setEvaluatorsLoading(true);
+    setEvaluatorsError(null);
+
+    try {
+      const response = await api.get(`/events/${id}/evaluators`);
+
+      const evaluatorsData =
+        response?.data?.evaluators || response?.evaluators || [];
+
+      if (Array.isArray(evaluatorsData)) {
+        const processedEvaluators = evaluatorsData
+          .filter((item: any) => {
+            const isItemActive = item.isActive !== false;
+            const isUserActive = item.user?.isActive !== false;
+            console.log(
+              `Filtro - ${item.user?.name}: item.isActive=${item.isActive}, user.isActive=${item.user?.isActive}`
+            );
+            return isItemActive && isUserActive;
+          })
+          .map((item: any) => ({
+            id: item.user.id,
+            name: item.user.name,
+            email: item.user.email,
+            role: item.user.role,
+            isFromBpk: item.user.isFromBpk,
+            isActive: item.user.isActive,
+            createdAt: new Date(item.user.createdAt || Date.now()),
+            updatedAt: item.user.updatedAt
+              ? new Date(item.user.updatedAt)
+              : undefined,
+          }));
+
+        console.log("Avaliadores processados final:", processedEvaluators);
+        setEvaluators(processedEvaluators);
+      } else {
+        console.log("Dados dos avaliadores não são um array válido");
+        setEvaluators([]);
+      }
+    } catch (error: any) {
+      console.error("Erro ao carregar avaliadores:", error);
+      setEvaluatorsError(error.message || "Erro ao carregar avaliadores");
+      setEvaluators([]);
+    } finally {
+      setEvaluatorsLoading(false);
+    }
+  };
+
+  // Carrega avaliadores quando o diálogo é aberto
+  React.useEffect(() => {
+    if (assignDialogOpen) {
+      loadEvaluators();
+    }
+  }, [assignDialogOpen, id]);
 
   const handleAssignEvaluators = async () => {
     if (!selectedArticle) return;
 
     try {
       await api.post(`/articles/${selectedArticle.id}/evaluators`, {
-        evaluatorIds: selectedEvaluatorIds,
+        evaluators: selectedEvaluatorIds,
       });
 
       toast.success("Avaliadores atribuídos com sucesso!");
@@ -306,31 +350,68 @@ export default function EventArticlesPage({ params }: EventArticlesPageProps) {
 
           {/* Assign Evaluators Dialog */}
           <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl bg-white">
               <DialogHeader>
                 <DialogTitle>Atribuir Avaliadores</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4">
+              <div className="space-y-4 bg-white">
                 {selectedArticle && (
                   <div className="p-4 bg-gray-50 rounded-lg">
                     <h4 className="font-medium">{selectedArticle.title}</h4>
                     <p className="text-sm text-gray-600 mt-1">
-                      por {selectedArticle.user?.name}
+                      {selectedArticle.summary}
                     </p>
                   </div>
                 )}
 
                 {evaluatorsLoading ? (
-                  <div className="flex justify-center py-8">
+                  <div className="flex justify-center py-8 bg-white">
                     <LoadingSpinner text="Carregando avaliadores..." />
                   </div>
-                ) : evaluators && evaluators.length > 0 ? (
+                ) : evaluatorsError ? (
+                  <div className="text-center py-8 text-red-500 bg-white">
+                    <Users className="mx-auto h-12 w-12 mb-4" />
+                    <h3 className="font-medium text-red-900 mb-2">
+                      Erro ao carregar avaliadores
+                    </h3>
+                    <p className="text-red-600 mb-4">
+                      {evaluatorsError ||
+                        "Não foi possível carregar os avaliadores do evento"}
+                    </p>
+                    <Button onClick={() => loadEvaluators()} variant="outline">
+                      Tentar Novamente
+                    </Button>
+                  </div>
+                ) : evaluators &&
+                  Array.isArray(evaluators) &&
+                  evaluators.length > 0 ? (
                   <>
-                    <div className="max-h-96 overflow-y-auto space-y-2">
+                    <div className="text-sm text-gray-600 mb-3">
+                      Selecione os avaliadores para este artigo (
+                      {evaluators.length} disponível(is)):
+                    </div>
+                    <div className="max-h-96 overflow-y-auto space-y-2 bg-white">
                       {evaluators.map((evaluator) => (
                         <div
                           key={evaluator.id}
-                          className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50"
+                          className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 bg-white cursor-pointer"
+                          onClick={() => {
+                            const isSelected = selectedEvaluatorIds.includes(
+                              evaluator.id
+                            );
+                            if (isSelected) {
+                              setSelectedEvaluatorIds(
+                                selectedEvaluatorIds.filter(
+                                  (id) => id !== evaluator.id
+                                )
+                              );
+                            } else {
+                              setSelectedEvaluatorIds([
+                                ...selectedEvaluatorIds,
+                                evaluator.id,
+                              ]);
+                            }
+                          }}
                         >
                           <input
                             type="checkbox"
@@ -338,33 +419,15 @@ export default function EventArticlesPage({ params }: EventArticlesPageProps) {
                             checked={selectedEvaluatorIds.includes(
                               evaluator.id
                             )}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setSelectedEvaluatorIds([
-                                  ...selectedEvaluatorIds,
-                                  evaluator.id,
-                                ]);
-                              } else {
-                                setSelectedEvaluatorIds(
-                                  selectedEvaluatorIds.filter(
-                                    (id) => id !== evaluator.id
-                                  )
-                                );
-                              }
-                            }}
+                            onChange={() => {}} // Controlled by onClick above
                             className="rounded"
                           />
-                          <label
-                            htmlFor={evaluator.id}
-                            className="flex-1 cursor-pointer"
-                          >
-                            <div>
-                              <p className="font-medium">{evaluator.name}</p>
-                              <p className="text-sm text-gray-500">
-                                {evaluator.email}
-                              </p>
-                            </div>
-                          </label>
+                          <div className="flex-1">
+                            <p className="font-medium">{evaluator.name}</p>
+                            <p className="text-sm text-gray-500">
+                              {evaluator.email}
+                            </p>
+                          </div>
                           <Badge
                             variant={
                               evaluator.isFromBpk ? "default" : "outline"
@@ -375,7 +438,7 @@ export default function EventArticlesPage({ params }: EventArticlesPageProps) {
                         </div>
                       ))}
                     </div>
-                    <div className="flex justify-end space-x-2 pt-4 border-t">
+                    <div className="flex justify-end space-x-2 pt-4 border-t bg-white">
                       <Button
                         variant="outline"
                         onClick={() => {
@@ -389,20 +452,34 @@ export default function EventArticlesPage({ params }: EventArticlesPageProps) {
                       <Button
                         onClick={handleAssignEvaluators}
                         disabled={selectedEvaluatorIds.length === 0}
+                        className="btn-gradient-accent"
                       >
                         Atribuir {selectedEvaluatorIds.length} avaliador(es)
                       </Button>
                     </div>
                   </>
                 ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    <Users className="mx-auto h-12 w-12 mb-4" />
-                    <p>Nenhum avaliador disponível para este evento</p>
-                    <Button asChild className="mt-4">
-                      <Link href={ROUTES.EVENT_EVALUATORS(id)}>
-                        Adicionar Avaliadores
-                      </Link>
-                    </Button>
+                  <div className="text-center py-8 text-gray-500 bg-white">
+                    <Users className="mx-auto h-12 w-12 mb-4 text-gray-400" />
+                    <h3 className="font-medium text-gray-900 mb-2">
+                      Nenhum avaliador atribuído ao evento
+                    </h3>
+                    <p className="text-gray-600 mb-4">
+                      Este evento ainda não possui avaliadores atribuídos.
+                      Adicione avaliadores ao evento primeiro.
+                    </p>
+                    <div className="space-y-2">
+                      <Button asChild>
+                        <Link href={ROUTES.EVENT_EVALUATORS(id)}>
+                          <Users className="mr-2 h-4 w-4" />
+                          Adicionar Avaliadores ao Evento
+                        </Link>
+                      </Button>
+                      <div className="text-xs text-gray-500">
+                        Você precisa primeiro adicionar avaliadores ao evento
+                        para poder atribuí-los aos artigos
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
