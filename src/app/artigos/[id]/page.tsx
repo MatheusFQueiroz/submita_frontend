@@ -5,27 +5,19 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { AuthGuard } from "@/components/guards/AuthGuard";
-import { RoleGuard } from "@/components/guards/RoleGuard";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { PDFViewer } from "@/components/common/PDFViewer";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import {
   FileText,
-  User,
-  Calendar,
   Download,
-  Edit,
-  Eye,
-  MessageSquare,
   Star,
   Clock,
   Users,
-  AlertTriangle,
 } from "lucide-react";
 import { useApi } from "@/hooks/useApi";
 import { useAuthContext } from "@/providers/AuthProvider";
@@ -46,7 +38,6 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
   const {
     data: article,
     loading: articleLoading,
-    execute: refetchArticle,
   } = useApi<{ article: Article }>(() => api.get(`/articles/${id}`), {
     immediate: true,
   });
@@ -55,9 +46,8 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
     Evaluation[]
   >(() => api.get(`/articles/${id}`), { immediate: true });
 
-  const isAuthor = user?.id === article?.article.userId;
+  // const isAuthor = user?.id === article?.article.userId;
   const isEvaluator = user?.role === USER_ROLES.EVALUATOR;
-  const isCoordinator = user?.role === USER_ROLES.COORDINATOR;
 
   const handleWithdrawArticle = async () => {
     try {
@@ -82,6 +72,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       toast.error("Erro ao baixar arquivo");
+      console.log("Error downloading PDF:", error);
     }
   };
 
@@ -108,7 +99,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
             <p className="text-gray-600 mt-2">
               O artigo que você está procurando não existe ou foi removido.
             </p>
-            <Button asChild className="mt-4">
+            <Button asChild className="mt-4 btn-gradient-accent">
               <Link href={ROUTES.ARTICLES}>Voltar para artigos</Link>
             </Button>
           </div>
@@ -122,9 +113,9 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
     { label: article.article.title },
   ];
 
-  const canEdit = isAuthor && article.article.status === "SUBMITTED";
-  const canWithdraw =
-    isAuthor && ["SUBMITTED", "UNDER_REVIEW"].includes(article.article.status);
+  // const canEdit = isAuthor && article.article.status === "SUBMITTED";
+  // const canWithdraw =
+  //   isAuthor && ["SUBMITTED", "UNDER_REVIEW"].includes(article.article.status);
   const canEvaluate = isEvaluator && article.article.status === "UNDER_REVIEW";
 
   return (
@@ -134,13 +125,14 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
         breadcrumbs={breadcrumbs}
         actions={
           <div className="flex space-x-2">
-            {article.article.pdfPath && (
-              <Button variant="outline" onClick={handleDownloadPDF}>
+            {article?.article.pdfPath && (
+              <Button variant="outline" className="btn-event-accent" onClick={handleDownloadPDF}>
                 <Download className="mr-2 h-4 w-4" />
                 Download PDF
               </Button>
             )}
 
+            {/* 
             {canEdit && (
               <Button variant="outline" asChild>
                 <Link href={ROUTES.ARTICLE_DETAILS(article.article.id)}>
@@ -148,18 +140,18 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                   Editar
                 </Link>
               </Button>
-            )}
+            )} */}
 
-            {canEvaluate && (
+            {/* {canEvaluate && (
               <Button asChild>
                 <Link href={ROUTES.EVALUATE_ARTICLE(article.article.id)}>
                   <Star className="mr-2 h-4 w-4" />
                   Avaliar
                 </Link>
               </Button>
-            )}
+            )} */}
 
-            {canWithdraw && (
+            {/* {canWithdraw && (
               <Button
                 variant="destructive"
                 onClick={() => setWithdrawDialogOpen(true)}
@@ -167,7 +159,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                 <AlertTriangle className="mr-2 h-4 w-4" />
                 Retirar
               </Button>
-            )}
+            )} */}
           </div>
         }
       >
@@ -221,7 +213,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
               <TabsContent value="overview" className="space-y-4 mt-4">
                 {/* Informações Gerais */}
                 <Card>
-                  <CardHeader className="pb-3">
+                  <CardHeader>
                     <CardTitle className="text-lg">
                       Informações Gerais
                     </CardTitle>
@@ -254,7 +246,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
 
                 {/* Resumo */}
                 <Card>
-                  <CardHeader className="pb-3">
+                  <CardHeader>
                     <CardTitle className="text-lg">Resumo</CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -266,7 +258,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
 
                 {/* Evento */}
                 <Card>
-                  <CardHeader className="pb-3">
+                  <CardHeader>
                     <CardTitle className="text-lg">Evento</CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -299,13 +291,13 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                 </Card>
 
                 {/* Ações Rápidas */}
-                <Card>
-                  <CardHeader className="pb-3">
+                {/* <Card>
+                  <CardHeader>
                     <CardTitle className="text-lg">Ações Rápidas</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    {article.article.pdfPath && (
                       <Button
+                      disabled={!article.article.pdfPath || !canEdit}
                         variant="outline"
                         onClick={handleDownloadPDF}
                         className="w-full"
@@ -314,10 +306,9 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                         <Download className="mr-2 h-4 w-4" />
                         Download PDF
                       </Button>
-                    )}
 
-                    {canEdit && (
                       <Button
+                      disabled={!canEdit}
                         variant="outline"
                         asChild
                         className="w-full"
@@ -328,10 +319,8 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                           Editar Artigo
                         </Link>
                       </Button>
-                    )}
 
-                    {canEvaluate && (
-                      <Button asChild className="w-full" size="sm">
+                      <Button variant="outline" disabled={!canEvaluate} asChild className="w-full" size="sm">
                         <Link
                           href={ROUTES.EVALUATE_ARTICLE(article.article.id)}
                         >
@@ -339,11 +328,10 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                           Avaliar Artigo
                         </Link>
                       </Button>
-                    )}
 
-                    {canWithdraw && (
                       <Button
-                        variant="destructive"
+                      disabled={!canWithdraw}
+                        variant="outline"
                         onClick={() => setWithdrawDialogOpen(true)}
                         className="w-full"
                         size="sm"
@@ -351,15 +339,14 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                         <AlertTriangle className="mr-2 h-4 w-4" />
                         Retirar Artigo
                       </Button>
-                    )}
                   </CardContent>
-                </Card>
+                </Card> */}
               </TabsContent>
 
               {/* Tab Checklist */}
               <TabsContent value="checklist" className="space-y-4 mt-4">
                 <Card>
-                  <CardHeader className="pb-3">
+                  <CardHeader>
                     <CardTitle className="text-lg">
                       Checklist de Revisão
                     </CardTitle>
@@ -431,7 +418,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
 
                 {/* Comentários do Checklist */}
                 <Card>
-                  <CardHeader className="pb-3">
+                  <CardHeader>
                     <CardTitle className="text-lg">Observações</CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -460,7 +447,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                 {/* Componente de Avaliação para Avaliadores */}
                 {canEvaluate && (
                   <Card>
-                    <CardHeader className="pb-3">
+                    <CardHeader>
                       <CardTitle className="text-lg">Minha Avaliação</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -499,7 +486,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
 
                 {/* Avaliações Existentes */}
                 <Card>
-                  <CardHeader className="pb-3">
+                  <CardHeader>
                     <CardTitle className="text-lg">
                       Avaliações Recebidas
                     </CardTitle>
@@ -511,7 +498,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
                       </div>
                     ) : evaluations && evaluations.length > 0 ? (
                       <div className="space-y-4">
-                        {evaluations.map((evaluation, index) => (
+                        {evaluations.map((evaluation) => (
                           <div
                             key={evaluation.id}
                             className="border rounded-lg p-4 bg-gray-50"
@@ -583,7 +570,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
               {/* Tab Histórico */}
               <TabsContent value="history" className="space-y-4 mt-4">
                 <Card>
-                  <CardHeader className="pb-3">
+                  <CardHeader>
                     <CardTitle className="text-lg">
                       Histórico de Versões
                     </CardTitle>
@@ -660,7 +647,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
 
                 {/* Timeline de Eventos */}
                 <Card>
-                  <CardHeader className="pb-3">
+                  <CardHeader>
                     <CardTitle className="text-lg">
                       Timeline de Eventos
                     </CardTitle>
